@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"./utils"
 	"net/rpc"
+	"context"
 )
 
 type MetaDataList struct{
@@ -299,10 +300,21 @@ func DataClientAddDataHandler(w http.ResponseWriter, request *http.Request) {
 	value := "dadd:"+metaDataIpfsHash
 	to := common.HexToAddress("")
 	//发起交易到以太坊
-	utils.NewMessage(common.HexToAddress(from), &to, "0x10",
+	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
 		"0x"+utils.EncryptTransactionInput(value),"0x295f05", "0x77359400")
 
+	conn := utils.Connect2Eth()
 
+	txHash,err := utils.SendTransaction(conn, &message, password, context.TODO())
+	if err!= nil{
+		utils.ErrorPanic(err)
+		data = Data{msg:"提交交易出错", code:500}
+		js,_:=json.Marshal(data)
+		t.Execute(w, js)
+	}
+	data = Data{msg:txHash, code:500}
+	js,_:=json.Marshal(data)
+	t.Execute(w, js)
 
 }
 
