@@ -326,51 +326,6 @@ func DataClientAddDataHandler(w http.ResponseWriter, request *http.Request) {
 
 
 
-func ModelClientAskDataHandler(w http.ResponseWriter, request *http.Request){
-	/**
-		模型方使用metadata请求数据方的数据
-		@param password string
-		@param metaDataInfo string
-	 */
-	w.Header().Set("Access-Control-Allow-Origin","*")
-	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-	var t *template.Template
-	var data Data
-	t, _ = template.ParseFiles("template/indexdata.html")
-
-	password := request.PostFormValue("password")
-	from := request.PostFormValue("from")
-	metaDataInfo := request.PostFormValue("metaDataInfo")
-
-	if password == "" || metaDataInfo == "" {
-		data = Data{msg:"参数不完全", code:500}
-		js,_:=json.Marshal(data)
-		t.Execute(w, js)
-	}
-
-	value := "mpull:"+metaDataInfo
-	to := common.HexToAddress("")
-	//发起交易到以太坊
-	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
-		"0x"+utils.EncryptTransactionInput(value),"0x295f05", "0x77359400")
-
-	conn := utils.Connect2Eth()
-	txHash,err := utils.SendTransaction(conn, &message, password, context.TODO())
-
-	if  err!= nil{
-		log.Fatal("数据方上传数据到区块链失败",err)
-		data = Data{msg:"数据方上传数据到区块链失败", code:500}
-		js,_:=json.Marshal(data)
-		t.Execute(w, js)
-	}else{
-		data = Data{msg:txHash, code:200}
-		js,_:=json.Marshal(data)
-		t.Execute(w, js)
-	}
-
-}
-
-
 
 func DataClientMonitorMetaDataHandler(w http.ResponseWriter, request *http.Request){
 	/**
@@ -416,8 +371,8 @@ func DataClientAggreeRequestHandler(w http.ResponseWriter, request *http.Request
 	txHash,err := utils.SendTransaction(conn, &message, password, context.TODO())
 
 	if  err!= nil{
-		log.Fatal("数据方上传数据到区块链失败",err)
-		data = Data{msg:"数据方上传数据到区块链失败", code:500}
+		log.Fatal("数据方同意模型方的请求将原数据传递给计算方法失败",err)
+		data = Data{msg:"数据方同意模型方的请求将原数据传递给计算方法失败", code:500}
 		js,_:=json.Marshal(data)
 		t.Execute(w, js)
 	}else{
@@ -428,8 +383,56 @@ func DataClientAggreeRequestHandler(w http.ResponseWriter, request *http.Request
 
 
 
+}
+
+
+
+
+func ModelClientAskDataHandler(w http.ResponseWriter, request *http.Request){
+	/**
+		模型方使用metadata请求数据方的数据
+		@param password string
+		@param metaDataInfo string
+	 */
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexdata.html")
+
+	password := request.PostFormValue("password")
+	from := request.PostFormValue("from")
+	metaDataInfo := request.PostFormValue("metaDataInfo")
+
+	if password == "" || metaDataInfo == "" {
+		data = Data{msg:"参数不完全", code:500}
+		js,_:=json.Marshal(data)
+		t.Execute(w, js)
+	}
+
+	value := "mpull:"+metaDataInfo
+	to := common.HexToAddress("")
+	//发起交易到以太坊
+	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
+		"0x"+utils.EncryptTransactionInput(value),"0x295f05", "0x77359400")
+
+	conn := utils.Connect2Eth()
+	txHash,err := utils.SendTransaction(conn, &message, password, context.TODO())
+
+	if  err!= nil{
+		log.Fatal("模型方使用metadata请求数据方的数据失败",err)
+		data = Data{msg:"模型方使用metadata请求数据方的数据失败", code:500}
+		js,_:=json.Marshal(data)
+		t.Execute(w, js)
+	}else{
+		data = Data{msg:txHash, code:200}
+		js,_:=json.Marshal(data)
+		t.Execute(w, js)
+	}
 
 }
+
+
 func DataClientAskComputingHandler(w http.ResponseWriter, request *http.Request) {
 
 
@@ -460,15 +463,6 @@ func ModelClientCreateContractHandler(w http.ResponseWriter, request *http.Reque
 }
 
 
-func ModelClientUploadModelHandler(w http.ResponseWriter, request *http.Request) {
-
-	w.Header().Set("Access-Control-Allow-Origin","*")
-	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-	var t *template.Template
-	var data Data
-	t, _ = template.ParseFiles("template/indexmodel.html")
-
-}
 
 func ModelClientUploadModelHandler(w http.ResponseWriter, request *http.Request) {
 
@@ -486,6 +480,23 @@ func ModelClientUploadResultHandler(w http.ResponseWriter, request *http.Request
 	var t *template.Template
 	var data Data
 	t, _ = template.ParseFiles("template/indexmodel.html")
+
+}
+
+
+func ComputingClientMonitorDataClientHandler(w http.ResponseWriter, request *http.Request){
+	/**
+		ajax长连接
+		运算方监听是否有数据方的请求
+	 */
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexcomputer.html")
+
+
+
 
 }
 
