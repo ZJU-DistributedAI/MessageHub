@@ -1,19 +1,25 @@
 package utils
 
-import "log"
+import (
+	"github.com/getsentry/raven-go"
+	"log"
+)
 
 
 func DebugInfo(info string){
-	log.Println(" [DEBUG]: ", info)
+	raven.CaptureMessageAndWait(info, map[string]string{"category": "[DEBUG]"})
 }
 
 
 func WarnningInfo(info string){
-	log.Println(" [INFO]: ", info)
+	raven.CaptureMessageAndWait(info, map[string]string{"category": "[WARNING]"})
 }
 
-func ErrorInfo(e error){
-	log.Printf(" [ERROR]: %v\n", e)
+func ErrorPanic(e error){
+	raven.CaptureError(e, nil)
+	raven.CapturePanic(func(){
+		log.Panic(e)
+	}, nil)
 }
 
 

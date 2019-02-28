@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -180,7 +182,7 @@ func IndexHandler(w http.ResponseWriter,r *http.Request){
 
 	t, err := template.ParseFiles("template/index.html")
 	if err!= nil {
-		utils.ErrorInfo(err)
+		utils.ErrorPanic(err)
 	}
 
 	//js,_:=json.Marshal(serverTest)
@@ -211,7 +213,7 @@ func LoginHandler(w http.ResponseWriter,r *http.Request){
 			t, err = template.ParseFiles("template/indexcomputer.html")
 		}
 		if err!=nil {
-			utils.ErrorInfo(err)
+			utils.ErrorPanic(err)
 			return
 		}
 		data := Data{msg:"", code:200}
@@ -220,7 +222,7 @@ func LoginHandler(w http.ResponseWriter,r *http.Request){
 	}else{
 		t, err = template.ParseFiles("template/login.html")
 		if err!=nil {
-			utils.ErrorInfo(err)
+			utils.ErrorPanic(err)
 			return
 		}
 
@@ -236,6 +238,11 @@ func LoginHandler(w http.ResponseWriter,r *http.Request){
 }
 
 func CreateWalletHandler(w http.ResponseWriter,r *http.Request){
+
+	/**
+		为该用户创建以太坊钱包
+		@params: password string
+	 */
 
 	w.Header().Set("Access-Control-Allow-Origin","*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
@@ -266,43 +273,200 @@ func CreateWalletHandler(w http.ResponseWriter,r *http.Request){
 
 }
 
-func DataClientAddDataHandler(writer http.ResponseWriter, request *http.Request) {
+func DataClientAddDataHandler(w http.ResponseWriter, request *http.Request) {
+
+	/**
+		数据方账户将数据通过以太坊保存到消息服务器
+		@Params: from string
+		@Params: password string
+		@Params: dataIpfsHash string
+	 */
+
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+
+	t, _ = template.ParseFiles("template/indexdata.html")
+
+	password := request.PostFormValue("password")
+	from := request.PostFormValue("from")
+	metaDataIpfsHash := request.PostFormValue("metaDataIpfsHash")
+
+	if password == "" || metaDataIpfsHash == ""{
+		data = Data{msg:"参数不完全", code:500}
+		js,_:=json.Marshal(data)
+		t.Execute(w, js)
+	}
+
+	value := "dadd:"+metaDataIpfsHash
+	to := common.HexToAddress("")
+	//发起交易到以太坊
+	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
+		"0x"+utils.EncryptTransactionInput(value),"0x295f05", "0x77359400")
+	conn := utils.Connect2Eth()
+	txHash,err := utils.SendTransaction(conn, &message, password, context.TODO())
+
+	if  err!= nil{
+		log.Fatal("数据方上传数据到区块链失败",err)
+		data = Data{msg:"数据方上传数据到区块链失败", code:500}
+		js,_:=json.Marshal(data)
+		t.Execute(w, js)
+	}else{
+		data = Data{msg:txHash, code:200}
+		js,_:=json.Marshal(data)
+		t.Execute(w, js)
+	}
 
 }
-func DataClientAggreeRequestHandler(writer http.ResponseWriter, request *http.Request) {
+
+
+func DataClientMonitorMetaDataHandler(w http.ResponseWriter, request *http.Request){
+	/**
+		接受ajax长轮询
+		监听是否有模型方提交的metadata交易
+	 */
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexdata.html")
+
+	modelClientPullDataReceipt := GetModelClientPullDataReceipt()
+
+	data = Data{msg: modelClientPullDataReceipt.Metadata+":"+modelClientPullDataReceipt.From, code:200}
+	js, _ := json.Marshal(data)
+	t.Execute(w, js)
+}
+
+
+
+func DataClientAggreeRequestHandler(w http.ResponseWriter, request *http.Request) {
+	/**
+		数据方同意模型方的请求将原数据传递给计算方法（不加密实现）
+	 */
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexdata.html")
+
+	password := request.PostFormValue("password")
+	dataIpfsHash := request.PostFormValue("dataIpfsHash")
+	from := request.PostFormValue("from")
+
+	value := "dagree:"+dataIpfsHash
+	to := common.HexToAddress("")
+	//发起交易到以太坊
+	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
+		"0x"+utils.EncryptTransactionInput(value),"0x295f05", "0x77359400")
+	conn := utils.Connect2Eth()
+	txHash,err := utils.SendTransaction(conn, &message, password, context.TODO())
+
+	if  err!= nil{
+		log.Fatal("数据方上传数据到区块链失败",err)
+		data = Data{msg:"数据方上传数据到区块链失败", code:500}
+		js,_:=json.Marshal(data)
+		t.Execute(w, js)
+	}else{
+		data = Data{msg:txHash, code:200}
+		js,_:=json.Marshal(data)
+		t.Execute(w, js)
+	}
+
+
+
 
 }
-func DataClientAskComputingHandler(writer http.ResponseWriter, request *http.Request) {
+func DataClientAskComputingHandler(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexdata.html")
+
 
 }
-func DataClientDeleteDataHandler(writer http.ResponseWriter, request *http.Request) {
+func DataClientDeleteDataHandler(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexdata.html")
+
 
 }
-func ModelClientAskDataHandler(writer http.ResponseWriter, request *http.Request) {
+func ModelClientAskDataHandler(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexmodel.html")
 
 }
-func ModelClientCreateContractHandler(writer http.ResponseWriter, request *http.Request) {
+func ModelClientCreateContractHandler(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexmodel.html")
 
 }
-func ModelClientUploadModelHandler(writer http.ResponseWriter, request *http.Request) {
+func ModelClientUploadModelHandler(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexmodel.html")
 
 }
-func ModelClientUploadResultHandler(writer http.ResponseWriter, request *http.Request) {
+func ModelClientUploadResultHandler(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexmodel.html")
 
 }
-func ComputingClientAddDataHandler(writer http.ResponseWriter, request *http.Request) {
+func ComputingClientAddDataHandler(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexcomputer.html")
 
 }
-func ComputingClientAggreeRequestHandler(writer http.ResponseWriter, request *http.Request) {
+func ComputingClientAggreeRequestHandler(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexcomputer.html")
 
 }
-func ComputingClientDeleteDataHandler(writer http.ResponseWriter, request *http.Request) {
+func ComputingClientDeleteDataHandler(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexcomputer.html")
 
 }
-func ComputingClientTrainHandler(writer http.ResponseWriter, request *http.Request) {
+func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexcomputer.html")
 
 }
-func ComputingClientUploadEncryptedDataHandler(writer http.ResponseWriter, request *http.Request) {
+func ComputingClientUploadEncryptedDataHandler(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+
+	t, _ = template.ParseFiles("template/indexcomputer.html")
 
 }
 

@@ -1,12 +1,13 @@
 package main
 
 import (
-
+	"./utils"
+	"github.com/getsentry/raven-go"
 	"log"
 	"net/http"
 )
 
-func startMessageWatchingService(){
+func startWebService(){
 
 
 
@@ -24,10 +25,11 @@ func startMessageWatchingService(){
 
 
 	//data client
-	http.HandleFunc("/dataclient/adddata",DataClientAddDataHandler)
-	http.HandleFunc("/dataclient/agreerequest",DataClientAggreeRequestHandler)
-	http.HandleFunc("/dataclient/askcomputing",DataClientAskComputingHandler)
-	http.HandleFunc("/dataclient/deletedata",DataClientDeleteDataHandler)
+	http.HandleFunc("/dataclient/adddata", DataClientAddDataHandler)
+	http.HandleFunc("/dataclient/agreerequest", DataClientAggreeRequestHandler)
+	http.HandleFunc("/dataclient/askcomputing", DataClientAskComputingHandler)
+	http.HandleFunc("/dataclient/deletedata", DataClientDeleteDataHandler)
+	http.HandleFunc("dataclient/monitormetadata", DataClientMonitorMetaDataHandler)
 
 	//model client
 	http.HandleFunc("/modelclient/askdata",ModelClientAskDataHandler)
@@ -52,7 +54,19 @@ func startMessageWatchingService(){
 
 
 
+func init(){
 
+	//连接到sentry
+	raven.SetDSN("http://e8f71faeb2d043fd96058c57a481434c:b7afc614ef7149c997cb9b316d7f2eaf@212.64.85.208:9000/3")
+	//连接以太坊
+	utils.Connect2Eth()
+	//连接redis
+	utils.Connect2Redis()
+	//获取配置文件对象
+	utils.InitConfig("")
+
+
+}
 
 
 
@@ -60,6 +74,6 @@ func main(){
 
 	//监听Model Client和Data Client传过来的http请求
 	//_:= handler.Handlers{conn: utils.Connect2Eth()}
-	startMessageWatchingService()
+	startWebService()
 
 }

@@ -9,14 +9,26 @@ import (
 	"time"
 )
 
-type ResultReceipt struct {
+type TransactionReceipt struct {
 	TransactionHash string
 	BlockHash       string
 }
 
-//该通道用来存储已经被验证的交易
-var mindedTransactionHashChannel chan ResultReceipt
+type ModelClientPullDataReceipt struct {
+	Metadata string
+	From string
+}
 
+type DataAddreeReceipt struct {
+	DataIpfsHash string
+	From string
+}
+
+
+//该通道用来存储已经被验证的交易
+var mindedTransactionHashChannel chan TransactionReceipt
+var modelClientPullDataChannel chan ModelClientPullDataReceipt
+var dataAddressChannel chan DataAddreeReceipt
 //为每次获取到处于pending状态的交易时，对其创建协程进行监听
 //当有交易被验证并封装到区块时，将其塞到mindedTransactionHashChannel里面
 func createGoRoutine(client *rpc.Client, txHashes []string) {
@@ -37,7 +49,7 @@ func createGoRoutine(client *rpc.Client, txHashes []string) {
 			result := utils.GetTransactionReceipt(client, txHashes[i])
 
 			if result.BlockHash != "" {
-				mindedTransactionHashChannel <- ResultReceipt{TransactionHash: result.TransactionHash, BlockHash: result.BlockHash}
+				mindedTransactionHashChannel <- TransactionReceipt{TransactionHash: result.TransactionHash, BlockHash: result.BlockHash}
 				txHashes[i] = ""
 				isDone++
 			}
@@ -91,11 +103,25 @@ func dealNewTransactions(client *rpc.Client, filterId string, conn redis.Conn) {
 
 }
 
+func GetModelClientPullDataReceipt()(ModelClientPullDataReceipt){
+
+	for{
+		modelClientPullDataReceipt:= <-modelClientPullDataChannel
+		if &modelClientPullDataReceipt != nil{
+			return modelClientPullDataReceipt
+		}
+	}
+}
+
 func distributeTransactionByInput(from string,input string,conn redis.Conn){
 
 	splits:=strings.Split(input,":")
-	if splits[0]=="dadd"{ //数据方上传元数据
+	if splits[0] == "dadd"{ //数据方上传元数据
 		utils.Sadd2Redis(conn,"metadata",from,splits[1])
+	}else if splits[0] == "mpull"{//模型方请求数据方数据
+		modelClientPullDataChannel <- ModelClientPullDataReceipt{Metadata: splits[1], From: from}
+	}else if splits[0] == "daggree"{//数据方同意模型方的请求
+		dataAddressChannel <- DataAddreeReceipt{DataIpfsHash: splits[1], From: from}
 	}else if splits[0]=="madd"{ //模型方上传模型Hash
 		utils.Sadd2Redis(conn,"model",from,splits[1])
 	}else if splits[0]=="cadd"{ //运算方上传运算资源Hash
@@ -151,7 +177,8 @@ func main() {
 	}
 	defer conn.Close()
 
-	mindedTransactionHashChannel = make(chan ResultReceipt)
+	mindedTransactionHashChannel = make(chan TransactionReceipt)
+	modelClientPullDataChannel = make(chan ModelClientPullDataReceipt)
 
 	filterId, err := utils.CreateNewPendingTransactionFilter(client)
 
@@ -162,13 +189,6 @@ func main() {
 
 	//不使用协程池，监听以太坊
 	dealNewTransactions(client, filterId, conn)
-
-
-
-
-
-
-
 
 
 	//使用协程池

@@ -21,7 +21,7 @@ func sendMultiTransaction(client *rpc.Client,from string,to common.Address,numbe
 
 		message:=utils.NewMessage(common.HexToAddress(from),&to,"0x10","0x"+data,"0x295f05","0x77359400")
 
-		txHash,err:=utils.SendTransaction(client,&message,context.TODO())
+		txHash,err:=utils.SendTransaction(client,&message,"",context.TODO())
 		//txHash,err:=sendRawTransaction(client,"")
 		if err!=nil{
 			fmt.Println("send new transaction fail: ",err)

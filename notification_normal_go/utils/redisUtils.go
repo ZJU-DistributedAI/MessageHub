@@ -1,29 +1,37 @@
 package utils
 
 import (
-
 	"fmt"
-	"time"
-	"sync"
 	"github.com/garyburd/redigo/redis"
-
+	"sync"
+	"time"
 )
 
 var mutex sync.Mutex
 
+var connect_redis redis.Conn
+
 func Connect2Redis() (conn redis.Conn) {
 
-	var connect_redis redis.Conn
 
 	for {
 
-		conn, err := redis.Dial("tcp", "212.64.85.208:6379")
-
-		if err != nil {
-			fmt.Println("connect to redis fail! reconnecting.....", err)
-			time.Sleep(100) //等待0.1秒后重新尝试连接
-		} else {
-			connect_redis = conn
+		if connect_redis == nil {
+			mutex.Lock()
+			if connect_redis == nil{
+				conn, err := redis.Dial("tcp", "212.64.85.208:6379")
+				if err != nil {
+					ErrorPanic(err)
+					time.Sleep(100) //等待0.1秒后重新尝试连接
+				} else {
+					connect_redis = conn
+				}
+			}
+			mutex.Unlock()
+			if connect_redis != nil{
+				break
+			}
+		}else{
 			break
 		}
 	}
@@ -43,7 +51,7 @@ func Sadd2Redis(conn redis.Conn, key string,from string,value string) bool {
 	mutex.Unlock()
 
 	if err != nil {
-		fmt.Println("fail to sadd the value ", err)
+		ErrorPanic(err)
 		return false
 	}
 
@@ -75,7 +83,7 @@ func SmembersFromRedis(conn redis.Conn,key string)[]string{
 	result,err:=redis.Values(conn.Do("smembers",key))
 
 	if err!=nil{
-		fmt.Println("fail to hkeys the value ",err)
+		ErrorPanic(err)
 		return nil
 	}
 
@@ -94,7 +102,7 @@ func HgetKeyField(conn redis.Conn,key string,field string)string{
 	result,err:=redis.String(conn.Do("hget",key,field))
 
 	if err!=nil{
-		fmt.Println("fail to hkeys the value ",err)
+		ErrorPanic(err)
 		return ""
 	}
 

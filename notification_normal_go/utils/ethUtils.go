@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -15,8 +14,8 @@ type Client struct {
 }
 
 type Message struct {
-	To       *common.Address `json:"to"`
 	From     common.Address  `json:"from"`
+	To       *common.Address `json:"to"`
 	Value    string          `json:"value"`
 	Data     string          `json:"data"`
 	GasLimit string          `json:"gasLimit"`
@@ -58,31 +57,38 @@ type Block struct {
 	Transactions []Transaction `json:transactions`
 	//uncles []string `json:uncles`
 }
+var clientConnect *rpc.Client
 
 func Connect2Eth() (*rpc.Client) {
 
-	var clientConnect *rpc.Client
 	for {
-		if clientConnect == nil{
-			client, err := rpc.Dial("http://127.0.0.1:8545")
-			if err != nil {
-				fmt.Println("rpc.Dial err,reconnecting.....", err)
-				time.Sleep(100)
-			} else {
-				clientConnect = client
+
+		if clientConnect == nil {
+			mutex.Lock()
+			if clientConnect == nil{
+				client, err := rpc.Dial("http://127.0.0.1:8545")
+				if err != nil {
+					ErrorPanic(err)
+					time.Sleep(500) //等待0.5秒后重新尝试连接
+				} else {
+					clientConnect = client
+				}
+			}
+			mutex.Unlock()
+			if clientConnect != nil{
 				break
 			}
 		}else{
 			break
 		}
 	}
-
 	return clientConnect
+
 }
 
 func NewMessage(from common.Address, to *common.Address, value string, data string, gasLimit string, gasPrice string) (Message) {
 
-	return Message{To: to, From: from, Value: value, Data: data, GasLimit: gasLimit, GasPrice: gasPrice}
+	return Message{From: from, To: to, Value: value, Data: data, GasLimit: gasLimit, GasPrice: gasPrice}
 
 }
 
@@ -100,7 +106,7 @@ func CreateAccount(client *rpc.Client, password string) (string) {
 	var result string
 	err := client.Call(&result, "personal_newAccount",password)
 	if err != nil{
-		ErrorInfo(err)
+		ErrorPanic(err)
 		return ""
 	}
 	return result
@@ -113,10 +119,10 @@ func UnlockAccount(client *rpc.Client, account string, password string) (error) 
 	return err
 }
 
-func SendTransaction(client *rpc.Client, tx *Message, ctx context.Context) (string, error) {
+func SendTransaction(client *rpc.Client, tx *Message, password string, ctx context.Context) (string, error) {
 
 	var txHash string
-	err := client.CallContext(ctx, &txHash, "eth_sendTransaction", tx)
+	err := client.CallContext(ctx, &txHash, "personal_signAndSendTransaction ", tx, password)
 	//err:=client.rpcClient.Call(&result,"eth_sendTransaction",tx)
 	return txHash, err
 }
