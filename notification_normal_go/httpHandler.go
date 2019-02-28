@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"./utils"
 	"net/rpc"
+	"context"
 )
 
 type MetaDataList struct{
@@ -240,7 +241,10 @@ func LoginHandler(w http.ResponseWriter,r *http.Request){
 func CreateWalletHandler(w http.ResponseWriter,r *http.Request){
 
 	/**
+<<<<<<< HEAD
 		为该用户创建以太坊钱包
+=======
+>>>>>>> e9a91867ca374c278fae2b73b523e665656e346b
 		@params: password string
 	 */
 
@@ -276,7 +280,10 @@ func CreateWalletHandler(w http.ResponseWriter,r *http.Request){
 func DataClientAddDataHandler(w http.ResponseWriter, request *http.Request) {
 
 	/**
+<<<<<<< HEAD
 		数据方账户将数据通过以太坊保存到消息服务器
+=======
+>>>>>>> e9a91867ca374c278fae2b73b523e665656e346b
 		@Params: from string
 		@Params: password string
 		@Params: dataIpfsHash string
@@ -304,6 +311,7 @@ func DataClientAddDataHandler(w http.ResponseWriter, request *http.Request) {
 	//发起交易到以太坊
 	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
 		"0x"+utils.EncryptTransactionInput(value),"0x295f05", "0x77359400")
+<<<<<<< HEAD
 	conn := utils.Connect2Eth()
 	txHash,err := utils.SendTransaction(conn, &message, password, context.TODO())
 
@@ -319,6 +327,65 @@ func DataClientAddDataHandler(w http.ResponseWriter, request *http.Request) {
 	}
 
 }
+=======
+
+	conn := utils.Connect2Eth()
+
+	txHash,err := utils.SendTransaction(conn, &message, password, context.TODO())
+	if err!= nil{
+		utils.ErrorPanic(err)
+		data = Data{msg:"提交交易出错", code:500}
+		js,_:=json.Marshal(data)
+		t.Execute(w, js)
+	}
+	data = Data{msg:txHash, code:500}
+	js,_:=json.Marshal(data)
+	t.Execute(w, js)
+
+}
+
+//获取模型方传过来的metedata响应给数据方
+func ModelClientMetaDataInfoHandler(w http.ResponseWriter, request *http.Request){
+	/**
+		@param password string
+		@param metaDataInfo string
+	 */
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexdata.html")
+
+	password := request.PostFormValue("password")
+	metaDataInfo := request.PostFormValue("metaDataInfo")
+
+	if password == "" || metaDataInfo == "" {
+		data = Data{msg:"参数不完全", code:500}
+		js,_:=json.Marshal(data)
+		t.Execute(w, js)
+	}
+
+	//生成交易提交到区块链
+}
+
+
+
+func DataClientAggreeRequestHandler(w http.ResponseWriter, request *http.Request) {
+	//
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexdata.html")
+
+	password := request.PostFormValue("password")
+	metaDataInfo := request.PostFormValue("metaDataInfo")
+
+
+
+
+
+>>>>>>> e9a91867ca374c278fae2b73b523e665656e346b
 
 
 func DataClientMonitorMetaDataHandler(w http.ResponseWriter, request *http.Request){
@@ -338,6 +405,7 @@ func DataClientMonitorMetaDataHandler(w http.ResponseWriter, request *http.Reque
 	js, _ := json.Marshal(data)
 	t.Execute(w, js)
 }
+<<<<<<< HEAD
 
 
 
@@ -345,12 +413,16 @@ func DataClientAggreeRequestHandler(w http.ResponseWriter, request *http.Request
 	/**
 		数据方同意模型方的请求将原数据传递给计算方法（不加密实现）
 	 */
+=======
+func DataClientAskComputingHandler(w http.ResponseWriter, request *http.Request) {
+>>>>>>> e9a91867ca374c278fae2b73b523e665656e346b
 	w.Header().Set("Access-Control-Allow-Origin","*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	var t *template.Template
 	var data Data
 	t, _ = template.ParseFiles("template/indexdata.html")
 
+<<<<<<< HEAD
 	password := request.PostFormValue("password")
 	dataIpfsHash := request.PostFormValue("dataIpfsHash")
 	from := request.PostFormValue("from")
@@ -379,6 +451,11 @@ func DataClientAggreeRequestHandler(w http.ResponseWriter, request *http.Request
 
 }
 func DataClientAskComputingHandler(w http.ResponseWriter, request *http.Request) {
+=======
+
+}
+func DataClientDeleteDataHandler(w http.ResponseWriter, request *http.Request) {
+>>>>>>> e9a91867ca374c278fae2b73b523e665656e346b
 	w.Header().Set("Access-Control-Allow-Origin","*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	var t *template.Template
@@ -387,24 +464,27 @@ func DataClientAskComputingHandler(w http.ResponseWriter, request *http.Request)
 
 
 }
+<<<<<<< HEAD
 func DataClientDeleteDataHandler(w http.ResponseWriter, request *http.Request) {
+=======
+func ModelClientAskDataHandler(w http.ResponseWriter, request *http.Request) {
+>>>>>>> e9a91867ca374c278fae2b73b523e665656e346b
 	w.Header().Set("Access-Control-Allow-Origin","*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	var t *template.Template
 	var data Data
+<<<<<<< HEAD
 	t, _ = template.ParseFiles("template/indexdata.html")
 
 
 }
 func ModelClientAskDataHandler(w http.ResponseWriter, request *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin","*")
-	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-	var t *template.Template
-	var data Data
+=======
 	t, _ = template.ParseFiles("template/indexmodel.html")
 
 }
 func ModelClientCreateContractHandler(w http.ResponseWriter, request *http.Request) {
+>>>>>>> e9a91867ca374c278fae2b73b523e665656e346b
 	w.Header().Set("Access-Control-Allow-Origin","*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	var t *template.Template
@@ -412,7 +492,11 @@ func ModelClientCreateContractHandler(w http.ResponseWriter, request *http.Reque
 	t, _ = template.ParseFiles("template/indexmodel.html")
 
 }
+<<<<<<< HEAD
+func ModelClientCreateContractHandler(w http.ResponseWriter, request *http.Request) {
+=======
 func ModelClientUploadModelHandler(w http.ResponseWriter, request *http.Request) {
+>>>>>>> e9a91867ca374c278fae2b73b523e665656e346b
 	w.Header().Set("Access-Control-Allow-Origin","*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	var t *template.Template
@@ -420,6 +504,19 @@ func ModelClientUploadModelHandler(w http.ResponseWriter, request *http.Request)
 	t, _ = template.ParseFiles("template/indexmodel.html")
 
 }
+<<<<<<< HEAD
+func ModelClientUploadModelHandler(w http.ResponseWriter, request *http.Request) {
+=======
+func ModelClientUploadResultHandler(w http.ResponseWriter, request *http.Request) {
+>>>>>>> e9a91867ca374c278fae2b73b523e665656e346b
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexmodel.html")
+
+}
+<<<<<<< HEAD
 func ModelClientUploadResultHandler(w http.ResponseWriter, request *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin","*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
@@ -428,6 +525,8 @@ func ModelClientUploadResultHandler(w http.ResponseWriter, request *http.Request
 	t, _ = template.ParseFiles("template/indexmodel.html")
 
 }
+=======
+>>>>>>> e9a91867ca374c278fae2b73b523e665656e346b
 func ComputingClientAddDataHandler(w http.ResponseWriter, request *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin","*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
