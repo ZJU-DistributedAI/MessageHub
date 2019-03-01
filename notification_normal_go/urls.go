@@ -13,15 +13,15 @@ func startWebService(){
 
 	http.Handle("./template",http.FileServer(http.Dir("template")))
 
-	http.HandleFunc("/",LoginHandler)
-	http.HandleFunc("/listWholeMetaData",ListMetaData)
-	http.HandleFunc("/listWholeComputing",ListComputing)
-	http.HandleFunc("/listAskedMetaData",ListAskedMetaData)
-	http.HandleFunc("/listAskedComputing",ListAskedComputing)
+	http.HandleFunc("/", LoginHandler)
+	http.HandleFunc("/listWholeMetaData", ListMetaData)
+	http.HandleFunc("/listWholeComputing", ListComputing)
+	http.HandleFunc("/listAskedMetaData", ListAskedMetaData)
+	http.HandleFunc("/listAskedComputing", ListAskedComputing)
 
 	//user
-	http.HandleFunc("/user/login",LoginHandler)
-	http.HandleFunc("/user/createwallet",CreateWalletHandler)
+	http.HandleFunc("/user/login", LoginHandler)
+	http.HandleFunc("/user/createwallet", CreateWalletHandler)
 
 
 	//data client
@@ -30,19 +30,22 @@ func startWebService(){
 	http.HandleFunc("/dataclient/askcomputing", DataClientAskComputingHandler)
 	http.HandleFunc("/dataclient/deletedata", DataClientDeleteDataHandler)
 	http.HandleFunc("dataclient/monitormetadata", DataClientMonitorMetaDataHandler)
+	http.HandleFunc("/data/client/monitorcomputingaggree", DataClientMonitorComputingAggreeHandler)
 
 	//model client
-	http.HandleFunc("/modelclient/askdata",ModelClientAskDataHandler)
-	http.HandleFunc("/modelclient/createcontract",ModelClientCreateContractHandler)
-	http.HandleFunc("/modelclient/uploadmodel",ModelClientUploadModelHandler)
-	http.HandleFunc("/modelclient/uploadresult",ModelClientUploadResultHandler)
+	http.HandleFunc("/modelclient/askdata", ModelClientAskDataHandler)
+	http.HandleFunc("/modelclient/createcontract", ModelClientCreateContractHandler)
+	http.HandleFunc("/modelclient/uploadmodel", ModelClientUploadModelHandler)
+	http.HandleFunc("/modelclient/uploadresult", ModelClientUploadResultHandler)
+	http.HandleFunc("/modelclient/monitordataclient", ModelClientMonitorDataClientResultHandler)
 
 	//computing client
-	http.HandleFunc("/computingclient/adddata",ComputingClientAddDataHandler)
-	http.HandleFunc("/computingclient/agreerequest",ComputingClientAggreeRequestHandler)
-	http.HandleFunc("/computingclient/deletedata",ComputingClientDeleteDataHandler)
-	http.HandleFunc("/computingclient/train",ComputingClientTrainHandler)
-	http.HandleFunc("/computingclient/uploadencrypteddata",ComputingClientUploadEncryptedDataHandler)
+	http.HandleFunc("/computingclient/adddata", ComputingClientAddDataHandler)
+	http.HandleFunc("/computingclient/agreerequest", ComputingClientAggreeRequestHandler)
+	http.HandleFunc("/computingclient/deletedata", ComputingClientDeleteDataHandler)
+	http.HandleFunc("/computingclient/train", ComputingClientTrainHandler)
+	http.HandleFunc("/computingclient/uploadencrypteddata", ComputingClientUploadEncryptedDataHandler)
+	http.HandleFunc("/computingclient/monitordataclient", ComputingClientMonitorDataClientHandler)
 
 	// 启动web服务，监听9090端口
 	err := http.ListenAndServe(":9090", nil)

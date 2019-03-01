@@ -16,10 +16,11 @@ func WarnningInfo(info string){
 }
 
 func ErrorPanic(e error){
-	raven.CaptureError(e, nil)
-	raven.CapturePanic(func(){
-		log.Panic(e)
-	}, nil)
+	//raven.CaptureError(e, nil)
+	//raven.CapturePanic(func(){
+	//	log.Panic(e)
+	//}, nil)
+	log.Fatal(e)
 }
 
 

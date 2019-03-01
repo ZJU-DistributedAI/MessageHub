@@ -19,16 +19,37 @@ type ModelClientPullDataReceipt struct {
 	From string
 }
 
-type DataAddreeReceipt struct {
+type DataAskComputingReceipt struct {
+	ComputingHash string
+	From string
+}
+
+type DataAggreeReceipt struct {
 	DataIpfsHash string
 	From string
 }
 
 
-//该通道用来存储已经被验证的交易
+type DataClientMonitorComputingAggreeReciept struct {
+	ComputingHash string
+	From string
+}
+
+type DataClientIsAggreeReceipt struct {
+	Message string
+	From string
+}
+
+
+
 var mindedTransactionHashChannel chan TransactionReceipt
 var modelClientPullDataChannel chan ModelClientPullDataReceipt
-var dataAddressChannel chan DataAddreeReceipt
+var dataAggreeChannel chan DataAggreeReceipt
+var dataAskComputingChannel chan DataAskComputingReceipt
+var dataClientMonitorComputingAggreeChannel chan DataClientMonitorComputingAggreeReciept
+var dataClientIsAggreeChannel chan DataClientIsAggreeReceipt
+
+
 //为每次获取到处于pending状态的交易时，对其创建协程进行监听
 //当有交易被验证并封装到区块时，将其塞到mindedTransactionHashChannel里面
 func createGoRoutine(client *rpc.Client, txHashes []string) {
@@ -110,7 +131,51 @@ func GetModelClientPullDataReceipt()(ModelClientPullDataReceipt){
 		if &modelClientPullDataReceipt != nil{
 			return modelClientPullDataReceipt
 		}
+		time.Sleep(1000)
 	}
+}
+
+
+
+func GetDataAskComputingReceipt()(DataAskComputingReceipt){
+
+	for{
+
+		dataAskComputingReceipt := <- dataAskComputingChannel
+
+		if &dataAskComputingReceipt != nil {
+			return dataAskComputingReceipt
+		}
+		time.Sleep(1000)
+
+	}
+
+}
+
+func GetDataClientMonitorComputingAggreeReceipt()(DataClientMonitorComputingAggreeReciept){
+
+	for{
+		dataClientMonitorComputingAggreeReciept := <- dataClientMonitorComputingAggreeChannel
+
+		if &dataClientMonitorComputingAggreeReciept != nil {
+			return dataClientMonitorComputingAggreeReciept
+		}
+		time.Sleep(1000)
+	}
+
+}
+
+func GetDataClientIsAggreeReceipt()(DataClientIsAggreeReceipt){
+
+	for{
+		dataClientIsAggreeReceipt := <- dataClientIsAggreeChannel
+
+		if &dataClientIsAggreeReceipt != nil {
+			return dataClientIsAggreeReceipt
+		}
+		time.Sleep(1000)
+	}
+
 }
 
 func distributeTransactionByInput(from string,input string,conn redis.Conn){
@@ -121,7 +186,7 @@ func distributeTransactionByInput(from string,input string,conn redis.Conn){
 	}else if splits[0] == "mpull"{//模型方请求数据方数据
 		modelClientPullDataChannel <- ModelClientPullDataReceipt{Metadata: splits[1], From: from}
 	}else if splits[0] == "daggree"{//数据方同意模型方的请求
-		dataAddressChannel <- DataAddreeReceipt{DataIpfsHash: splits[1], From: from}
+		dataAggreeChannel <- DataAggreeReceipt{DataIpfsHash: splits[1], From: from}
 	}else if splits[0]=="madd"{ //模型方上传模型Hash
 		utils.Sadd2Redis(conn,"model",from,splits[1])
 	}else if splits[0]=="cadd"{ //运算方上传运算资源Hash
