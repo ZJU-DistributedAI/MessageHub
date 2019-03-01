@@ -346,6 +346,48 @@ func DataClientMonitorMetaDataHandler(w http.ResponseWriter, request *http.Reque
 	t.Execute(w, js)
 }
 
+func DataClientAggreeModelClientHandler(w http.ResponseWriter, request *http.Request){
+	/**
+		数据方同意模型范改的请求
+		@Params: from string
+		@Params: password string
+	 */
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+	var data Data
+	t, _ = template.ParseFiles("template/indexdata.html")
+
+	password := request.PostFormValue("password")
+	from := request.PostFormValue("from")
+
+	if password == "" {
+		data = Data{msg:"参数不完全", code:500}
+		js,_:=json.Marshal(data)
+		t.Execute(w, js)
+	}
+
+	value := "dagree:"
+	to := common.HexToAddress("")
+	//发起交易到以太坊
+	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
+		"0x"+utils.EncryptTransactionInput(value),"0x295f05", "0x77359400")
+
+	conn := utils.Connect2Eth()
+	txHash,err := utils.SendTransaction(conn, &message, password, context.TODO())
+
+	if  err!= nil{
+		log.Fatal("数据方同意交易创建失败",err)
+		data = Data{msg:"数据方同意交易创建失败", code:500}
+		js,_:=json.Marshal(data)
+		t.Execute(w, js)
+	}else{
+		data = Data{msg:txHash, code:200}
+		js,_:=json.Marshal(data)
+		t.Execute(w, js)
+	}
+
+}
 
 
 
@@ -414,9 +456,12 @@ func ModelClientMonitorDataClientResultHandler(w http.ResponseWriter, request *h
 
 }
 
-func DataClientAggreeRequestHandler(w http.ResponseWriter, request *http.Request) {
+func DataClientPushDataToComputingHandler(w http.ResponseWriter, request *http.Request) {
 	/**
-		数据方同意模型方的请求将原数据传递给计算方法
+		数据方将原数据传递给计算方法（未加密）
+		@param: password string
+		@param: from string
+		@param: dataIpfsHash string
 	 */
 
 	w.Header().Set("Access-Control-Allow-Origin","*")
@@ -426,8 +471,9 @@ func DataClientAggreeRequestHandler(w http.ResponseWriter, request *http.Request
 	t, _ = template.ParseFiles("template/indexdata.html")
 	password := request.PostFormValue("password")
 	from := request.PostFormValue("from")
+	dataIpfsHash := request.PostFormValue("dataIpfsHash")
 
-	value := "dagree:"
+	value := "dpush:"+dataIpfsHash
 	to := common.HexToAddress("")
 	//发起交易到以太坊
 	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
@@ -436,8 +482,8 @@ func DataClientAggreeRequestHandler(w http.ResponseWriter, request *http.Request
 	txHash,err := utils.SendTransaction(conn, &message, password, context.TODO())
 
 	if  err!= nil{
-		log.Fatal("数据方同意模型方的请求交易创建失败",err)
-		data = Data{msg:"数据方同意模型方的请求交易创建失败", code:500}
+		log.Fatal("数据方将数据传给运算方交易创建失败",err)
+		data = Data{msg:"数据方将数据传给运算方交易创建失败", code:500}
 		js,_:=json.Marshal(data)
 		t.Execute(w, js)
 	}else{
@@ -454,6 +500,9 @@ func DataClientAggreeRequestHandler(w http.ResponseWriter, request *http.Request
 func DataClientAskComputingHandler(w http.ResponseWriter, request *http.Request) {
 	/**
 		数据方请求运算方的资源
+		@param: password string 数据方密码
+		@param: computingHash string 运算方资源的IpfsHash
+		@param: from string  数据方的账户
 	 */
 	w.Header().Set("Access-Control-Allow-Origin","*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")

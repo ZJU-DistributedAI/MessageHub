@@ -14,10 +14,10 @@ func startWebService(){
 	http.Handle("./template",http.FileServer(http.Dir("template")))
 
 	http.HandleFunc("/", LoginHandler)
-	http.HandleFunc("/listWholeMetaData", ListMetaData)
-	http.HandleFunc("/listWholeComputing", ListComputing)
-	http.HandleFunc("/listAskedMetaData", ListAskedMetaData)
-	http.HandleFunc("/listAskedComputing", ListAskedComputing)
+	//http.HandleFunc("/listWholeMetaData", ListMetaData)
+	//http.HandleFunc("/listWholeComputing", ListComputing)
+	//http.HandleFunc("/listAskedMetaData", ListAskedMetaData)
+	//http.HandleFunc("/listAskedComputing", ListAskedComputing)
 
 	//user
 	http.HandleFunc("/user/login", LoginHandler)
@@ -26,10 +26,11 @@ func startWebService(){
 
 	//data client
 	http.HandleFunc("/dataclient/adddata", DataClientAddDataHandler)
-	http.HandleFunc("/dataclient/agreerequest", DataClientAggreeRequestHandler)
+	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler)
+	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)
 	http.HandleFunc("/dataclient/askcomputing", DataClientAskComputingHandler)
 	http.HandleFunc("/dataclient/deletedata", DataClientDeleteDataHandler)
-	http.HandleFunc("dataclient/monitormetadata", DataClientMonitorMetaDataHandler)
+	http.HandleFunc("/dataclient/monitormetadata", DataClientMonitorMetaDataHandler)
 	http.HandleFunc("/data/client/monitorcomputingaggree", DataClientMonitorComputingAggreeHandler)
 
 	//model client
