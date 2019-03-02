@@ -66,7 +66,7 @@ func Connect2Eth() (*rpc.Client) {
 		if clientConnect == nil {
 			mutex.Lock()
 			if clientConnect == nil{
-				client, err := rpc.Dial("http://127.0.0.1:8545")
+				client, err := rpc.Dial("http://212.64.85.208:8545")
 				if err != nil {
 					ErrorPanic(err)
 					time.Sleep(500) //等待0.5秒后重新尝试连接
@@ -114,7 +114,7 @@ func CreateAccount(client *rpc.Client, password string) (string) {
 
 func UnlockAccount(client *rpc.Client, account string, password string) (error) {
 
-	var result string
+	var result bool
 	err := client.Call(&result, "personal_unlockAccount", account, password)
 	return err
 }
