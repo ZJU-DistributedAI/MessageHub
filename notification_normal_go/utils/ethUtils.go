@@ -122,7 +122,7 @@ func UnlockAccount(client *rpc.Client, account string, password string) (error) 
 func SendTransaction(client *rpc.Client, tx *Message, password string, ctx context.Context) (string, error) {
 
 	var txHash string
-	err := client.CallContext(ctx, &txHash, "personal_signAndSendTransaction ", tx, password)
+	err := client.CallContext(ctx, &txHash, "personal_signAndSendTransaction", tx, password)
 	//err:=client.rpcClient.Call(&result,"eth_sendTransaction",tx)
 	return txHash, err
 }
