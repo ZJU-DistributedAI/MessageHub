@@ -79,7 +79,7 @@
   <script type="text/javascript">
     $(function() {
         var interfaceAddress = getAddress();
-      $("#LoginBtn").on('click', function() {  //添加点击事件
+        $("#LoginBtn").on('click', function() {  //添加点击事件
               console.log("click LoginBtn ok");
               var type_value= 0;
               var radioObj = document.querySelectorAll('.radio');
@@ -100,13 +100,24 @@
               }
 
               $.ajax({
-                  url:interfaceAddress+'user/login',
+                  url:interfaceAddress+'/user/checklogin',
                   type:'post',
                   dataType : 'text', // use json instead of text
                   data: "username="+$('#inputUsername').val()+"&password="+$('#inputPassword').val()
-                      +"&type="+type_value,
+                      +"&userType="+type_value,
+                  success : function(data){
+                      console.log(data);//
 
+                      if (data==="no") {//根据返回值进行跳转
 
+                      }else{
+                        window.location.href =interfaceAddress+ data;
+                      }
+                  },
+                  fail : function (data) {
+                      console.log(data);//
+                      alert("请求失败");
+                  }
               });
           });
 

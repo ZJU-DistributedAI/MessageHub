@@ -21,20 +21,22 @@ func startWebService(){
 
 	//user
 	http.HandleFunc("/user/login", LoginHandler)
+	http.HandleFunc("/user/checklogin", CheckLoginHandler)
 	http.HandleFunc("/user/createwallet", CreateWalletHandler)
-
+	http.HandleFunc("/user/createwalletpage", CreateWalletPageHandler)
 
 
 
 	//data client
 	http.HandleFunc("/dataclient/index", IndexDataHandle);
-	http.HandleFunc("/dataclient/adddata", DataClientAddDataHandler)
-	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler)
-	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)
+	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler);
+	http.HandleFunc("/dataclient/adddata", DataClientAddDataHandler);
+	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler) //todo fontend
+	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)//todo fontend
 	http.HandleFunc("/dataclient/askcomputing", DataClientAskComputingHandler)
 	http.HandleFunc("/dataclient/deletedata", DataClientDeleteDataHandler)
-	http.HandleFunc("/dataclient/monitormetadata", DataClientMonitorMetaDataHandler)
-	http.HandleFunc("/data/client/monitorcomputingaggree", DataClientMonitorComputingAggreeHandler)
+	http.HandleFunc("/dataclient/monitormetadata", DataClientMonitorMetaDataHandler)//todo fontend
+	http.HandleFunc("/data/client/monitorcomputingaggree", DataClientMonitorComputingAggreeHandler)//todo fontend
 
 	//model client
 	http.HandleFunc("/modelclient/index", IndexModelHandle);

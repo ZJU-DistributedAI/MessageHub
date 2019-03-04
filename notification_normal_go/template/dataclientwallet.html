@@ -154,14 +154,20 @@
              <form>
               <div class="form-group">
                 <div class="form-label-group">
-                  <input name="add_ETH_key" type="text" id="add_ETH_key" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="add_ETH_key">ETH_key: ETH private key for transaction </label>
-               
-                </div>
+                      <input name="add_password" type="text" id="add_password" class="form-control" required="required" autofocus="autofocus" >
+                      <label for="add_password">password: 数据方密码</label>
+
+                  </div>
+                  </br>
+                  <div class="form-label-group">
+                      <input name="add_from" type="text" id="add_from" class="form-control" required="required" autofocus="autofocus" >
+                      <label for="add_from">wallet: 数据方账户 </label>
+
+                  </div>
                   </br>
                 <div class="form-label-group">
                    <input name="add_hash" type="text" id="add_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="add_hash">hash: data IPFS address</label>
+                  <label for="add_hash">hash: 需要添加的数据资源的IPFS地址</label>
                 </div>
 
               </div>
@@ -204,27 +210,22 @@
             <div class="card-body">
              <form >
               <div class="form-group">
-                <div class="form-label-group">
-                  <input name="askComputing_ETH_key" type="text" id="askComputing_ETH_key" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="askComputing_ETH_key">ETH_key: ETH private key for transaction </label>
-               
-                </div>
-                  </br>
-                <div class="form-label-group">
-                   <input name="askComputing_computing_hash" type="text" id="askComputing_computing_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="askComputing_computing_hash">computing_hash: computing resourse hash</label>
-                </div>
-                 </br>
-                <div class="form-label-group">
-                   <input name="askComputing_contract_hash" type="text" id="askComputing_contract_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="askComputing_contract_hash">contract_hash: smart contract hash</label>
-                </div>
+                  <div class="form-label-group">
+                      <input name="askcomputing_password" type="text" id="askcomputing_password" class="form-control" required="required" autofocus="autofocus" >
+                      <label for="askcomputing_password">password: 数据方密码</label>
 
-                 </br>
-                <div class="form-label-group">
-                   <input name="askComputing_public_key" type="text" id="askComputing_public_key" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="askComputing_public_key">public_key: ETH public key(Wallet address)</label>
-                </div>
+                  </div>
+                  </br>
+                  <div class="form-label-group">
+                      <input name="askcomputing_from" type="text" id="askcomputing_from" class="form-control" required="required" autofocus="autofocus" >
+                      <label for="askcomputing_from">wallet: 数据方的账户 </label>
+
+                  </div>
+                  </br>
+                  <div class="form-label-group">
+                      <input name="askcomputing_hash" type="text" id="askcomputing_hash" class="form-control" required="required" autofocus="autofocus" >
+                      <label for="askcomputing_hash">computing hash: 运算方资源的IpfsHash </label>
+                  </div>
 
               </div>
 
@@ -240,16 +241,22 @@
             <div class="card-body">
              <form >
               <div class="form-group">
-                <div class="form-label-group">
-                  <input name="del_ETH_key" type="text" id="del_ETH_key" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="del_ETH_key">ETH_key: ETH private key for transaction </label>
-               
-                </div>
+                  <div class="form-label-group">
+                      <input name="del_password" type="text" id="del_password" class="form-control" required="required" autofocus="autofocus" >
+                      <label for="del_password">password: 数据方密码</label>
+
+                  </div>
                   </br>
-                <div class="form-label-group">
-                   <input name="del_hash" type="text" id="del_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="del_hash">hash: data IPFS address</label>
-                </div>
+                  <div class="form-label-group">
+                      <input name="del_from" type="text" id="del_from" class="form-control" required="required" autofocus="autofocus" >
+                      <label for="del_from">wallet: 数据方账户 </label>
+
+                  </div>
+                  </br>
+                  <div class="form-label-group">
+                      <input name="del_hash" type="text" id="del_hash" class="form-control" required="required" autofocus="autofocus" >
+                      <label for="del_hash">hash: 需要删除的数据资源的IPFS地址</label>
+                  </div>
 
               </div>
 
@@ -351,15 +358,16 @@
   </body>
 
   <script type="text/javascript">
+      var interfaceAddress = getAddress();
       $(function() {
           $("#AddDataForm").on('click', function() {  //添加点击事件
               console.log("click AddData ok");
               $.ajax({
-                  url:'http://127.0.0.1:3000/dataclient/AddData',
+                  url:interfaceAddress+'/dataclient/adddata',
                   type:'post',
                   dataType : 'text', // use json instead of text
 
-                  data: "add_ETH_key="+$('#add_ETH_key').val()+"&add_hash="+$('#add_hash').val(),
+                  data: "password="+$('#add_password').val()+"&from="+$('#add_from').val()+"&metaDataIpfsHash="+$('#add_hash').val(),
                   success : function(data){
                       console.log(data);// for name use data.data.name
                       alert("操作成功");
@@ -392,11 +400,10 @@
           $("#AskComputing").on('click', function() {  //添加点击事件
               console.log("click AskComputing ok");
               $.ajax({
-                  url:'http://127.0.0.1:3000/dataclient/AskComputing',
+                  url:interfaceAddress+'/dataclient/askcomputing',
                   type:'post',
                   dataType : 'text',
-                  data: "askComputing_ETH_key="+$('#askComputing_ETH_key').val()+"&askComputing_computing_hash="+$('#askComputing_computing_hash').val()+
-                      "&askComputing_contract_hash="+$('#askComputing_contract_hash').val()+  "&askComputing_public_key="+$('#askComputing_public_key').val() ,
+                  data: "password="+$('#askcomputing_password').val()+"&from="+$('#askcomputing_from').val()+"&computingHash="+$('#askcomputing_hash').val(),
                   success : function(data){
                       console.log(data);
                       alert("操作成功");
@@ -412,10 +419,10 @@
           $("#DeleteData").on('click', function() {  //添加点击事件
               console.log("click DeleteData ok");
               $.ajax({
-                  url:'http://127.0.0.1:3000/dataclient/DeleteData',
+                  url:interfaceAddress+'/dataclient/deletedata',
                   type:'post',
                   dataType : 'text',
-                  data: "del_ETH_key="+$('#del_ETH_key').val()+"&del_hash="+$('#del_hash').val(),
+                  data: "password="+$('#del_password').val()+"&from="+$('#del_from').val()+"&metaDataIpfsHash="+$('#del_hash').val(),
                   success : function(data){
                       console.log(data);//
                       alert("操作成功");

@@ -230,8 +230,7 @@ func IndexComputingHandle(w http.ResponseWriter,r *http.Request){
 }
 
 
-
-func LoginHandler(w http.ResponseWriter,r *http.Request){
+func CheckLoginHandler(w http.ResponseWriter,r *http.Request){
 
 	w.Header().Set("Access-Control-Allow-Origin","*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
@@ -239,57 +238,61 @@ func LoginHandler(w http.ResponseWriter,r *http.Request){
 	username := r.PostFormValue("username")
 	password := r.PostFormValue("password")
 	userType := r.PostFormValue("userType")
+	fmt.Printf(username)
+	fmt.Print(password)
+	fmt.Print(userType)
+
+	if username == "dcd" && password == "123456" {
+		if userType == "0"{
+			w.Write([]byte("/dataclient/index"))
+		}else if userType == "1"{
+			w.Write([]byte("/modelclient/index"))
+		}else{
+			w.Write([]byte("/computingclient/index"))
+		}
+		return
+	}else{
+		w.Write([]byte("fail"))
+		return
+	}
+
+
+}
+
+
+func LoginHandler(w http.ResponseWriter,r *http.Request){
+
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
 
 
 	var t *template.Template
 	var err error
-	if username == "dcd" && password == "123456" {
-		if userType == "0"{
-			t, err = template.ParseFiles("template/indexdata.html")
 
-			w.Header().Set("Location", "/dataclient/index")
-
-			w.WriteHeader(200)
-
-
-
-		}else if userType == "1"{
-			t, err = template.ParseFiles("template/indexmodel.html")
-			http.Redirect(w,r, "/modelclient/index",200)
-
-		}else{
-			t, err = template.ParseFiles("template/indexcomputer.html")
-			http.Redirect(w,r, "/computingclient/index",200)
-
-		}
-		if err!=nil {
-			utils.ErrorPanic(err)
-			log.Fatal(err)
-			return
-		}
-
-		//data := Data{msg:"", code:200}
-		//fmt.Printf("账号或密码正确")
-		//js,_:=json.Marshal(data)
-		//w.Write(js)
-		////t.Execute(w, data)
-
-	}else{
-		t, err = template.ParseFiles("template/login.html")
-		if err!=nil {
-			utils.ErrorPanic(err)
-			return
-		}
-
-		data := Data{msg:"账号或密码错误", code:200}
-		fmt.Printf("账号或密码错误")
-		//js,_:=json.Marshal(data)
-		//w.Write(js)
-		t.Execute(w, data)
-
+	t, err = template.ParseFiles("template/login.html")
+	if err!=nil {
+		utils.ErrorPanic(err)
+		return
 	}
+	data := Data{msg:"login", code:200}
+	js,_:=json.Marshal(data)
+	t.Execute(w, js)
+
+	return
 
 
+}
+
+func CreateWalletPageHandler(w http.ResponseWriter,r *http.Request){
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
+
+	t, _ = template.ParseFiles("template/createwallet.html")
+
+
+	t.Execute(w, nil)
 
 }
 
@@ -328,7 +331,16 @@ func CreateWalletHandler(w http.ResponseWriter,r *http.Request){
 	t.Execute(w, js)
 
 }
+func DataClientWalletPageHandler(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var t *template.Template
 
+	t, _ = template.ParseFiles("template/dataclientwallet.html")
+
+
+	t.Execute(w, nil)
+}
 func DataClientAddDataHandler(w http.ResponseWriter, request *http.Request) {
 
 	/**
@@ -614,6 +626,12 @@ func DataClientDeleteDataHandler(w http.ResponseWriter, request *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin","*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+
+	//password := request.PostFormValue("password")
+	//from := request.PostFormValue("from")
+	//metaDataIpfsHash := request.PostFormValue("metaDataIpfsHash")
+
 	//var t *template.Template
 	//var data Data
 	//t, _ = template.ParseFiles("template/indexdata.html")
