@@ -9,8 +9,8 @@ import (
 
 func startWebService(){
 
-
-
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.Handle("./template",http.FileServer(http.Dir("template")))
 
 	http.HandleFunc("/", LoginHandler)
@@ -24,7 +24,10 @@ func startWebService(){
 	http.HandleFunc("/user/createwallet", CreateWalletHandler)
 
 
+
+
 	//data client
+	http.HandleFunc("/dataclient/index", IndexDataHandle);
 	http.HandleFunc("/dataclient/adddata", DataClientAddDataHandler)
 	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler)
 	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)
@@ -34,6 +37,7 @@ func startWebService(){
 	http.HandleFunc("/data/client/monitorcomputingaggree", DataClientMonitorComputingAggreeHandler)
 
 	//model client
+	http.HandleFunc("/modelclient/index", IndexModelHandle);
 	http.HandleFunc("/modelclient/askdata", ModelClientAskDataHandler)
 	http.HandleFunc("/modelclient/createcontract", ModelClientCreateContractHandler)
 	http.HandleFunc("/modelclient/uploadmodel", ModelClientUploadModelHandler)
@@ -41,6 +45,7 @@ func startWebService(){
 	http.HandleFunc("/modelclient/monitordataclient", ModelClientMonitorDataClientResultHandler)
 
 	//computing client
+	http.HandleFunc("/computingclient/index", IndexComputingHandle);
 	http.HandleFunc("/computingclient/adddata", ComputingClientAddDataHandler)
 	http.HandleFunc("/computingclient/agreerequest", ComputingClientAggreeRequestHandler)
 	http.HandleFunc("/computingclient/deletedata", ComputingClientDeleteDataHandler)
@@ -67,7 +72,7 @@ func init(){
 	//连接redis
 	utils.Connect2Redis()
 	//获取配置文件对象
-	utils.InitConfig("")
+	// utils.InitConfig("")
 
 	InitChannels()
 

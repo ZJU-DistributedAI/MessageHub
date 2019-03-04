@@ -194,6 +194,43 @@ func IndexHandler(w http.ResponseWriter,r *http.Request){
 	t.Execute(w, nil)
 }
 
+func IndexDataHandle(w http.ResponseWriter,r *http.Request){
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+	t, _ := template.ParseFiles("template/indexdata.html")
+
+	data := Data{msg:"ok", code:200}
+	t.Execute(w, data)
+
+}
+
+
+func IndexModelHandle(w http.ResponseWriter,r *http.Request){
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+	t, _ := template.ParseFiles("template/indexmodel.html")
+
+	data := Data{msg:"ok", code:200}
+	t.Execute(w, data)
+
+}
+
+
+func IndexComputingHandle(w http.ResponseWriter,r *http.Request){
+	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+	t, _ := template.ParseFiles("template/indexcomputer.html")
+
+	data := Data{msg:"ok", code:200}
+	t.Execute(w, data)
+
+}
+
+
+
 func LoginHandler(w http.ResponseWriter,r *http.Request){
 
 	w.Header().Set("Access-Control-Allow-Origin","*")
@@ -203,23 +240,39 @@ func LoginHandler(w http.ResponseWriter,r *http.Request){
 	password := r.PostFormValue("password")
 	userType := r.PostFormValue("userType")
 
+
 	var t *template.Template
 	var err error
 	if username == "dcd" && password == "123456" {
 		if userType == "0"{
 			t, err = template.ParseFiles("template/indexdata.html")
+
+			w.Header().Set("Location", "/dataclient/index")
+
+			w.WriteHeader(200)
+
+
+
 		}else if userType == "1"{
 			t, err = template.ParseFiles("template/indexmodel.html")
+			http.Redirect(w,r, "/modelclient/index",200)
+
 		}else{
 			t, err = template.ParseFiles("template/indexcomputer.html")
+			http.Redirect(w,r, "/computingclient/index",200)
+
 		}
 		if err!=nil {
 			utils.ErrorPanic(err)
 			log.Fatal(err)
 			return
 		}
-		data := Data{msg:"", code:200}
-		t.Execute(w, data)
+
+		//data := Data{msg:"", code:200}
+		//fmt.Printf("账号或密码正确")
+		//js,_:=json.Marshal(data)
+		//w.Write(js)
+		////t.Execute(w, data)
 
 	}else{
 		t, err = template.ParseFiles("template/login.html")
@@ -229,11 +282,12 @@ func LoginHandler(w http.ResponseWriter,r *http.Request){
 		}
 
 		data := Data{msg:"账号或密码错误", code:200}
+		fmt.Printf("账号或密码错误")
+		//js,_:=json.Marshal(data)
+		//w.Write(js)
 		t.Execute(w, data)
+
 	}
-
-
-
 
 
 
