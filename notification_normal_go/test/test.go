@@ -22,7 +22,7 @@ func sendMultiTransaction(client *rpc.Client,from string,to common.Address,numbe
 
 		message:=utils.NewMessage(common.HexToAddress(from),&to,"0x10","0x"+data,"0x295f05","0x77359400")
 
-		txHash,err:=utils.SendTransaction(client,&message,"",context.TODO())
+		txHash,err:=utils.SendTransaction(client,&message,"abc",context.TODO())
 		//txHash,err:=sendRawTransaction(client,"")
 		if err!=nil{
 			fmt.Println("send new transaction fail: ",err)
@@ -47,24 +47,21 @@ func main() {
 	}
 	defer client.Close()
 
-	var account []string
-	err := client.Call(&account, "eth_accounts")
-
-	if err != nil {
-		fmt.Println("获得账户失败! ", err)
+	// create account
+	myaccount := utils.CreateAccount(client, "abc")
+	if myaccount == ""{
+		fmt.Println("account create failed")
 	}
 
-	//fmt.Println("account:",account)
 
-	to := common.HexToAddress(account[1])
-
+	to := common.HexToAddress(myaccount)
 	fmt.Println("to: ", to)
 
-	err = utils.UnlockAccount(client, account[0], "abc")
+	err := utils.UnlockAccount(client, myaccount, "abc")
 
 	if err != nil {
 		fmt.Println("unlockAccount fail: ", err)
 	}
-	sendMultiTransaction(client, account[0], to, 2)
+	sendMultiTransaction(client, myaccount, to, 2)
 
 }
