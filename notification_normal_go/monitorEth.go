@@ -124,6 +124,16 @@ func dealNewTransactions(client *rpc.Client, filterId string, conn redis.Conn) {
 
 }
 
+
+func InitChannels(){
+	 mindedTransactionHashChannel = make(chan TransactionReceipt)
+	 modelClientPullDataChannel = make(chan ModelClientPullDataReceipt)
+	 dataAggreeChannel = make(chan DataAggreeReceipt)
+	 dataAskComputingChannel = make(chan DataAskComputingReceipt)
+	 dataClientMonitorComputingAggreeChannel = make(chan DataClientMonitorComputingAggreeReciept)
+	 dataClientIsAggreeChannel = make(chan DataClientIsAggreeReceipt)
+}
+
 func GetModelClientPullDataReceipt()(ModelClientPullDataReceipt){
 
 	for{
@@ -192,9 +202,9 @@ func distributeTransactionByInput(from string,input string,conn redis.Conn){
 	}else if splits[0]=="cadd"{ //运算方上传运算资源Hash
 		utils.Sadd2Redis(conn,"computing",from,splits[1])
 	}else if splits[0]== "mask"{ //模型方请求数据，根据上传的metaDataHash参数
-		askDataClient(conn,splits[1])
+		//askDataClient(conn,splits[1])
 	}else if splits[0]== "dask"{ //数据方寻找合适的运算资源，根据上传的运算资源描述Hash
-		askComputing(conn,splits[1])
+		//askComputing(conn,splits[1])
 	}
 }
 
@@ -223,7 +233,7 @@ func dealTransactionWithPool(client *rpc.Client, filterId string, pool *Pool) {
 
 
 
-
+/*
 func main() {
 
 	client := utils.Connect2Eth()
@@ -261,4 +271,4 @@ func main() {
 	//dealTransactionWithPool(client,filterId,pool)
 	//wg.Wait()
 
-}
+}*/

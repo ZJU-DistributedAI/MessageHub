@@ -69,6 +69,8 @@ func init(){
 	//获取配置文件对象
 	utils.InitConfig("")
 
+	InitChannels()
+
 
 }
 
