@@ -9,7 +9,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/rpc"
 	"../utils"
-	)
+	"time"
+)
 
 
 func sendMultiTransaction(client *rpc.Client,from string,to common.Address,number int){
@@ -51,17 +52,23 @@ func main() {
 	myaccount := utils.CreateAccount(client, "abc")
 	if myaccount == ""{
 		fmt.Println("account create failed")
+		return
 	}
-
+	fmt.Println("New account", myaccount)
 
 	to := common.HexToAddress(myaccount)
 	fmt.Println("to: ", to)
 
-	err := utils.UnlockAccount(client, myaccount, "abc")
+	// set ether base
+	fmt.Println("set Etherbase: ", utils.SetEtherBase(client, myaccount))
+	// unlock
+	fmt.Println( "Account unlock", utils.UnlockAccount(client, myaccount, "abc"))
+	// begin mine
+	fmt.Println("start miner: ", utils.StartMiner(client, 1))
+	time.Sleep(60000000000)	// miner for 1 minute
 
-	if err != nil {
-		fmt.Println("unlockAccount fail: ", err)
-	}
+	// print balance
+	fmt.Println(utils.GetBalance(client, myaccount))
+
 	sendMultiTransaction(client, myaccount, to, 2)
-
 }

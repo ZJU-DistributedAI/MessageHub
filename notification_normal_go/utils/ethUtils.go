@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
+	"log"
 	"time"
 )
 
@@ -112,11 +113,14 @@ func CreateAccount(client *rpc.Client, password string) (string) {
 	return result
 }
 
-func UnlockAccount(client *rpc.Client, account string, password string) (error) {
+func UnlockAccount(client *rpc.Client, account string, password string) (bool) {
 
 	var result bool
 	err := client.Call(&result, "personal_unlockAccount", account, password)
-	return err
+	if err != nil{
+		log.Fatal(err)
+	}
+	return result
 }
 
 func SendTransaction(client *rpc.Client, tx *Message, password string, ctx context.Context) (string, error) {
@@ -163,5 +167,32 @@ func GetTransactionReceipt(client *rpc.Client, txHash string) (Receipt) {
 	var result Receipt
 	_ = client.Call(&result, "eth_getTransactionReceipt", txHash)
 	//fmt.Println(result)
+	return result
+}
+
+func SetEtherBase(client *rpc.Client, account string)bool{
+	var result bool
+	err := client.Call(&result, "miner_setEtherbase", account)
+	if err != nil{
+		log.Fatal(err)
+	}
+	return result
+}
+
+func StartMiner(client *rpc.Client, number int) bool {
+	var result bool
+	err := client.Call(&result, "miner_start", number)
+	if err != nil{
+		log.Fatal(err)
+	}
+	return result
+}
+
+func GetBalance(client *rpc.Client, account string) string{
+	var result string
+	err := client.Call(&result, "eth_getBalance", account, "latest")
+	if err != nil{
+		log.Fatal(err)
+	}
 	return result
 }
