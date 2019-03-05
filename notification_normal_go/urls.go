@@ -24,9 +24,7 @@ func startWebService(){
 	http.HandleFunc("/user/checklogin", CheckLoginHandler)
 	http.HandleFunc("/user/createwallet", CreateWalletHandler)
 	http.HandleFunc("/user/createwalletpage", CreateWalletPageHandler)
-
-
-
+	
 	//data client
 	http.HandleFunc("/dataclient/index", IndexDataHandle);
 	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler);

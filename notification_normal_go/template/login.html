@@ -107,12 +107,7 @@
                       +"&userType="+type_value,
                   success : function(data){
                       console.log(data);//
-
-                      if (data==="no") {//根据返回值进行跳转
-
-                      }else{
-                        window.location.href =interfaceAddress+ data;
-                      }
+                      window.location.href =interfaceAddress+ data;
                   },
                   fail : function (data) {
                       console.log(data);//

@@ -10,7 +10,8 @@
     <meta name="author" content="">
 
     <title>DistributedAI - Data Client</title>
-
+    <script src="../static/js/constant.js"></script>
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
     <!-- Bootstrap core CSS-->
     <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
@@ -182,20 +183,21 @@
             <div class="card-body">
              <form >
               <div class="form-group">
-                <div class="form-label-group">
-                  <input name="agree_ETH_key" type="text" id="agree_ETH_key" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="agree_ETH_key">ETH_key: ETH private key for transaction </label>
-               
-                </div>
+                  <div class="form-label-group">
+                      <input name="agree_password" type="text" id="agree_password" class="form-control" required="required" autofocus="autofocus" >
+                      <label for="agree_password">password: 数据方密码</label>
+
+                  </div>
                   </br>
-                <div class="form-label-group">
-                   <input name="agree_contract_hash" type="text" id="agree_contract_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="agree_contract_hash">contract_hash: smart contract hash </label>
-                </div>
+                  <div class="form-label-group">
+                      <input name="agree_from" type="text" id="agree_from" class="form-control" required="required" autofocus="autofocus" >
+                      <label for="agree_from">wallet: 数据方账户 </label>
+
+                  </div>
               </br>
                 <div class="form-label-group">
                    <input name="agree_data_hash" type="text" id="agree_data_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="agree_data_hash">data_hash: data hash</label>
+                  <label for="agree_data_hash">hash: 需要同意的数据资源的IPFS地址</label>
                 </div>
 
               </div>
@@ -369,8 +371,9 @@
 
                   data: "password="+$('#add_password').val()+"&from="+$('#add_from').val()+"&metaDataIpfsHash="+$('#add_hash').val(),
                   success : function(data){
-                      console.log(data);// for name use data.data.name
-                      alert("操作成功");
+                      console.log(data);
+                      var jsonObj = $.parseJSON(data)
+                      alert(jsonObj.msg);
                   },
                   fail : function (data) {
                       console.log(data);// for name use data.data.name
@@ -382,13 +385,14 @@
           $("#AgreeRequest").on('click', function() {  //添加点击事件
               console.log("click AgreeRequest ok");
               $.ajax({
-                  url:'http://127.0.0.1:3000/dataclient/AgreeRequest',
+                  url:interfaceAddress + '/dataclient/aggreemodelclient',
                   type:'post',
                   dataType : 'text',
-                  data: "agree_ETH_key="+$('#agree_ETH_key').val()+"&agree_contract_hash="+$('#agree_contract_hash').val()+ "&agree_data_hash="+$('#agree_data_hash').val(),
+                  data: "password="+$('#agree_password').val()+"&from="+$('#agree_from').val()+"&metaDataIpfsHash="+$('#agree_data_hash').val(),
                   success : function(data){
                       console.log(data);
-                      alert("操作成功");
+                      var jsonObj = $.parseJSON(data)
+                      alert(jsonObj.msg);
                   },
                   fail : function (data) {
                       console.log(data);
