@@ -12,16 +12,17 @@
     <title>DistributedAI - Computing Client</title>
 
     <!-- Bootstrap core CSS-->
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="../static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 
     <!-- Page level plugin CSS-->
-    <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="../static/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="css/sb-admin.css" rel="stylesheet">
+    <link href="../static/css/sb-admin.css" rel="stylesheet">
+      <script src="../static/js/constant.js"></script>
 
   </head>
 
@@ -90,38 +91,40 @@
 
     <div id="wrapper">
 
-      <!-- Sidebar -->
-      <ul class="sidebar navbar-nav">
-        <li class="nav-item dropdown">
-          <a class="nav-link" href="indexcomputer.html">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span>
-          </a>
-        </li>
-        
-         <li class="nav-item dropdown">
-          <a class="nav-link" href="download_tool.html">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Download Tools</span></a>
-        </li>
+    <!-- Sidebar -->
+    <ul class="sidebar navbar-nav">
         <li class="nav-item active">
-          <a class="nav-link dropdown-toggle" href="#" id="WalletDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fas fa-fw fa-folder"></i>
-            <span>Wallet</span>
-          </a>
-           <div class="dropdown-menu" aria-labelledby="WalletDropdown">
-            <h6 class="dropdown-header">Create:</h6>
-            <a class="dropdown-item" href="register.html">Create Wallet</a>
-            <div class="dropdown-divider"></div>
-            <h6 class="dropdown-header">Functions:</h6>
-            <a class="dropdown-item" href="computingclientwallet.html">Add data</a>
-            <a class="dropdown-item" href="computingclientwallet.html">Agree Request</a>
-            <a class="dropdown-item" href="computingclientwallet.html">Delete Data</a>
-            <a class="dropdown-item" href="computingclientwallet.html">Train</a>
-            <a class="dropdown-item" href="computingclientwallet.html">Upload Encrypted Data</a>
-          </div>
+            <a class="nav-link" onclick="doLocation('/computingclient/index')">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
         </li>
-      </ul>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link"  onclick="doLocation('/user/downloadtool')">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Download Tools</span></a>
+        </li>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="WalletDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-fw fa-folder"></i>
+                <span>Wallet</span>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="WalletDropdown">
+                <h6 class="dropdown-header">Create:</h6>
+                <a class="dropdown-item"  onclick="doLocation('/user/createwalletpage')">Create Wallet</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header">Functions:</h6>
+                <a class="dropdown-item" onclick="doLocation('/computingclient/walletpage')">Add data</a>
+                <a class="dropdown-item" onclick="doLocation('/computingclient/walletpage')">Agree Request</a>
+                <a class="dropdown-item" onclick="doLocation('/computingclient/walletpage')">Delete Data</a>
+                <a class="dropdown-item" onclick="doLocation('/computingclient/walletpage')">Train</a>
+                <a class="dropdown-item" onclick="doLocation('/computingclient/walletpage')">Upload Encrypted Data</a>
+            </div>
+        </li>
+
+    </ul>
 
       <div id="content-wrapper">
 
@@ -130,7 +133,7 @@
           <!-- Breadcrumbs-->
           <ol class="breadcrumb">
             <li class="breadcrumb-item">
-              <a href="indexcomputer.html">Dashboard</a>
+              <a onclick="doLocation('/computingclient/index')">Dashboard</a>
             </li>
             <li class="breadcrumb-item active">Computing Client Wallet</li>
           </ol>
@@ -330,25 +333,30 @@
           <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
           <div class="modal-footer">
             <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-            <a class="btn btn-primary" href="login.html">Logout</a>
+            <a class="btn btn-primary" onclick="doLocation('/user/login')">Logout</a>
           </div>
         </div>
       </div>
     </div>
     </div>
     <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../static/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin.min.js"></script>
+    <script src="../static/js/sb-admin.min.js"></script>
 
   </body>
 
   <script type="text/javascript">
+      var interfaceAddress = getAddress();
+      function doLocation(url)
+      {
+          window.location.href =interfaceAddress+ url;
+      }
       $(function() {
           $("#AddData").on('click', function() {  //添加点击事件
               console.log("click AddData ok");

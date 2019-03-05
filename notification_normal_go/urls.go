@@ -7,11 +7,11 @@ import (
 	"net/http"
 )
 
-func startWebService(){
+func startWebService() {
 
-
-
-	http.Handle("./template",http.FileServer(http.Dir("template")))
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	http.Handle("./template", http.FileServer(http.Dir("template")))
 
 	http.HandleFunc("/", LoginHandler)
 	//http.HandleFunc("/listWholeMetaData", ListMetaData)
@@ -21,10 +21,15 @@ func startWebService(){
 
 	//user
 	http.HandleFunc("/user/login", LoginHandler)
+	http.HandleFunc("/user/checklogin", CheckLoginHandler)
 	http.HandleFunc("/user/createwallet", CreateWalletHandler)
-
+	http.HandleFunc("/user/createwalletpage", CreateWalletPageHandler)
+	http.HandleFunc("/user/downloadtool", DownloadToolPageHandle)
 
 	//data client
+	http.HandleFunc("/dataclient/index", IndexDataHandle)                          //font OK, back ok
+	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler)         //font OK, back ok
+	http.HandleFunc("/dataclient/availablecomputingpage", DataClientAvaCompHandle) //font OK, back ok
 	http.HandleFunc("/dataclient/adddata", DataClientAddDataHandler)
 	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler)
 	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)
@@ -34,6 +39,9 @@ func startWebService(){
 	http.HandleFunc("/data/client/monitorcomputingaggree", DataClientMonitorComputingAggreeHandler)
 
 	//model client
+	http.HandleFunc("/modelclient/index", IndexModelHandle)
+	http.HandleFunc("/modelclient/walletpage", ModelClientWalletPageHandler)
+	http.HandleFunc("/modelclient/availabledatapage", ModelClientAvaDataHandle)
 	http.HandleFunc("/modelclient/askdata", ModelClientAskDataHandler)
 	http.HandleFunc("/modelclient/createcontract", ModelClientCreateContractHandler)
 	http.HandleFunc("/modelclient/uploadmodel", ModelClientUploadModelHandler)
@@ -41,6 +49,8 @@ func startWebService(){
 	http.HandleFunc("/modelclient/monitordataclient", ModelClientMonitorDataClientResultHandler)
 
 	//computing client
+	http.HandleFunc("/computingclient/index", IndexComputingHandle)
+	http.HandleFunc("/computingclient/walletpage", ComputingClientWalletPageHandler)
 	http.HandleFunc("/computingclient/adddata", ComputingClientAddDataHandler)
 	http.HandleFunc("/computingclient/agreerequest", ComputingClientAggreeRequestHandler)
 	http.HandleFunc("/computingclient/deletedata", ComputingClientDeleteDataHandler)
@@ -55,10 +65,7 @@ func startWebService(){
 	}
 }
 
-
-
-
-func init(){
+func init() {
 
 	//连接到sentry
 	raven.SetDSN("http://e8f71faeb2d043fd96058c57a481434c:b7afc614ef7149c997cb9b316d7f2eaf@212.64.85.208:9000/3")
@@ -67,16 +74,13 @@ func init(){
 	//连接redis
 	utils.Connect2Redis()
 	//获取配置文件对象
-	utils.InitConfig("")
+	// utils.InitConfig("")
 
 	InitChannels()
 
-
 }
 
-
-
-func main(){
+func main() {
 
 	//监听Model Client和Data Client传过来的http请求
 	//_:= handler.Handlers{conn: utils.Connect2Eth()}
