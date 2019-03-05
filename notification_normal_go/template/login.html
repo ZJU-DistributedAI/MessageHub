@@ -12,17 +12,18 @@
     <title>DistributedAI - Login</title>
 
     <!-- Bootstrap core CSS-->
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="../static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 
     <!-- Custom styles for this template-->
-    <link href="css/sb-admin.css" rel="stylesheet">
-
+    <link href="../static/css/sb-admin.css" rel="stylesheet">
+      <script src="../static/js/constant.js"></script>
   </head>
 
   <body class="bg-dark">
+
 
     <div class="container">
       <div class="card card-login mx-auto mt-5">
@@ -31,8 +32,8 @@
           <form>
             <div class="form-group">
               <div class="form-label-group">
-                <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="required" autofocus="autofocus">
-                <label for="inputEmail">Email address</label>
+                <input type="username" id="inputUsername" class="form-control" placeholder="Username" required="required" autofocus="autofocus">
+                <label for="inputUsername">Username</label>
               </div>
             </div>
             <div class="form-group">
@@ -41,15 +42,22 @@
                 <label for="inputPassword">Password</label>
               </div>
             </div>
-            <div class="form-group">
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" value="remember-me">
-                  Remember Password
-                </label>
-              </div>
+           
+            <div>
+              <input class="radio" type="radio" id="clientChoice1"
+                     name="type" value="data" checked="checked"  />
+              <label for="clientChoice1">Data client</label>
+              <br>
+              <input class="radio" type="radio" id="clientChoice2"
+                     name="type" value="model"/>
+              <label for="clientChoice2">Model client</label>
+              <br>
+              <input class="radio" type="radio" id="clientChoice3"
+                     name="type" value="computation"/>
+              <label for="clientChoice3">Computation client</label>
+
             </div>
-            <a class="btn btn-primary btn-block" href="indexdata.html">Login</a>
+            <a id ="LoginBtn" class="btn btn-primary btn-block" >Login</a>
           </form>
           <div class="text-center">
             <a class="d-block small mt-3" href="register.html">Register an Account</a>
@@ -58,14 +66,56 @@
         </div>
       </div>
     </div>
-
     <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
 
   </body>
 
+  <script type="text/javascript">
+    $(function() {
+        var interfaceAddress = getAddress();
+        $("#LoginBtn").on('click', function() {  //添加点击事件
+              console.log("click LoginBtn ok");
+              var type_value= 0;
+              var radioObj = document.querySelectorAll('.radio');
+              for(var i = 0;i < radioObj.length;i++){
+                  if(radioObj[i].checked === true){
+                      if(radioObj[i].value=== "data")
+                      {
+                        type_value=0;
+                      }else if(radioObj[i].value=== "model")
+                      {
+                        type_value=1;
+                      }else if(radioObj[i].value==="computation")
+                      {
+                        type_value=2;
+                      }
+                     
+                  }
+              }
+
+              $.ajax({
+                  url:interfaceAddress+'/user/checklogin',
+                  type:'post',
+                  dataType : 'text', // use json instead of text
+                  data: "username="+$('#inputUsername').val()+"&password="+$('#inputPassword').val()
+                      +"&userType="+type_value,
+                  success : function(data){
+                      console.log(data);//
+                      window.location.href =interfaceAddress+ data;
+                  },
+                  fail : function (data) {
+                      console.log(data);//
+                      alert("请求失败");
+                  }
+              });
+          });
+
+      })
+  </script>
 </html>
