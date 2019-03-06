@@ -64,6 +64,25 @@ func Sadd2Redis(conn redis.Conn, key string,from string,value string) bool {
 	return true;
 }
 
+
+func SremFromRedis(conn redis.Conn, key string,from string,value string) bool {
+
+	mutex.Lock()
+	var err error
+	if from==""{
+		_, err = conn.Do("srem", key,  value)
+	}else{
+		_, err = conn.Do("srem", key,  from+":"+value)
+	}
+	mutex.Unlock()
+
+	if err != nil {
+		ErrorPanic(err)
+		return false
+	}
+	return true
+}
+
 func Save2local(conn redis.Conn) bool {
 
 	mutex.Lock()

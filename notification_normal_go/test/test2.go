@@ -10,7 +10,7 @@ import (
 
 func init() {
 
-	raven.SetDSN("http://1186ef58d90f4b1992df3673c6c85857:f6a3101d6fdc49d594f7f1d89a4dd6e5@212.64.85.208:9000/4")
+	raven.SetDSN("http://1b94cad9e5df4ef2b743b5fc43ad3e6f:4808eab3818b4ef1bc2f068d4278d207@212.64.85.208:9000/2")
 
 }
 
