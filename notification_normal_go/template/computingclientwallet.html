@@ -184,10 +184,15 @@
                       <label for="agree_password">password: 运算方的钱包密码 </label>
                   </div>
                  </br>
-                <div class="form-label-group">
-                   <input name="agree_to" type="text" id="agree_to" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="agree_to">wallet: 需要同意请求的数据方钱包地址</label>
-                </div>
+                  <div class="form-label-group">
+                      <input name="agree_to" type="text" id="agree_to" class="form-control" required="required" autofocus="autofocus" >
+                      <label for="agree_to">wallet: 需要同意请求的数据方钱包地址</label>
+                  </div>
+                  </br>
+                  <div class="form-label-group">
+                      <input name="agree_to_model" type="text" id="agree_to_model" class="form-control" required="required" autofocus="autofocus" >
+                      <label for="agree_to_model">wallet: 需要同意请求的数据方对应的模型方的钱包地址</label>
+                  </div>
               </div>
               <button id ="AgreeRequest" class="btn btn-primary btn-block" type="button">Submit</button>
              </form>
@@ -195,20 +200,25 @@
         </div>
 
 		<div class="card mb-3">
-            <div class="card-header">Delete Data</div>
+            <div class="card-header">删除自己的运算资源</div>
             <div class="card-body">
              <form >
               <div class="form-group">
                 <div class="form-label-group">
-                  <input name="del_from" type="text" id="del_ETH_key" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="del_ETH_key">ETH_key: ETH private key for transaction </label>
+                  <input name="del_from" type="text" id="del_from" class="form-control" required="required" autofocus="autofocus" >
+                  <label for="del_from">wallet: 运算方钱包地址</label>
                 </div>
+                  </br>
+                  <div class="form-label-group">
+                      <input name="del_password" type="text" id="del_password" class="form-control" required="required" autofocus="autofocus" >
+                      <label for="del_password">password: 运算方钱包密码</label>
+                  </div>
+
                   </br>
                 <div class="form-label-group">
                    <input name="del_hash" type="text" id="del_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="del_hash">hash: data IPFS address</label>
+                  <label for="del_hash">hash: 需要删除的运算资源metadata的IPFShash</label>
                 </div>
-
               </div>
 
               <button id="DeleteData" class="btn btn-primary btn-block" type="button">Submit</button>
@@ -352,7 +362,7 @@
           $("#AddData").on('click', function() {  //添加点击事件
               console.log("click AddData ok");
               $.ajax({
-                  url:computingIpfsHash+'/computingclient/adddata',
+                  url:interfaceAddress+'/computingclient/adddata',
                   type:'post',
                   dataType : 'text', // use json instead of text
                   data: "password="+$('#add_password').val()+"&from="+$('#add_from').val()+"&computingIpfsHash="+$('#add_hash').val(),
@@ -371,10 +381,11 @@
           $("#AgreeRequest").on('click', function() {  //添加点击事件
               console.log("click AgreeRequest ok");
               $.ajax({
-                  url:'http://127.0.0.1:3000/computingclient/AgreeRequest',
+                  url:interfaceAddress+'/computingclient/agreerequest',
                   type:'post',
                   dataType : 'text', // use json instead of text
-                  data: "from="+$('#agree_from').val()+"&password="+$('#agree_password').val()+"&dataAddress="+$('#agree_to').val(),
+                  data: "from="+$('#agree_from').val()+"&password="+$('#agree_password').val()+
+                      "&dataAddress="+$('#agree_to').val()+"&modelAddress"+$('#agree_to_model'),
                   success : function(data){
                       console.log(data);
                       var jsonObj = $.parseJSON(data);
@@ -390,10 +401,11 @@
           $("#DeleteData").on('click', function() {  //添加点击事件
               console.log("click DeleteData ok");
               $.ajax({
-                  url:'http://127.0.0.1:3000/computingclient/DeleteData',
+                  url:interfaceAddress+'/computingclient/deletedcomputing',
                   type:'post',
                   dataType : 'text', // use json instead of text
-                  data: "ETH_key="+$('#del_ETH_key').val()+"&hash="+$('#del_hash').val(),
+                  data: "from="+$('#del_from').val()+"&password="+$('#del_password').val()
+                      +"&computinghash="+$('#del_hash').val(),
 
                   success : function(data){
                       console.log(data);// for name use data.data.name

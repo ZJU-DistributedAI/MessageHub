@@ -205,42 +205,35 @@
      
 
 		<div class="card mb-3">
-            <div class="card-header">Upload Model</div>
+            <div class="card-header">上传模型资源</div>
             <div class="card-body">
              <form >
               <div class="form-group">
                 <div class="form-label-group">
-                  <input name="upload_ETH_key" type="text" id="upload_ETH_key" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="upload_ETH_key">ETH_key: ETH private key for transaction </label>
+                  <input name="upload_from" type="text" id="upload_from" class="form-control" required="required" autofocus="autofocus" >
+                  <label for="upload_from">walllet: 模型方的钱包地址 </label>
                
                 </div>
                   </br>
 
                 <div class="form-label-group">
-                <input name="upload_HE_key" type="text" id="upload_HE_key" class="form-control" required="required" autofocus="autofocus" >
-                <label for="upload_HE_key">HE_key: Homomorphic Encryption Key </label>
-             
-                </div>
-                 </br>
-
-                <div class="form-label-group">
-                <input name="upload_RSA_key" type="text" id="upload_RSA_key" class="form-control" required="required" autofocus="autofocus" >
-                <label for="upload_RSA_key">RSA_key: RSA public key </label>
-               
-                </div>
-                </br>
-
-                <div class="form-label-group">
-                   <input name="upload_contract_hash" type="text" id="upload_contract_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="upload_contract_hash">contract_hash: smart contract hash</label>
+                <input name="upload_password" type="text" id="upload_password" class="form-control" required="required" autofocus="autofocus" >
+                <label for="upload_password">password: 模型方的钱包密码 </label>
                 </div>
 
                 </br>
 
                 <div class="form-label-group">
                    <input name="upload_model_hash" type="text" id="upload_model_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="upload_model_hash">model_hash: encrypted model IPFS address</label>
+                  <label for="upload_model_hash">model_hash: 加密后的模型所存储的IPFShash</label>
                 </div>
+                </br>
+
+                <div class="form-label-group">
+                  <input name="upload_contract_hash" type="text" id="upload_contract_hash" class="form-control" required="required" autofocus="autofocus" >
+                  <label for="upload_contract_hash">contract_hash: 此次交易的智能合约地址</label>
+                </div>
+
 
               </div>
 
@@ -361,7 +354,8 @@
                   data: "password="+$('#ask_password').val()+"&from="+$('#ask_from').val()+"&metaDataInfo="+$('#ask_hash').val(),
                   success : function(data){
                       console.log(data);
-                      alert("操作成功");
+                    var jsonObj = $.parseJSON(data)
+                    alert(jsonObj.msg);
                   },
                   fail : function (data) {
                       console.log(data);
@@ -379,7 +373,8 @@
                   data: "ETH_key="+$('#create_ETH_key').val()+"&smart_contract="+$('#create_smart_contract').val(),
                   success : function(data){
                       console.log(data);
-                      alert("操作成功");
+                    var jsonObj = $.parseJSON(data)
+                    alert(jsonObj.msg);
                   },
                   fail : function (data) {
                       console.log(data);
@@ -391,15 +386,15 @@
           $("#UploadModel").on('click', function() {  //添加点击事件
               console.log("click UploadModel ok");
               $.ajax({
-                  url:'http://127.0.0.1:3000/modelclient/UploadModel',
+                  url:interfaceAddress+'/modelclient/uploadmodel',
                   type:'post',
                   dataType : 'text',
-                  data: "ETH_key="+$('#upload_ETH_key').val()+"&HE_key="+$('#upload_HE_key').val()+
-                      "&RSA_key="+$('#upload_RSA_key').val()+  "&hash="+$('#upload_contract_hash').val()
-                        +  "&model_hash="+$('#upload_model_hash').val() ,
+                  data: "password="+$('#upload_password').val()+"&from="+$('#upload_from').val()+
+                          "&modelIpfsHash="+$('#upload_model_hash').val()+"&contractHash="+$('#upload_contract_hash').val() ,
                   success : function(data){
                       console.log(data);
-                      alert("操作成功");
+                    var jsonObj = $.parseJSON(data)
+                    alert(jsonObj.msg);
                   },
                   fail : function (data) {
                       console.log(data);

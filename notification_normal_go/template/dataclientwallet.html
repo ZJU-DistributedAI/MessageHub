@@ -151,7 +151,7 @@
           <p>Manage your wallet.</p>
 
           <div class="card mb-3">
-            <div class="card-header">添加数据</div>
+            <div class="card-header">添加数据的metadata</div>
             <div class="card-body">
              <form>
               <div class="form-group">
@@ -234,7 +234,11 @@
                       <input name="askcomputing_hash" type="text" id="askcomputing_hash" class="form-control" required="required" autofocus="autofocus" >
                       <label for="askcomputing_hash">computing hash: 所请求的运算方资源的IPFShash </label>
                   </div>
-
+                  </br>
+                  <div class="form-label-group">
+                      <input name="askcomputing_to" type="text" id="askcomputing_to" class="form-control" required="required" autofocus="autofocus" >
+                      <label for="askcomputing_to">model client wallet: 模型方的钱包地址 </label>
+                  </div>
               </div>
 
               <button id= "AskComputing"  class="btn btn-primary btn-block" type="button">Submit</button>
@@ -276,45 +280,47 @@
         </div>
 
         <div class="card mb-3">
-            <div class="card-header">Upload Encrypted Data</div>
+            <div class="card-header">上传加密后的数据给模型方</div>
             <div class="card-body">
-             <form >
-              <div class="form-group">
-                <div class="form-label-group">
-                  <input name="upload_ETH_key" type="text" id="upload_ETH_key" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="upload_ETH_key">ETH_key: ETH private key for transaction </label>
-               
-                </div>
-                  </br>
-                <div class="form-label-group">
-                   <input name="upload_contract_hash" type="text" id="upload_contract_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="upload_contract_hash">contract_hash: smart contract hash</label>
-                </div>
+                <form >
+                    <div class="form-group">
+                        <div class="form-label-group">
+                            <input name="upload_from" type="text" id="upload_from" class="form-control" required="required" autofocus="autofocus" >
+                            <label for="upload_from">wallet: 数据方钱包地址 </label>
+                        </div>
 
-                </br>
-                <div class="form-label-group">
-                   <input name="upload_data_hash" type="text" id="upload_data_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="upload_data_hash">data_hash: data hash</label>
-                </div>
+                        </br>
+                        <div class="form-label-group">
+                            <input name="upload_password" type="text" id="upload_password" class="form-control" required="required" autofocus="autofocus" >
+                            <label for="upload_password">password: 数据方钱包密码</label>
+                        </div>
+                        </br>
+                        <div class="form-label-group">
+                            <input name="upload_metadata_hash" type="text" id="upload_metadata_hash" class="form-control" required="required" autofocus="autofocus" >
+                            <label for="upload_metadata_hash">data_metadata_hash: 数据metadata的IPFShash</label>
+                        </div>
 
+                        </br>
+                        <div class="form-label-group">
+                            <input name="upload_encrypt_data_hash" type="text" id="upload_encrypt_data_hash" class="form-control" required="required" autofocus="autofocus" >
+                            <label for="upload_encrypt_data_hash">encrypt_data_hash: 加密后的数据的IPFShash</label>
+                        </div>
+                        </br>
+                        <div class="form-label-group">
+                            <input name="upload_to" type="text" id="upload_to" class="form-control" required="required" autofocus="autofocus" >
+                            <label for="upload_to">model client wallet: 模型方的钱包地址</label>
+                        </div>
+                    </div>
 
-                </br>
-                <div class="form-label-group">
-                   <input name="upload_encrypt_data_hash" type="text" id="upload_encrypt_data_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="upload_encrypt_data_hash">encrypt_data_hash: encrypted data hash</label>
-                </div>
-
-
-              </div>
-
-              <button  id= "UploadEncryptedData"  class="btn btn-primary btn-block" type="button">Submit</button>
-             </form>
-          </div>
+                    <button  id= "UploadEncryptedData"  class="btn btn-primary btn-block" type="button">Submit</button>
+                </form>
+            </div>
         </div>
 
 
 
-        <!-- /.container-fluid -->
+
+            <!-- /.container-fluid -->
 
         <!-- Sticky Footer -->
         <footer class="sticky-footer">
@@ -378,7 +384,7 @@
           $("#AddDataForm").on('click', function() {  //添加点击事件
               console.log("click AddData ok");
               $.ajax({
-                  url:interfaceAddress+'/dataclient/adddata',
+                  url:interfaceAddress+'/dataclient/addmetadata',
                   type:'post',
                   dataType : 'text', // use json instead of text
 
@@ -421,7 +427,8 @@
                   url:interfaceAddress+'/dataclient/askcomputing',
                   type:'post',
                   dataType : 'text',
-                  data: "password="+$('#askcomputing_password').val()+"&from="+$('#askcomputing_from').val()+"&computingHash="+$('#askcomputing_hash').val(),
+                  data: "password="+$('#askcomputing_password').val()+"&from="+$('#askcomputing_from').val()
+                      +"&computingHash="+$('#askcomputing_hash').val()+ "&modelAddress="+$('#askcomputing_to').val(),
                   success : function(data){
                       console.log(data);
                       var jsonObj = $.parseJSON(data)
@@ -453,15 +460,15 @@
                   }
               });
           });
-
           $("#UploadEncryptedData").on('click', function() {  //添加点击事件
               console.log("click UploadEncryptedData ok");
               $.ajax({
-                  url:'http://127.0.0.1:3000/dataclient/UploadEncryptedData',
+                  url:interfaceAddress+'/dataclient/pushdatatocomputing',
                   type:'post',
                   dataType : 'text',
-                  data: "upload_ETH_key="+$('#upload_ETH_key').val()+"&upload_contract_hash="+$('#upload_contract_hash').val()
-                      + "upload_data_hash="+$('#upload_data_hash').val()+"&upload_encrypt_data_hash="+$('#upload_encrypt_data_hash').val(),
+                  data: "from="+$('#upload_from').val()+"&password="+$('#upload_password').val()
+                      + "dataIpfsHash="+$('#upload_encrypt_data_hash').val()+"&modelAddress="+$('#upload_to').val()
+                        +"dataMetadataIpfsHash"+$('#upload_metadata_hash'),
                   success : function(data){
                       console.log(data);//
                       var jsonObj = $.parseJSON(data)
