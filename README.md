@@ -1,8 +1,12 @@
 # MessageHub
 
+## 使用方法：
+1. 本地开启redis服务器 `redis-server /usr/local/etc/redis.conf`
+2. 开启后端服务 `sh startup.sh`
+3. 登陆网站 `http://localhost:9090/user/login` 目前可用的账户是dcd，密码是123456
 
 
-##数据方接口
+## 数据方接口
 - **/dataclient/adddata**  
 数据方上传你数据到区块链接口(交易形式,已实现)
 - **/dataclient/pushdatatocomputing**  
@@ -20,8 +24,8 @@
 
 
 
-##模型方接口
+## 模型方接口
 
 
 
-##运算方接口
+## 运算方接口
