@@ -245,6 +245,7 @@ func CheckLoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// todo test
 func DataClientAvaCompHandle(w http.ResponseWriter, r *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -261,6 +262,7 @@ func DataClientAvaCompHandle(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, "")
 }
 
+// todo: test
 func ModelClientAvaDataHandle(w http.ResponseWriter, r *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -448,12 +450,12 @@ func DataClientAggreeModelClientHandler(w http.ResponseWriter, request *http.Req
 	password := request.PostFormValue("password")
 	from := request.PostFormValue("from")
 	metaDataIpfsHash := request.PostFormValue("metaDataIpfsHash")
+	modelAddress := request.PostFormValue("modelAddress")
 
-	if password == "" {
-
+	if password == "" || modelAddress == "" || metaDataIpfsHash == "" {
 		data = Data{Msg: "参数不完全", Code: 201}
 	} else {
-		value := "dagree:" + metaDataIpfsHash
+		value := "dagree:" + metaDataIpfsHash + ":" + modelAddress
 		to := common.HexToAddress("")
 		//发起交易到以太坊
 		message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
@@ -539,7 +541,7 @@ func ModelClientMonitorDataClientResultHandler(w http.ResponseWriter, request *h
 
 }
 
-// TODO: test
+// TODO: test SendTransaction
 func DataClientPushDataToComputingHandler(w http.ResponseWriter, request *http.Request) {
 	/**
 	数据方将原数据传递给计算方法（未加密）
@@ -548,34 +550,39 @@ func DataClientPushDataToComputingHandler(w http.ResponseWriter, request *http.R
 	@param: dataIpfsHash string
 	*/
 
+	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-	var t *template.Template
+
+	// handle
 	var data Data
-	t, _ = template.ParseFiles("template/indexdata.html")
 	password := request.PostFormValue("password")
 	from := request.PostFormValue("from")
 	dataIpfsHash := request.PostFormValue("dataIpfsHash")
+	modelAddress := request.PostFormValue("modelAddress")
+	dataMetadataIpfsHash := request.PostFormValue("dataMetadataIpfsHash")
 
-	value := "dpush:" + dataIpfsHash
-	to := common.HexToAddress("")
-	//发起交易到以太坊
-	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
-		"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
-	conn := utils.Connect2Eth()
-	txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
-
-	if err != nil {
-		log.Fatal("数据方将数据传给运算方交易创建失败", err)
-		data = Data{Msg: "数据方将数据传给运算方交易创建失败", Code: 500}
-		js, _ := json.Marshal(data)
-		t.Execute(w, js)
+	if password == "" || dataIpfsHash == "" || dataMetadataIpfsHash == "" || modelAddress == "" {
+		data = Data{Msg: "参数不完全", Code: 500}
 	} else {
-		data = Data{Msg: txHash, Code: 200}
-		js, _ := json.Marshal(data)
-		t.Execute(w, js)
-	}
+		value := "dpush:" + dataIpfsHash + ":" + modelAddress + ":" + dataMetadataIpfsHash
+		to := common.HexToAddress("")
+		//发起交易到以太坊
+		message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
+			"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
+		conn := utils.Connect2Eth()
+		txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
 
+		if err != nil {
+			log.Println("数据方将数据传给运算方交易创建失败", err)
+			data = Data{Msg: "数据方将数据传给运算方交易创建失败", Code: 500}
+		} else {
+			data = Data{Msg: txHash, Code: 200}
+		}
+	}
+	// response
+	js, _ := json.Marshal(data)
+	w.Write(js)
 }
 
 // TODO: test
