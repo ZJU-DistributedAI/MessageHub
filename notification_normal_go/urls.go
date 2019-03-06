@@ -27,20 +27,12 @@ func startWebService() {
 	http.HandleFunc("/user/downloadtool", DownloadToolPageHandle)
 
 	//data client
-<<<<<<< HEAD
-	http.HandleFunc("/dataclient/index", IndexDataHandle);
-	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler);
-	http.HandleFunc("/dataclient/addmetadata", DataClientAddMetaDataHandler);
+	http.HandleFunc("/dataclient/addmetadata", DataClientAddMetaDataHandler)
 	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler) //todo fontend
-	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)//todo fontend
-=======
-	http.HandleFunc("/dataclient/index", IndexDataHandle)                          //font OK, back ok
-	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler)         //font OK, back ok
-	http.HandleFunc("/dataclient/availablecomputingpage", DataClientAvaCompHandle) //font OK, back ok
-	http.HandleFunc("/dataclient/adddata", DataClientAddDataHandler)
-	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler)
-	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)
->>>>>>> 6e8dc644e7511e8c39df22f324ffdcb3ce11873c
+	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)     //todo fontend
+	http.HandleFunc("/dataclient/index", IndexDataHandle)                                    //font OK, back ok
+	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler)                   //font OK, back ok
+	http.HandleFunc("/dataclient/availablecomputingpage", DataClientAvaCompHandle)           //font OK, back ok
 	http.HandleFunc("/dataclient/askcomputing", DataClientAskComputingHandler)
 	http.HandleFunc("/dataclient/deletedata", DataClientDeleteDataHandler)
 	http.HandleFunc("/dataclient/monitormetadata", DataClientMonitorMetaDataHandler)
