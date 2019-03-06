@@ -7,11 +7,11 @@ import (
 	"net/http"
 )
 
-func startWebService(){
+func startWebService() {
 
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
-	http.Handle("./template",http.FileServer(http.Dir("template")))
+	http.Handle("./template", http.FileServer(http.Dir("template")))
 
 	http.HandleFunc("/", LoginHandler)
 	//http.HandleFunc("/listWholeMetaData", ListMetaData)
@@ -24,20 +24,32 @@ func startWebService(){
 	http.HandleFunc("/user/checklogin", CheckLoginHandler)
 	http.HandleFunc("/user/createwallet", CreateWalletHandler)
 	http.HandleFunc("/user/createwalletpage", CreateWalletPageHandler)
-	
+	http.HandleFunc("/user/downloadtool", DownloadToolPageHandle)
+
 	//data client
+<<<<<<< HEAD
 	http.HandleFunc("/dataclient/index", IndexDataHandle);
 	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler);
 	http.HandleFunc("/dataclient/addmetadata", DataClientAddMetaDataHandler);
 	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler) //todo fontend
 	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)//todo fontend
+=======
+	http.HandleFunc("/dataclient/index", IndexDataHandle)                          //font OK, back ok
+	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler)         //font OK, back ok
+	http.HandleFunc("/dataclient/availablecomputingpage", DataClientAvaCompHandle) //font OK, back ok
+	http.HandleFunc("/dataclient/adddata", DataClientAddDataHandler)
+	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler)
+	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)
+>>>>>>> 6e8dc644e7511e8c39df22f324ffdcb3ce11873c
 	http.HandleFunc("/dataclient/askcomputing", DataClientAskComputingHandler)
 	http.HandleFunc("/dataclient/deletedata", DataClientDeleteDataHandler)
-	http.HandleFunc("/dataclient/monitormetadata", DataClientMonitorMetaDataHandler)//todo fontend
-	http.HandleFunc("/data/client/monitorcomputingaggree", DataClientMonitorComputingAggreeHandler)//todo fontend
+	http.HandleFunc("/dataclient/monitormetadata", DataClientMonitorMetaDataHandler)
+	http.HandleFunc("/data/client/monitorcomputingaggree", DataClientMonitorComputingAggreeHandler)
 
 	//model client
-	http.HandleFunc("/modelclient/index", IndexModelHandle);
+	http.HandleFunc("/modelclient/index", IndexModelHandle)
+	http.HandleFunc("/modelclient/walletpage", ModelClientWalletPageHandler)
+	http.HandleFunc("/modelclient/availabledatapage", ModelClientAvaDataHandle)
 	http.HandleFunc("/modelclient/askdata", ModelClientAskDataHandler)
 	http.HandleFunc("/modelclient/createcontract", ModelClientCreateContractHandler)
 	http.HandleFunc("/modelclient/uploadmodel", ModelClientUploadModelHandler)
@@ -45,7 +57,8 @@ func startWebService(){
 	http.HandleFunc("/modelclient/monitordataclient", ModelClientMonitorDataClientResultHandler)
 
 	//computing client
-	http.HandleFunc("/computingclient/index", IndexComputingHandle);
+	http.HandleFunc("/computingclient/index", IndexComputingHandle)
+	http.HandleFunc("/computingclient/walletpage", ComputingClientWalletPageHandler)
 	http.HandleFunc("/computingclient/adddata", ComputingClientAddDataHandler)
 	http.HandleFunc("/computingclient/agreerequest", ComputingClientAggreeRequestHandler)
 	http.HandleFunc("/computingclient/deletedcomputing", ComputingClientDeleteComputingHashHandler)
@@ -60,10 +73,7 @@ func startWebService(){
 	}
 }
 
-
-
-
-func init(){
+func init() {
 
 	//连接到sentry
 	raven.SetDSN("http://1b94cad9e5df4ef2b743b5fc43ad3e6f:4808eab3818b4ef1bc2f068d4278d207@212.64.85.208:9000/2")
@@ -76,12 +86,9 @@ func init(){
 
 	InitChannels()
 
-
 }
 
-
-
-func main(){
+func main() {
 
 	//监听Model Client和Data Client传过来的http请求
 	//_:= handler.Handlers{conn: utils.Connect2Eth()}
