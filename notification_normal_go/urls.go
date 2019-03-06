@@ -30,7 +30,7 @@ func startWebService() {
 	http.HandleFunc("/dataclient/index", IndexDataHandle)                          //font OK, back ok
 	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler)         //font OK, back ok
 	http.HandleFunc("/dataclient/availablecomputingpage", DataClientAvaCompHandle) //font OK, back ok
-	http.HandleFunc("/dataclient/adddata", DataClientAddDataHandler)
+	http.HandleFunc("/dataclient/adddata", DataClientAddDataHandler)               //font OK,
 	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler)
 	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)
 	http.HandleFunc("/dataclient/askcomputing", DataClientAskComputingHandler)
@@ -39,8 +39,8 @@ func startWebService() {
 	http.HandleFunc("/data/client/monitorcomputingaggree", DataClientMonitorComputingAggreeHandler)
 
 	//model client
-	http.HandleFunc("/modelclient/index", IndexModelHandle)
-	http.HandleFunc("/modelclient/walletpage", ModelClientWalletPageHandler)
+	http.HandleFunc("/modelclient/index", IndexModelHandle)                  //font OK, back ok
+	http.HandleFunc("/modelclient/walletpage", ModelClientWalletPageHandler) //font OK, back ok
 	http.HandleFunc("/modelclient/availabledatapage", ModelClientAvaDataHandle)
 	http.HandleFunc("/modelclient/askdata", ModelClientAskDataHandler)
 	http.HandleFunc("/modelclient/createcontract", ModelClientCreateContractHandler)
@@ -49,10 +49,10 @@ func startWebService() {
 	http.HandleFunc("/modelclient/monitordataclient", ModelClientMonitorDataClientResultHandler)
 
 	//computing client
-	http.HandleFunc("/computingclient/index", IndexComputingHandle)
-	http.HandleFunc("/computingclient/walletpage", ComputingClientWalletPageHandler)
-	http.HandleFunc("/computingclient/adddata", ComputingClientAddDataHandler)
-	http.HandleFunc("/computingclient/agreerequest", ComputingClientAggreeRequestHandler)
+	http.HandleFunc("/computingclient/index", IndexComputingHandle)                       //font OK, back ok
+	http.HandleFunc("/computingclient/walletpage", ComputingClientWalletPageHandler)      //font OK, back ok
+	http.HandleFunc("/computingclient/adddata", ComputingClientAddDataHandler)            //font OK,
+	http.HandleFunc("/computingclient/agreerequest", ComputingClientAggreeRequestHandler) //font OK,
 	http.HandleFunc("/computingclient/deletedata", ComputingClientDeleteDataHandler)
 	http.HandleFunc("/computingclient/train", ComputingClientTrainHandler)
 	http.HandleFunc("/computingclient/uploadencrypteddata", ComputingClientUploadEncryptedDataHandler)
