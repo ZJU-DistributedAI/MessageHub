@@ -22,6 +22,7 @@
 
   <!-- Custom styles for this template-->
   <link href="../static/css/sb-admin.css" rel="stylesheet">
+  <script src="../static/js/constant.js"></script>
 
 </head>
 
@@ -743,7 +744,7 @@
       <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
       <div class="modal-footer">
         <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-        <a class="btn btn-primary" href="login.html">Logout</a>
+        <a class="btn btn-primary" onclick="doLocation('/user/login')">Logout</a>
       </div>
     </div>
   </div>
