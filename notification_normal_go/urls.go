@@ -27,12 +27,13 @@ func startWebService() {
 	http.HandleFunc("/user/downloadtool", DownloadToolPageHandle)
 
 	//data client
-	http.HandleFunc("/dataclient/index", IndexDataHandle)                          //font OK, back ok
-	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler)         //font OK, back ok
-	http.HandleFunc("/dataclient/availablecomputingpage", DataClientAvaCompHandle) //font OK, back ok
-	http.HandleFunc("/dataclient/adddata", DataClientAddDataHandler)               //font OK,
-	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler)
-	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)
+
+	http.HandleFunc("/dataclient/addmetadata", DataClientAddMetaDataHandler)
+	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler) //todo fontend
+	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)     //todo fontend
+	http.HandleFunc("/dataclient/index", IndexDataHandle)                                    //font OK, back ok
+	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler)                   //font OK, back ok
+	http.HandleFunc("/dataclient/availablecomputingpage", DataClientAvaCompHandle)           //font OK, back ok
 	http.HandleFunc("/dataclient/askcomputing", DataClientAskComputingHandler)
 	http.HandleFunc("/dataclient/deletedata", DataClientDeleteDataHandler)
 	http.HandleFunc("/dataclient/monitormetadata", DataClientMonitorMetaDataHandler)
@@ -49,11 +50,13 @@ func startWebService() {
 	http.HandleFunc("/modelclient/monitordataclient", ModelClientMonitorDataClientResultHandler)
 
 	//computing client
+
 	http.HandleFunc("/computingclient/index", IndexComputingHandle)                       //font OK, back ok
 	http.HandleFunc("/computingclient/walletpage", ComputingClientWalletPageHandler)      //font OK, back ok
 	http.HandleFunc("/computingclient/adddata", ComputingClientAddDataHandler)            //font OK,
 	http.HandleFunc("/computingclient/agreerequest", ComputingClientAggreeRequestHandler) //font OK,
-	http.HandleFunc("/computingclient/deletedata", ComputingClientDeleteDataHandler)
+	http.HandleFunc("/computingclient/deletedcomputing", ComputingClientDeleteComputingHashHandler)
+
 	http.HandleFunc("/computingclient/train", ComputingClientTrainHandler)
 	http.HandleFunc("/computingclient/uploadencrypteddata", ComputingClientUploadEncryptedDataHandler)
 	http.HandleFunc("/computingclient/monitordataclient", ComputingClientMonitorDataClientHandler)
@@ -68,7 +71,7 @@ func startWebService() {
 func init() {
 
 	//连接到sentry
-	raven.SetDSN("http://e8f71faeb2d043fd96058c57a481434c:b7afc614ef7149c997cb9b316d7f2eaf@212.64.85.208:9000/3")
+	raven.SetDSN("http://1b94cad9e5df4ef2b743b5fc43ad3e6f:4808eab3818b4ef1bc2f068d4278d207@212.64.85.208:9000/2")
 	//连接以太坊
 	utils.Connect2Eth()
 	//连接redis

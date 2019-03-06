@@ -19,6 +19,13 @@ type ModelClientPullDataReceipt struct {
 	From string
 }
 
+type DataClientAddMetaDataReceipt struct {
+
+	MetaDataIpfsHash string
+	From string
+
+}
+
 type DataAskComputingReceipt struct {
 	ComputingHash string
 	From string
@@ -49,6 +56,17 @@ var dataAskComputingChannel chan DataAskComputingReceipt
 var dataClientMonitorComputingAggreeChannel chan DataClientMonitorComputingAggreeReciept
 var dataClientIsAggreeChannel chan DataClientIsAggreeReceipt
 
+
+
+func InitChannels(){
+	mindedTransactionHashChannel = make(chan TransactionReceipt)
+	modelClientPullDataChannel = make(chan ModelClientPullDataReceipt)
+	dataAggreeChannel = make(chan DataAggreeReceipt)
+	dataAskComputingChannel = make(chan DataAskComputingReceipt)
+	dataClientMonitorComputingAggreeChannel = make(chan DataClientMonitorComputingAggreeReciept)
+	dataClientIsAggreeChannel = make(chan DataClientIsAggreeReceipt)
+
+}
 
 //为每次获取到处于pending状态的交易时，对其创建协程进行监听
 //当有交易被验证并封装到区块时，将其塞到mindedTransactionHashChannel里面
@@ -125,14 +143,8 @@ func dealNewTransactions(client *rpc.Client, filterId string, conn redis.Conn) {
 }
 
 
-func InitChannels(){
-	 mindedTransactionHashChannel = make(chan TransactionReceipt)
-	 modelClientPullDataChannel = make(chan ModelClientPullDataReceipt)
-	 dataAggreeChannel = make(chan DataAggreeReceipt)
-	 dataAskComputingChannel = make(chan DataAskComputingReceipt)
-	 dataClientMonitorComputingAggreeChannel = make(chan DataClientMonitorComputingAggreeReciept)
-	 dataClientIsAggreeChannel = make(chan DataClientIsAggreeReceipt)
-}
+
+
 
 func GetModelClientPullDataReceipt()(ModelClientPullDataReceipt){
 
@@ -192,18 +204,20 @@ func distributeTransactionByInput(from string,input string,conn redis.Conn){
 
 	splits:=strings.Split(input,":")
 	if splits[0] == "dadd"{ //数据方上传元数据
-		utils.Sadd2Redis(conn,"metadata",from,splits[1])
-	}else if splits[0] == "mpull"{//模型方请求数据方数据
+		utils.Sadd2Redis(conn,"metaDataHash", from, splits[1])
+	}else if splits[0] == "ddelete" {
+		utils.SremFromRedis(conn, "metaDataHash", from, splits[1])
+	}else if splits[0] == "mpull" {//模型方请求数据方数据
 		modelClientPullDataChannel <- ModelClientPullDataReceipt{Metadata: splits[1], From: from}
-	}else if splits[0] == "daggree"{//数据方同意模型方的请求
+	}else if splits[0] == "daggree" {//数据方同意模型方的请求
 		dataAggreeChannel <- DataAggreeReceipt{DataIpfsHash: splits[1], From: from}
-	}else if splits[0]=="madd"{ //模型方上传模型Hash
-		utils.Sadd2Redis(conn,"model",from,splits[1])
-	}else if splits[0]=="cadd"{ //运算方上传运算资源Hash
-		utils.Sadd2Redis(conn,"computing",from,splits[1])
-	}else if splits[0]== "mask"{ //模型方请求数据，根据上传的metaDataHash参数
+	}else if splits[0]=="madd" { //模型方上传模型Hash
+		utils.Sadd2Redis(conn,"modelHash",from,splits[1])
+	}else if splits[0]=="cadd" { //运算方上传运算资源Hash
+		utils.Sadd2Redis(conn,"computingHash",from,splits[1])
+	}else if splits[0]== "mask" { //模型方请求数据，根据上传的metaDataHash参数
 		//askDataClient(conn,splits[1])
-	}else if splits[0]== "dask"{ //数据方寻找合适的运算资源，根据上传的运算资源描述Hash
+	}else if splits[0]== "dask" { //数据方寻找合适的运算资源，根据上传的运算资源描述Hash
 		//askComputing(conn,splits[1])
 	}
 }
