@@ -1,17 +1,21 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"./utils"
 	"net/rpc"
-
+	"strings"
 )
 
 type MetaDataList struct{
@@ -618,7 +622,6 @@ func ModelClientCreateContractHandler(w http.ResponseWriter, request *http.Reque
 
 }
 
-
 // TODO: test
 func ModelClientUploadModelHandler(w http.ResponseWriter, request *http.Request) {
 
@@ -666,7 +669,7 @@ func ComputingClientMonitorDataClientHandler(w http.ResponseWriter, request *htt
 // TODO: test
 func ComputingClientAddDataHandler(w http.ResponseWriter, request *http.Request) {
 	/**
-		运算方将运算资源提交的以太坊
+		运算方将运算资源提交到以太坊
 		@param: computingIpfsHash string
 		@param: from string
 		@param: password string
