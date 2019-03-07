@@ -99,6 +99,9 @@ func matchComputing(splits []string) {
 func ListMetaData(w http.ResponseWriter, r *http.Request) {
 	//这里我们用json的格式返回所有data描述信息
 
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
 	conn := utils.Connect2Redis()
 	defer conn.Close()
 
@@ -110,8 +113,7 @@ func ListMetaData(w http.ResponseWriter, r *http.Request) {
 
 	js, _ := json.Marshal(metaDataList)
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
 
 	w.Write([]byte(string(js)))
 
@@ -121,6 +123,10 @@ func ListMetaData(w http.ResponseWriter, r *http.Request) {
 //TODO 返回运算资源描述信息列表，让DataClient挑选最佳运算资源
 func ListComputing(w http.ResponseWriter, r *http.Request) {
 	//这里我们用json的格式返回所有computing描述信息
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
 	conn := utils.Connect2Redis()
 	defer conn.Close()
 
@@ -132,8 +138,7 @@ func ListComputing(w http.ResponseWriter, r *http.Request) {
 
 	js, _ := json.Marshal(metaDataList)
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
 	w.Write([]byte(string(js)))
 
 }
@@ -541,15 +546,11 @@ func ModelClientAskDataHandler(w http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		log.Println("模型方使用metadata请求数据方的数据失败", err)
 		data = Data{Msg: "模型方使用metadata请求数据方的数据失败", Code: 500}
-		js, _ := json.Marshal(data)
-		w.Write(js)
-		return
 	} else {
 		data = Data{Msg: txHash, Code: 200}
-		js, _ := json.Marshal(data)
-		w.Write(js)
-		return
 	}
+	js, _ := json.Marshal(data)
+	w.Write(js)
 
 }
 
@@ -646,13 +647,12 @@ func DataClientAskComputingHandler(w http.ResponseWriter, request *http.Request)
 	if err != nil {
 		log.Println("数据方请求运算方的运算资源失败", err)
 		data = Data{Msg: "数据方请求运算方的运算资源失败", Code: 500}
-		js, _ := json.Marshal(data)
-		t.Execute(w, js)
+
 	} else {
 		data = Data{Msg: txHash, Code: 200}
-		js, _ := json.Marshal(data)
-		t.Execute(w, js)
 	}
+	js, _ := json.Marshal(data)
+	t.Execute(w, js)
 }
 
 // TODO: test
@@ -702,13 +702,13 @@ func DataClientDeleteDataHandler(w http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		log.Println("数据方删除metadDataHash失败", err)
 		data = Data{Msg: "数据方删除metadDataHash失败", Code: 500}
-		js, _ := json.Marshal(data)
-		t.Execute(w, js)
+
 	} else {
 		data = Data{Msg: txHash, Code: 200}
-		js, _ := json.Marshal(data)
-		t.Execute(w, js)
+
 	}
+	js, _ := json.Marshal(data)
+	t.Execute(w, js)
 
 }
 
@@ -823,13 +823,12 @@ func ComputingClientAddDataHandler(w http.ResponseWriter, request *http.Request)
 	if err != nil {
 		log.Println("运算方上传运算资源到区块链失败", err)
 		data = Data{Msg: "运算方上传运算资源到区块链失败", Code: 500}
-		js, _ := json.Marshal(data)
-		t.Execute(w, js)
+
 	} else {
 		data = Data{Msg: txHash, Code: 200}
-		js, _ := json.Marshal(data)
-		t.Execute(w, js)
 	}
+	js, _ := json.Marshal(data)
+	t.Execute(w, js)
 
 }
 
@@ -862,13 +861,11 @@ func ComputingClientAggreeRequestHandler(w http.ResponseWriter, request *http.Re
 	if err != nil {
 		log.Println("运算方的同意交易生成失败", err)
 		data = Data{Msg: "运算方的同意交易生成失败", Code: 500}
-		js, _ := json.Marshal(data)
-		t.Execute(w, js)
 	} else {
 		data = Data{Msg: txHash, Code: 200}
-		js, _ := json.Marshal(data)
-		t.Execute(w, js)
 	}
+	js, _ := json.Marshal(data)
+	t.Execute(w, js)
 }
 
 // TODO: test
@@ -894,14 +891,36 @@ func ComputingClientDeleteComputingHashHandler(w http.ResponseWriter, request *h
 	if err != nil {
 		log.Println("运算方删除computingHash失败", err)
 		data = Data{Msg: "运算方删除computingHash失败", Code: 500}
-		js, _ := json.Marshal(data)
-		w.Write(js)
 	} else {
 		data = Data{Msg: txHash, Code: 200}
-		js, _ := json.Marshal(data)
-		w.Write(js)
 	}
+	js, _ := json.Marshal(data)
+	w.Write(js)
 }
+
+
+
+func ComputingClientTrainReceiptHandler(w http.ResponseWriter, request *http.Request){
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	var data Data
+	_, err := http.Get("http://127.0.0.1:9091/dockerbackend/trainrequest")
+
+	if err != nil {
+		log.Println("与容器后端通信失败", err)
+		data = Data{Msg: "与容器后端通信失败", Code: 500}
+
+	}else{
+
+		data = Data{Msg: "接受到训练请求", Code: 200}
+
+	}
+	js, _ := json.Marshal(data)
+	w.Write(js)
+
+}
+
 
 // TODO: test
 func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
@@ -909,8 +928,7 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 	/**
 	调用容器后端接口训练模型
 	*/
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
 
 	var data Data
 
@@ -930,15 +948,15 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		log.Println("运算方删除computingHash失败", err)
 		data = Data{Msg: "运算方删除computingHash失败", Code: 500}
-		js, _ := json.Marshal(data)
-		w.Write(js)
+
 	} else {
 		result, _:=ioutil.ReadAll(resp.Body)
 		resp.Body.Close()
 		data = Data{Msg: string(result), Code: 200}
-		js, _ := json.Marshal(data)
-		w.Write(js)
+
 	}
+	js, _ := json.Marshal(data)
+	w.Write(js)
 
 }
 
@@ -952,6 +970,9 @@ func ComputingClientUploadEncryptedDataHandler(w http.ResponseWriter, request *h
 	//t, _ = template.ParseFiles("template/indexcomputer.html")
 }
 
+
+
+
 // TODO: test
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
@@ -964,3 +985,5 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	t.Execute(w, nil)
 }
+
+
