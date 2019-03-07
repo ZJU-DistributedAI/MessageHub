@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -42,13 +43,35 @@ func DownloadFile(hash string, filename string) {
 
 func MakeDirectory(dirname string)(path string){
 
-	cmd := exec.Command("mkdir","-p", "C:\Users\\huyifan01\\Documents\\MachineLearning\\"+dirname)
+	cmd := exec.Command("mkdir","-p", "C:\\Users\\huyifan01\\Documents\\MachineLearning\\"+dirname)
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println(err)
 		return ""
 	}
-	return "C:\Users\\huyifan01\\Documents\\MachineLearning\\"+dirname+"\\"
+	return "C:\\Users\\huyifan01\\Documents\\MachineLearning\\"+dirname+"\\"
+}
+
+
+func ReadFile(filepath string)(string){
+
+	f, err := os.Open(filepath)
+
+	if err != nil{
+		log.Printf("打开文件失败: ", err)
+	}
+	defer f.Close()
+
+	r := bufio.NewReader(f)
+
+	b, _, err := r.ReadLine()
+
+	if err != io.EOF {
+		log.Println("读取文件失败: ",err)
+	}
+
+	return string(b)
+
 }
 
 
