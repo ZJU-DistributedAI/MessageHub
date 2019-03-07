@@ -251,7 +251,6 @@ func CheckLoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 func DataClientAvaCompHandle(w http.ResponseWriter, r *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -267,7 +266,7 @@ func DataClientAvaCompHandle(w http.ResponseWriter, r *http.Request) {
 	}
 	t.Execute(w, "")
 }
-// todo test
+
 func DataClientModelAskHandle(w http.ResponseWriter, r *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -283,8 +282,6 @@ func DataClientModelAskHandle(w http.ResponseWriter, r *http.Request) {
 	}
 	t.Execute(w, "")
 }
-
-
 
 func ModelClientAvaDataHandle(w http.ResponseWriter, r *http.Request) {
 	// header
@@ -374,7 +371,6 @@ func ComputingClientTrainPageHandle(w http.ResponseWriter, request *http.Request
 	t.Execute(w, nil)
 }
 
-
 func CreateWalletHandler(w http.ResponseWriter, r *http.Request) {
 
 	/**
@@ -416,18 +412,21 @@ func DataClientWalletPageHandler(w http.ResponseWriter, request *http.Request) {
 	t, _ := template.ParseFiles("template/dataclientwallet.html")
 	t.Execute(w, nil)
 }
+
 func ModelClientWalletPageHandler(w http.ResponseWriter, request *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	t, _ := template.ParseFiles("template/modelclientwallet.html")
 	t.Execute(w, nil)
 }
+
 func ComputingClientWalletPageHandler(w http.ResponseWriter, request *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	t, _ := template.ParseFiles("template/computingclientwallet.html")
 	t.Execute(w, nil)
 }
+
 func ComputingClientDataAskHandle(w http.ResponseWriter, request *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
@@ -543,7 +542,7 @@ func DataClientAggreeModelClientHandler(w http.ResponseWriter, request *http.Req
 	w.Write(js)
 }
 
-// TODO: test
+// TODO: test SendTransaction
 func ModelClientAskDataHandler(w http.ResponseWriter, request *http.Request) {
 	/**
 	模型方使用metadata请求数据方的数据
@@ -558,31 +557,28 @@ func ModelClientAskDataHandler(w http.ResponseWriter, request *http.Request) {
 	from := request.PostFormValue("from")
 	metaDataInfo := request.PostFormValue("metaDataInfo")
 
-	if password == "" || metaDataInfo == "" {
+	if password == "" || metaDataInfo == ""{
 		data = Data{Msg: "参数不完全", Code: 500}
-		js, _ := json.Marshal(data)
-		w.Write(js)
-		return
-	}
-
-	value := "mpull:" + metaDataInfo
-	to := common.HexToAddress("")
-	//发起交易到以太坊
-	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
-		"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
-
-	conn := utils.Connect2Eth()
-	txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
-
-	if err != nil {
-		log.Println("模型方使用metadata请求数据方的数据失败", err)
-		data = Data{Msg: "模型方使用metadata请求数据方的数据失败", Code: 500}
 	} else {
-		data = Data{Msg: txHash, Code: 200}
+		value := "mpull:" + metaDataInfo
+		to := common.HexToAddress("")
+		//发起交易到以太坊
+		message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
+			"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
+
+		conn := utils.Connect2Eth()
+		txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
+
+		if err != nil {
+			log.Println("模型方使用metadata请求数据方的数据失败", err)
+			data = Data{Msg: "模型方使用metadata请求数据方的数据失败", Code: 500}
+		} else {
+			data = Data{Msg: txHash, Code: 200}
+		}
 	}
+	// response
 	js, _ := json.Marshal(data)
 	w.Write(js)
-
 }
 
 // TODO: test
@@ -650,7 +646,7 @@ func DataClientPushDataToComputingHandler(w http.ResponseWriter, request *http.R
 	w.Write(js)
 }
 
-// TODO: test
+// TODO: test SendTransaction
 func DataClientAskComputingHandler(w http.ResponseWriter, request *http.Request) {
 	/**
 	数据方请求运算方的资源
@@ -658,32 +654,38 @@ func DataClientAskComputingHandler(w http.ResponseWriter, request *http.Request)
 	@param: computingHash string 运算方资源的IpfsHash
 	@param: from string  数据方的账户
 	*/
+
+	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-	var t *template.Template
+
+	// handle
 	var data Data
-	t, _ = template.ParseFiles("template/indexdata.html")
 	password := request.PostFormValue("password")
 	computingHash := request.PostFormValue("computingHash")
 	from := request.PostFormValue("from")
+	modelAddress := request.PostFormValue("modelAddress")
 
-	value := "dcomputing:" + computingHash
-	to := common.HexToAddress("")
-	//发起交易到以太坊
-	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
-		"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
-	conn := utils.Connect2Eth()
-	txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
-
-	if err != nil {
-		log.Println("数据方请求运算方的运算资源失败", err)
-		data = Data{Msg: "数据方请求运算方的运算资源失败", Code: 500}
-
+	if password == "" || computingHash == "" || modelAddress == "" {
+		data = Data{Msg: "参数不完全", Code: 500}
 	} else {
-		data = Data{Msg: txHash, Code: 200}
+		value := "dcomputing:" + computingHash + ":" + modelAddress
+		to := common.HexToAddress("")
+		//发起交易到以太坊
+		message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
+			"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
+		conn := utils.Connect2Eth()
+		txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
+
+		if err != nil {
+			log.Println("数据方请求运算方的运算资源失败", err)
+			data = Data{Msg: "数据方请求运算方的运算资源失败", Code: 500}
+		} else {
+			data = Data{Msg: txHash, Code: 200}
+		}
 	}
 	js, _ := json.Marshal(data)
-	t.Execute(w, js)
+	w.Write(js)
 }
 
 // TODO: test
@@ -693,54 +695,55 @@ func DataClientMonitorComputingAggreeHandler(w http.ResponseWriter, request *htt
 	ajax长连接
 	数据方监听是否有运算方的同意交易
 	*/
+
+	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	log.Println("收到请求DataClientMonitorComputingAggreeHandler")
-	var t *template.Template
+
+	// handle
 	var data Data
-	t, _ = template.ParseFiles("template/indexdata.html")
-
 	dataClientMonitorComputingAggreeReceipt := GetDataClientMonitorComputingAggreeReceipt()
-
 	data = Data{Msg: dataClientMonitorComputingAggreeReceipt.ComputingHash + ":" + dataClientMonitorComputingAggreeReceipt.From,
 		Code: 200}
-	js, _ := json.Marshal(data)
-	t.Execute(w, js)
 
+	// response
+	js, _ := json.Marshal(data)
+	w.Write(js)
 }
 
-// TODO: test
+// TODO: test SendTransaction
 func DataClientDeleteDataHandler(w http.ResponseWriter, request *http.Request) {
-
+	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
-	var t *template.Template
+	// handle
 	var data Data
-	t, _ = template.ParseFiles("template/indexdata.html")
 	password := request.PostFormValue("password")
 	metadataHash := request.PostFormValue("metadataHash")
 	from := request.PostFormValue("from")
 
-	value := "ddelete:" + metadataHash
-	to := common.HexToAddress("")
-	//发起交易到以太坊
-	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
-		"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
-	conn := utils.Connect2Eth()
-	txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
-
-	if err != nil {
-		log.Println("数据方删除metadDataHash失败", err)
-		data = Data{Msg: "数据方删除metadDataHash失败", Code: 500}
-
+	if password == "" || metadataHash == "" {
+		data = Data{Msg: "参数不完全", Code: 500}
 	} else {
-		data = Data{Msg: txHash, Code: 200}
+		value := "ddelete:" + metadataHash
+		to := common.HexToAddress("")
+		//发起交易到以太坊
+		message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
+			"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
+		conn := utils.Connect2Eth()
+		txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
 
+		if err != nil {
+			log.Println("数据方删除metadDataHash失败", err)
+			data = Data{Msg: "数据方删除metadDataHash失败", Code: 500}
+		} else {
+			data = Data{Msg: txHash, Code: 200}
+		}
 	}
 	js, _ := json.Marshal(data)
-	t.Execute(w, js)
-
+	w.Write(js)
 }
 
 // TODO: test
@@ -751,10 +754,10 @@ func ModelClientCreateContractHandler(w http.ResponseWriter, request *http.Reque
 	//var t *template.Template
 	//var data Data
 	//t, _ = template.ParseFiles("template/indexmodel.html")
-
 }
 
-// TODO: test
+
+// TODO: test SendTransaction
 func ModelClientUploadModelHandler(w http.ResponseWriter, request *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -766,12 +769,14 @@ func ModelClientUploadModelHandler(w http.ResponseWriter, request *http.Request)
 	password := request.PostFormValue("password")
 	from := request.PostFormValue("from")
 	modelIpfsHash := request.PostFormValue("modelIpfsHash")
+	contractHash := request.PostFormValue("contractHash")
+
 	// fmt.Println(password, from, metaDataIpfsHash)
 
 	if password == "" || modelIpfsHash == "" {
 		data = Data{Msg: "参数不完全", Code: 201}
 	} else {
-		value := "madd:" + modelIpfsHash
+		value := "madd:" + modelIpfsHash + ":" + contractHash
 		to := common.HexToAddress("")
 
 		message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
@@ -808,23 +813,21 @@ func ComputingClientMonitorDataClientHandler(w http.ResponseWriter, request *htt
 	ajax长连接
 	运算方监听是否有数据方的运算资源请求
 	*/
+	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-	var t *template.Template
+
+	// handle
 	var data Data
-	t, _ = template.ParseFiles("template/indexcomputer.html")
-
 	dataAskComputingReceipt := GetDataAskComputingReceipt()
-
 	data = Data{Msg: dataAskComputingReceipt.ComputingHash + ":" + dataAskComputingReceipt.From, Code: 200}
 
+	// response
 	js, _ := json.Marshal(data)
-
-	t.Execute(w, js)
-
+	w.Write(js)
 }
 
-// TODO: test
+// TODO: test SendTransaction
 func ComputingClientAddDataHandler(w http.ResponseWriter, request *http.Request) {
 	/**
 	运算方将运算资源提交的以太坊
@@ -832,38 +835,44 @@ func ComputingClientAddDataHandler(w http.ResponseWriter, request *http.Request)
 	@param: from string
 	@param: password string
 	*/
+
+	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-	var t *template.Template
-	var data Data
-	t, _ = template.ParseFiles("template/indexcomputer.html")
 
+	// handle
+	var data Data
 	computingIpfsHash := request.PostFormValue("computingIpfsHash")
 	from := request.PostFormValue("from")
 	password := request.PostFormValue("password")
 
-	value := "cadd:" + computingIpfsHash
-	to := common.HexToAddress("")
-	//发起交易到以太坊
-	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
-		"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
-
-	conn := utils.Connect2Eth()
-	txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
-
-	if err != nil {
-		log.Println("运算方上传运算资源到区块链失败", err)
-		data = Data{Msg: "运算方上传运算资源到区块链失败", Code: 500}
-
+	if computingIpfsHash == "" {
+		data = Data{Msg: "参数不完全", Code: 201}
 	} else {
-		data = Data{Msg: txHash, Code: 200}
-	}
-	js, _ := json.Marshal(data)
-	t.Execute(w, js)
+		value := "cadd:" + computingIpfsHash
+		to := common.HexToAddress("")
+		//发起交易到以太坊
+		message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
+			"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
 
+		conn := utils.Connect2Eth()
+		txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
+
+		if err != nil {
+			log.Println("运算方上传运算资源到区块链失败", err)
+			data = Data{Msg: "运算方上传运算资源到区块链失败", Code: 500}
+
+		} else {
+			data = Data{Msg: txHash, Code: 200}
+		}
+	}
+
+	// response
+	js, _ := json.Marshal(data)
+	w.Write(js)
 }
 
-// TODO: test
+// TODO: test SendTransaction
 func ComputingClientAggreeRequestHandler(w http.ResponseWriter, request *http.Request) {
 	/**
 	运算方同意数据方的请求
@@ -871,88 +880,104 @@ func ComputingClientAggreeRequestHandler(w http.ResponseWriter, request *http.Re
 	@param: from string
 	@param: password string
 	*/
+
+	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-	var t *template.Template
-	var data Data
-	t, _ = template.ParseFiles("template/indexcomputer.html")
 
+	// model address
+	var data Data
 	from := request.PostFormValue("from")
 	password := request.PostFormValue("password")
+	dataAddress := request.PostFormValue("dataAddress")
+	modelAddress := request.PostFormValue("modelAddress")
 
-	value := "caggree:"
-	to := common.HexToAddress("")
-	//发起交易到以太坊
-	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
-		"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
-
-	conn := utils.Connect2Eth()
-	txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
-
-	if err != nil {
-		log.Println("运算方的同意交易生成失败", err)
-		data = Data{Msg: "运算方的同意交易生成失败", Code: 500}
+	if dataAddress == "" || modelAddress == "" {
+		data = Data{Msg: "参数不完全", Code: 201}
 	} else {
-		data = Data{Msg: txHash, Code: 200}
+		value := "caggree:" + dataAddress + ":" + modelAddress
+		to := common.HexToAddress("")
+		//发起交易到以太坊
+		message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
+			"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
+		conn := utils.Connect2Eth()
+		txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
+
+		if err != nil {
+			log.Println("运算方的同意交易生成失败", err)
+			data = Data{Msg: "运算方的同意交易生成失败", Code: 500}
+		} else {
+			data = Data{Msg: txHash, Code: 200}
+		}
 	}
+
+	// response
 	js, _ := json.Marshal(data)
-	t.Execute(w, js)
+	w.Write(js)
 }
 
-// TODO: test
-
+// TODO: test SendTransaction
 func ComputingClientDeleteComputingHashHandler(w http.ResponseWriter, request *http.Request) {
+	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
+	// handle
 	var data Data
-
 	password := request.PostFormValue("password")
 	computingHash := request.PostFormValue("computinghash")
 	from := request.PostFormValue("from")
-
-	value := "ddelete:" + computingHash
-	to := common.HexToAddress("")
-	//发起交易到以太坊
-	message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
-		"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
-	conn := utils.Connect2Eth()
-	txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
-
-	if err != nil {
-		log.Println("运算方删除computingHash失败", err)
-		data = Data{Msg: "运算方删除computingHash失败", Code: 500}
+	if computingHash == "" {
+		data = Data{Msg: "参数不完全", Code: 201}
 	} else {
-		data = Data{Msg: txHash, Code: 200}
+		value := "ddelete:" + computingHash
+		to := common.HexToAddress("")
+		//发起交易到以太坊
+		message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
+			"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
+		conn := utils.Connect2Eth()
+		txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
+
+		if err != nil {
+			log.Println("运算方删除computingHash失败", err)
+			data = Data{Msg: "运算方删除computingHash失败", Code: 500}
+		} else {
+			data = Data{Msg: txHash, Code: 200}
+		}
 	}
+
+	// response
 	js, _ := json.Marshal(data)
 	w.Write(js)
 }
 
+// todo test
 func ComputingClientTrainReceiptHandler(w http.ResponseWriter, request *http.Request){
-
+	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+	// handle
 	var data Data
 	_, err := http.Get("http://127.0.0.1:9091/dockerbackend/trainrequest")
-
 	if err != nil {
 		log.Println("与容器后端通信失败", err)
 		data = Data{Msg: "与容器后端通信失败", Code: 500}
-
 	}else{
-
 		data = Data{Msg: "接受到训练请求", Code: 200}
-
 	}
+
+	//response
 	js, _ := json.Marshal(data)
 	w.Write(js)
-
 }
 
 
 // TODO: test
 func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
+	// header
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	/**
 	调用容器后端接口训练模型
@@ -970,20 +995,17 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 	//utils.DownloadFile(dataIpfsHash, path+"data_"+dataIpfsHash)
 
 	_, err := http.Get("http://127.0.0.1:9091/dockerbackend/starttrain")
-
 	if err != nil {
 		log.Println("运算方删除computingHash失败", err)
 		data = Data{Msg: "运算方删除computingHash失败", Code: 500}
 	} else {
-
 		result := utils.ReadFile("//root//MachineLearning//parameters.json")
-
 		data = Data{Msg: result, Code: 200}
-
 	}
+
+	// response
 	js, _ := json.Marshal(data)
 	w.Write(js)
-
 }
 
 
@@ -997,15 +1019,10 @@ func ComputingClientUploadEncryptedDataHandler(w http.ResponseWriter, request *h
 	//t, _ = template.ParseFiles("template/indexcomputer.html")
 }
 
-
-
-
-// TODO: test
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
 		http.Redirect(w, r, "/login/index", http.StatusFound)
 	}
-
 	t, err := template.ParseFiles("template/404.html")
 	if err != nil {
 		log.Println(err)
