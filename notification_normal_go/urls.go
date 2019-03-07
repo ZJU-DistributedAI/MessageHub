@@ -58,6 +58,7 @@ func startWebService() {
 	http.HandleFunc("/computingclient/agreerequest", ComputingClientAggreeRequestHandler)           //font OK,
 	http.HandleFunc("/computingclient/deletedcomputing", ComputingClientDeleteComputingHashHandler) //font OK,
 
+	http.HandleFunc("/computingclient/trainrequest", ComputingClientTrainReceiptHandler)
 	http.HandleFunc("/computingclient/train", ComputingClientTrainHandler)
 	http.HandleFunc("/computingclient/uploadencrypteddata", ComputingClientUploadEncryptedDataHandler)
 	http.HandleFunc("/computingclient/monitordataclient", ComputingClientMonitorDataClientHandler)
@@ -86,8 +87,7 @@ func init() {
 
 func main() {
 
-	//监听Model Client和Data Client传过来的http请求
-	//_:= handler.Handlers{conn: utils.Connect2Eth()}
+
 	startWebService()
 
 }
