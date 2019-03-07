@@ -3,10 +3,15 @@ package utils
 import (
 	"bufio"
 	"encoding/hex"
+	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"strings"
 )
+
+
+var myMap map[string]string
 
 func DecryptTransactionInput(input string)(string){
 
@@ -25,7 +30,28 @@ func EncryptTransactionInput(input string)string{
 	return test
 }
 
-var myMap map[string]string
+func DownloadFile(hash string, filename string) {
+	myhash := strings.Split(hash, "\000")
+	finalhash := myhash[0]
+	cmd := exec.Command("ipfs", "get", finalhash, "-o="+filename)
+	err := cmd.Run()
+	if err != nil {
+		fmt.Print(err)
+	}
+}
+
+func MakeDirectory(dirname string)(path string){
+
+	cmd := exec.Command("mkdir","-p", "C:\Users\\huyifan01\\Documents\\MachineLearning\\"+dirname)
+	err := cmd.Run()
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	return "C:\Users\\huyifan01\\Documents\\MachineLearning\\"+dirname+"\\"
+}
+
+
 func InitConfig(path string) map[string]string {
 	//初始化
 

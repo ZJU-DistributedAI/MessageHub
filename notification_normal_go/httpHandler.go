@@ -903,18 +903,42 @@ func ComputingClientDeleteComputingHashHandler(w http.ResponseWriter, request *h
 	}
 }
 
-// TODO: waiting docker API
+// TODO: test
 func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 
 	/**
 	调用容器后端接口训练模型
 	*/
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-	//var t *template.Template
-	//var data Data
-	//t, _ = template.ParseFiles("template/indexcomputer.html")
+
+	var data Data
+
+
+	modelIpfsHash := request.PostFormValue("modelIpfsHash")
+	dataIpfsHash := request.PostFormValue("dataIpfshash")
+	modelFrom := request.PostFormValue("modelFrom")
+	dataFrom := request.PostFormValue("dataFrom")
+
+
+	path := utils.MakeDirectory("train_"+modelFrom+"_"+dataFrom)
+	utils.DownloadFile(modelIpfsHash, path+"model_"+modelIpfsHash)
+	utils.DownloadFile(dataIpfsHash, path+"data_"+dataIpfsHash)
+
+	resp, err := http.Get("http://127.0.0.1:9091/dockerbackend/starttrain")
+
+	if err != nil {
+		log.Println("运算方删除computingHash失败", err)
+		data = Data{Msg: "运算方删除computingHash失败", Code: 500}
+		js, _ := json.Marshal(data)
+		w.Write(js)
+	} else {
+		result, _:=ioutil.ReadAll(resp.Body)
+		resp.Body.Close()
+		data = Data{Msg: string(result), Code: 200}
+		js, _ := json.Marshal(data)
+		w.Write(js)
+	}
 
 }
 
