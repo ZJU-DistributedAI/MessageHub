@@ -42,14 +42,14 @@ func matchData(splits []string) {
 	//请求数据方询问是否同意吧最佳数据的Hash给模型方
 	resp, err := http.Get("url?data_hash=" + metaData)
 	if err != nil {
-		log.Fatal("请求数据方出错：%v", err)
+		log.Println("请求数据方出错：%v", err)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal("读取response数据失败：%v", err)
+		log.Println("读取response数据失败：%v", err)
 	}
 
 	//TODO 万一最佳数据的提供方不允许提供最佳数据则需要一个机制来选择不是最佳的数据
@@ -73,14 +73,14 @@ func matchComputing(splits []string) {
 	//请求运算方询问是否同意运算资源Hash给区块链
 	resp, err := http.Get("url?computing_meta_hash=" + computingMetaHash)
 	if err != nil {
-		log.Fatal("请求运算方出错：%v", err)
+		log.Println("请求运算方出错：%v", err)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal("读取response数据失败：%v", err)
+		log.Println("读取response数据失败：%v", err)
 	}
 
 	//TODO 万一最佳数据的提供方不允许提供最佳数据则需要一个机制来选择不是最佳的数据
@@ -177,20 +177,21 @@ func ListAskedComputing(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(string(js)))
 }
 
-func IndexHandler(w http.ResponseWriter, r *http.Request) {
-
-	// view
-	t, err := template.ParseFiles("template/index.html")
-	if err != nil {
-		utils.ErrorPanic(err)
-	}
-
-	// header
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-	// body
-	t.Execute(w, nil)
-}
+//
+//func IndexHandler(w http.ResponseWriter, r *http.Request) {
+//
+//	// view
+//	t, err := template.ParseFiles("template/index.html")
+//	if err != nil {
+//		utils.ErrorPanic(err)
+//	}
+//
+//	// header
+//	w.Header().Set("Access-Control-Allow-Origin", "*")
+//	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+//	// body
+//	t.Execute(w, nil)
+//}
 
 func IndexDataHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -254,7 +255,7 @@ func DataClientAvaCompHandle(w http.ResponseWriter, r *http.Request) {
 	// login view
 	var t *template.Template
 	var err error
-	t, err = template.ParseFiles("template/data_available_computing.html")
+	t, err = template.ParseFiles("template/data_computing_agree.html")
 	if err != nil {
 		utils.ErrorPanic(err)
 		return
@@ -279,6 +280,37 @@ func ModelClientAvaDataHandle(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, "")
 }
 
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	// header
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+	// login view
+	var t *template.Template
+	var err error
+	t, err = template.ParseFiles("template/register.html")
+	if err != nil {
+		utils.ErrorPanic(err)
+		return
+	}
+	t.Execute(w, "")
+}
+
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	// header
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+	// login view
+	var t *template.Template
+	var err error
+	t, err = template.ParseFiles("template/home.html")
+	if err != nil {
+		utils.ErrorPanic(err)
+		return
+	}
+	t.Execute(w, "")
+}
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -484,9 +516,7 @@ func ModelClientAskDataHandler(w http.ResponseWriter, request *http.Request) {
 	*/
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-	var t *template.Template
 	var data Data
-	t, _ = template.ParseFiles("template/indexdata.html")
 
 	password := request.PostFormValue("password")
 	from := request.PostFormValue("from")
@@ -495,7 +525,8 @@ func ModelClientAskDataHandler(w http.ResponseWriter, request *http.Request) {
 	if password == "" || metaDataInfo == "" {
 		data = Data{Msg: "参数不完全", Code: 500}
 		js, _ := json.Marshal(data)
-		t.Execute(w, js)
+		w.Write(js)
+		return
 	}
 
 	value := "mpull:" + metaDataInfo
@@ -508,14 +539,16 @@ func ModelClientAskDataHandler(w http.ResponseWriter, request *http.Request) {
 	txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
 
 	if err != nil {
-		log.Fatal("模型方使用metadata请求数据方的数据失败", err)
+		log.Println("模型方使用metadata请求数据方的数据失败", err)
 		data = Data{Msg: "模型方使用metadata请求数据方的数据失败", Code: 500}
 		js, _ := json.Marshal(data)
-		t.Execute(w, js)
+		w.Write(js)
+		return
 	} else {
 		data = Data{Msg: txHash, Code: 200}
 		js, _ := json.Marshal(data)
-		t.Execute(w, js)
+		w.Write(js)
+		return
 	}
 
 }
@@ -611,7 +644,7 @@ func DataClientAskComputingHandler(w http.ResponseWriter, request *http.Request)
 	txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
 
 	if err != nil {
-		log.Fatal("数据方请求运算方的运算资源失败", err)
+		log.Println("数据方请求运算方的运算资源失败", err)
 		data = Data{Msg: "数据方请求运算方的运算资源失败", Code: 500}
 		js, _ := json.Marshal(data)
 		t.Execute(w, js)
@@ -631,6 +664,7 @@ func DataClientMonitorComputingAggreeHandler(w http.ResponseWriter, request *htt
 	*/
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	log.Println("收到请求DataClientMonitorComputingAggreeHandler")
 	var t *template.Template
 	var data Data
 	t, _ = template.ParseFiles("template/indexdata.html")
@@ -666,7 +700,7 @@ func DataClientDeleteDataHandler(w http.ResponseWriter, request *http.Request) {
 	txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
 
 	if err != nil {
-		log.Fatal("数据方删除metadDataHash失败", err)
+		log.Println("数据方删除metadDataHash失败", err)
 		data = Data{Msg: "数据方删除metadDataHash失败", Code: 500}
 		js, _ := json.Marshal(data)
 		t.Execute(w, js)
@@ -787,7 +821,7 @@ func ComputingClientAddDataHandler(w http.ResponseWriter, request *http.Request)
 	txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
 
 	if err != nil {
-		log.Fatal("运算方上传运算资源到区块链失败", err)
+		log.Println("运算方上传运算资源到区块链失败", err)
 		data = Data{Msg: "运算方上传运算资源到区块链失败", Code: 500}
 		js, _ := json.Marshal(data)
 		t.Execute(w, js)
@@ -826,7 +860,7 @@ func ComputingClientAggreeRequestHandler(w http.ResponseWriter, request *http.Re
 	txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
 
 	if err != nil {
-		log.Fatal("运算方的同意交易生成失败", err)
+		log.Println("运算方的同意交易生成失败", err)
 		data = Data{Msg: "运算方的同意交易生成失败", Code: 500}
 		js, _ := json.Marshal(data)
 		t.Execute(w, js)
@@ -858,7 +892,7 @@ func ComputingClientDeleteComputingHashHandler(w http.ResponseWriter, request *h
 	txHash, err := utils.SendTransaction(conn, &message, password, context.TODO())
 
 	if err != nil {
-		log.Fatal("运算方删除computingHash失败", err)
+		log.Println("运算方删除computingHash失败", err)
 		data = Data{Msg: "运算方删除computingHash失败", Code: 500}
 		js, _ := json.Marshal(data)
 		w.Write(js)

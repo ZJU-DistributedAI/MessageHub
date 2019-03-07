@@ -45,7 +45,7 @@
           </div>
           <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
             <div class="col-12 col-md-3 mx-auto">
-              <a class="btn btn-block btn-lg btn-primary" href="register.html">Sign up!</a>
+              <a class="btn btn-block btn-lg btn-primary" onclick="doLocation('/user/register')">Sign up!</a>
             </div>
           </div>
         </div>
@@ -212,7 +212,14 @@
     <!-- Bootstrap core JavaScript -->
     <script src="../static/vendor/jquery/jquery.min.js"></script>
     <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+      var interfaceAddress = getAddress();
+      function doLocation(url)
+      {
+        window.location.href =interfaceAddress+ url;
+      }
 
+    </script>
   </body>
 
 </html>

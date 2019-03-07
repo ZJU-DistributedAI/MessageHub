@@ -150,12 +150,12 @@
               <div class="form-group">
                   <div class="form-label-group">
                       <input name="add_from" type="text" id="add_from" class="form-control" required="required" autofocus="autofocus" >
-                      <label for="add_from">wallet: 运算方钱包地址 </label>
+                      <label for="add_from">wallet: 运算方的钱包地址 </label>
                   </div>
                   </br>
                     <div class="form-label-group">
                       <input name="add_password" type="text" id="add_password" class="form-control" required="required" autofocus="autofocus" >
-                      <label for="add_password">password: 运算方钱包密码 </label>
+                      <label for="add_password">password: 运算方的钱包密码 </label>
                     </div>
                   </br>
                 <div class="form-label-group">
@@ -206,12 +206,12 @@
               <div class="form-group">
                 <div class="form-label-group">
                   <input name="del_from" type="text" id="del_from" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="del_from">wallet: 运算方钱包地址</label>
+                  <label for="del_from">wallet: 运算方的钱包地址</label>
                 </div>
                   </br>
                   <div class="form-label-group">
                       <input name="del_password" type="text" id="del_password" class="form-control" required="required" autofocus="autofocus" >
-                      <label for="del_password">password: 运算方钱包密码</label>
+                      <label for="del_password">password: 运算方的钱包密码</label>
                   </div>
 
                   </br>
@@ -408,11 +408,12 @@
                       +"&computinghash="+$('#del_hash').val(),
 
                   success : function(data){
-                      console.log(data);// for name use data.data.name
-                      alert("操作成功");
+                      console.log(data);
+                      var jsonObj = $.parseJSON(data);
+                      alert(jsonObj.msg);
                   },
                   fail : function (data) {
-                      console.log(data);// for name use data.data.name
+                      console.log(data);
                       alert("请求失败");
                   }
               });
@@ -428,11 +429,12 @@
                       +"&public_key="+$('#train_public_key').val(),
 
                   success : function(data){
-                      console.log(data);// for name use data.data.name
-                      alert("操作成功");
+                      console.log(data);
+                      var jsonObj = $.parseJSON(data);
+                      alert(jsonObj.msg);
                   },
                   fail : function (data) {
-                      console.log(data);// for name use data.data.name
+                      console.log(data);
                       alert("请求失败");
                   }
               });
@@ -448,11 +450,12 @@
                       +"&request_id="+$('#upload_request_id').val()+"&res_hash="+$('#upload_res_hash').val(),
 
                   success : function(data){
-                      console.log(data);// for name use data.data.name
-                      alert("操作成功");
+                      console.log(data);
+                      var jsonObj = $.parseJSON(data);
+                      alert(jsonObj.msg);
                   },
                   fail : function (data) {
-                      console.log(data);// for name use data.data.name
+                      console.log(data);
                       alert("请求失败");
                   }
               });

@@ -29,7 +29,7 @@
 
     <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 
-        <a class="navbar-brand mr-1" href="indexmodel.html">Data Client</a>
+        <a class="navbar-brand mr-1" href="/dataclient/index">Data Client</a>
 
       <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
         <i class="fas fa-bars"></i>
@@ -248,28 +248,34 @@
     {
       window.location.href =interfaceAddress+ url;
     }
-    //
-    // $(window).on('load', function() {
-    //     console.log("hello");
-    //
-    //     $.ajax({
-    //         url:'http://127.0.0.1:3000/user/createwallet',
-    //         type:'post',
-    //         dataType : 'text', // use json instead of text
-    //         data: "",
-    //         success : function(data){
-    //             console.log(data);// for name use data.data.name
-    //             alert("操作成功");
-    //             ShowingData(data) ;
-    //
-    //         },
-    //         fail : function (data) {
-    //             console.log(data);// for name use data.data.name
-    //             alert("请求失败");
-    //         }
-    //     });
-    //
-    // });
+    //前端Ajax持续调用服务端，称为Ajax轮询技术
+
+    var gettingComputingAgree = {
+
+      url:interfaceAddress+'/data/client/monitorcomputingaggree',
+      type:'post',
+      dataType : 'text', // use json instead of text
+      data: "",
+
+      success:function(res) {
+
+        alert.log(res);
+
+        $.ajax(gettingComputingAgree); //关键在这里，回调函数内再次请求Ajax
+
+      },
+      //当请求时间过长（默认为60秒），就再次调用ajax长轮询
+      error:function(res){
+
+        alert.log(res);
+        $.ajax($gettingComputingAgree);
+      }
+
+    };
+
+    $.ajax(getting);
+
+
 
     function ShowingData(json){
  

@@ -13,13 +13,14 @@ func startWebService() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.Handle("./template", http.FileServer(http.Dir("template")))
 
-	http.HandleFunc("/", LoginHandler)
+	http.HandleFunc("/", HomeHandler)
 	//http.HandleFunc("/listWholeMetaData", ListMetaData)
 	//http.HandleFunc("/listWholeComputing", ListComputing)
 	//http.HandleFunc("/listAskedMetaData", ListAskedMetaData)
 	//http.HandleFunc("/listAskedComputing", ListAskedComputing)
 
 	//user
+	http.HandleFunc("/user/register", RegisterHandler)
 	http.HandleFunc("/user/login", LoginHandler)
 	http.HandleFunc("/user/checklogin", CheckLoginHandler)
 	http.HandleFunc("/user/createwallet", CreateWalletHandler)
