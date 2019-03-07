@@ -898,6 +898,13 @@ func ComputingClientDeleteComputingHashHandler(w http.ResponseWriter, request *h
 	w.Write(js)
 }
 
+func ComputingClientTrainPageHandle(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	t, _ := template.ParseFiles("template/computing_train.html")
+	t.Execute(w, nil)
+}
+
 
 
 func ComputingClientTrainReceiptHandler(w http.ResponseWriter, request *http.Request){
@@ -956,6 +963,7 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 	w.Write(js)
 
 }
+
 
 // TODO: test
 func ComputingClientUploadEncryptedDataHandler(w http.ResponseWriter, request *http.Request) {
