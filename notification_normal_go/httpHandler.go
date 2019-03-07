@@ -1,16 +1,21 @@
 package main
 
 import (
+	"./abi"
 	"./utils"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/rpc"
+	"strings"
 )
 
 type MetaDataList struct {
@@ -671,11 +676,37 @@ func DataClientDeleteDataHandler(w http.ResponseWriter, request *http.Request) {
 
 }
 
+const key = `{"address":"f448d0ae08287173002d06093abdab2ac1d7ce9a", "crypto":{"cipher":"aes-128-ctr", "ciphertext":"b8ed8722c4bce17a035d14d3134c9f49a25476f8de84872bdb8921cdaf418fed", "cipherparams":{"iv":"ad9f92893a3b2ea5a4fc8b038a7c79cb"}, "kdf":"scrypt", "kdfparams":{"dklen":32, "n":262144, "p":1, "r":8, "salt":"73e2d83f69e7afbb323cd73831a50004501366c687698818e4ce9440ca657a9b"}, "mac":"f404ba734343531b6346506f363343151ae67dd26229ae1748c53e116c5939bd"}, "id":"00e53020-8296-4ffb-9d6b-c56d2d246b2c", "version":3}`
+
 // TODO: test
 func ModelClientCreateContractHandler(w http.ResponseWriter, request *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	rpcConn := utils.Connect2Eth()
+	ethConn := ethclient.NewClient(rpcConn)
+	password := request.PostFormValue("password")
+	auth, err := bind.NewTransactor(strings.NewReader(key), password)
+	if err != nil {
+		log.Fatalf("Failed to create authorized transactor: %v", err)
+	}
+
+	// Deploy a new contract
+	address, tx, _, err := abi.DeployMain(auth, ethConn)
+	if err != nil {
+		log.Fatalf("Failed to deploy new token contract: %v", err)
+	}
+
+	ctx := context.Background()
+	addressAfterMined, err := bind.WaitDeployed(ctx, ethConn, tx)
+	if err != nil {
+		log.Fatalf("failed to deploy contact when mining :%v", err)
+	}
+
+	if bytes.Compare(address.Bytes(), addressAfterMined.Bytes()) != 0 {
+		log.Fatalf("mined address :%s,before mined address:%s", addressAfterMined, address)
+	}
+
 	//var t *template.Template
 	//var data Data
 	//t, _ = template.ParseFiles("template/indexmodel.html")
