@@ -947,7 +947,7 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 		data = Data{Msg: "运算方删除computingHash失败", Code: 500}
 	} else {
 
-		result := utils.ReadFile("/root/MachineLearning")
+		result := utils.ReadFile("//root//MachineLearning//parameters.json")
 
 		data = Data{Msg: result, Code: 200}
 
