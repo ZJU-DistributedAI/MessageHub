@@ -148,25 +148,27 @@
           <p>Manage your wallet.</p>
 
           <div class="card mb-3">
-            <div class="card-header">Ask Data</div>
+            <div class="card-header">请求数据</div>
             <div class="card-body">
              <form >
               <div class="form-group">
                 <div class="form-label-group">
-                  <input name="ask_password" type="text" id="ask_password" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="ask_password">password: 模型方密码</label>
-
-                </div>
-                </br>
-                <div class="form-label-group">
                   <input name="ask_from" type="text" id="ask_from" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="ask_from">wallet: 模型房账户 </label>
+                  <label for="ask_from">wallet: 模型方的钱包地址 </label>
 
                 </div>
                 </br>
+
+                <div class="form-label-group">
+                  <input name="ask_password" type="text" id="ask_password" class="form-control" required="required" autofocus="autofocus" >
+                  <label for="ask_password">password: 模型方的钱包密码</label>
+
+                </div>
+                </br>
+
                 <div class="form-label-group">
                   <input name="ask_hash" type="text" id="ask_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="ask_hash">hash: 所请求的数据资源的IPFS地址</label>
+                  <label for="ask_hash">hash: 所请求的数据资源metadata的IPFShash</label>
                 </div>
 
 
@@ -225,7 +227,7 @@
 
                 <div class="form-label-group">
                    <input name="upload_model_hash" type="text" id="upload_model_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="upload_model_hash">model_hash: 加密后的模型所存储的IPFShash</label>
+                  <label for="upload_model_hash">model_hash: 存储加密后模型的IPFShash</label>
                 </div>
                 </br>
 
@@ -354,8 +356,8 @@
                   data: "password="+$('#ask_password').val()+"&from="+$('#ask_from').val()+"&metaDataInfo="+$('#ask_hash').val(),
                   success : function(data){
                       console.log(data);
-                    var jsonObj = $.parseJSON(data)
-                    alert(jsonObj.msg);
+                      var jsonObj = $.parseJSON(data)
+                      alert(jsonObj.msg);
                   },
                   fail : function (data) {
                       console.log(data);
@@ -373,8 +375,8 @@
                   data: "ETH_key="+$('#create_ETH_key').val()+"&smart_contract="+$('#create_smart_contract').val(),
                   success : function(data){
                       console.log(data);
-                    var jsonObj = $.parseJSON(data)
-                    alert(jsonObj.msg);
+                      var jsonObj = $.parseJSON(data)
+                      alert(jsonObj.msg);
                   },
                   fail : function (data) {
                       console.log(data);
@@ -393,8 +395,8 @@
                           "&modelIpfsHash="+$('#upload_model_hash').val()+"&contractHash="+$('#upload_contract_hash').val() ,
                   success : function(data){
                       console.log(data);
-                    var jsonObj = $.parseJSON(data)
-                    alert(jsonObj.msg);
+                      var jsonObj = $.parseJSON(data)
+                      alert(jsonObj.msg);
                   },
                   fail : function (data) {
                       console.log(data);
@@ -413,7 +415,8 @@
                       "&rsa_key="+$('#uploadFinal_rsa_key').val()+  "&trans_id="+$('#uploadFinal_trans_id').val(),
                   success : function(data){
                       console.log(data);
-                      alert("操作成功");
+                      var jsonObj = $.parseJSON(data)
+                      alert(jsonObj.msg);
                   },
                   fail : function (data) {
                       console.log(data);

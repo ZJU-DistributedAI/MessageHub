@@ -9,8 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>DistributedAI - DownloadTools</title>
-
+    <title>DistributedAI - Data Client</title>
     <!-- Bootstrap core CSS-->
     <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
@@ -30,7 +29,7 @@
 
     <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 
-      <a class="navbar-brand mr-1" >Distributed AI</a>
+        <a class="navbar-brand mr-1" href="/dataclient/index">Data Client</a>
 
       <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
         <i class="fas fa-bars"></i>
@@ -93,13 +92,51 @@
 
       <!-- Sidebar -->
       <ul class="sidebar navbar-nav">
-
         <li class="nav-item active">
-          <a class="nav-link" onclick="doLocation('/user/downloadtool')">
+          <a class="nav-link" onclick="doLocation('/dataclient/index')">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link"  onclick="doLocation('/user/downloadtool')">
             <i class="fas fa-fw fa-table"></i>
             <span>Download Tools</span></a>
         </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link" onclick="doLocation('/dataclient/availablecomputingpage')">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Check Computing</span></a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link" onclick="doLocation('/dataclient/modelaskingpage')">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Check Model</span></a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="WalletDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-fw fa-folder"></i>
+            <span>Wallet</span>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="WalletDropdown">
+            <h6 class="dropdown-header">Create:</h6>
+            <a class="dropdown-item"  onclick="doLocation('/user/createwalletpage')">Create Wallet</a>
+            <div class="dropdown-divider"></div>
+            <h6 class="dropdown-header">Functions:</h6>
+            <a class="dropdown-item" onclick="doLocation('/dataclient/walletpage')">Add Data</a>
+            <a class="dropdown-item" onclick="doLocation('/dataclient/walletpage')">Agree Request</a>
+            <a class="dropdown-item" onclick="doLocation('/dataclient/walletpage')">Ask Computing</a>
+            <a class="dropdown-item" onclick="doLocation('/dataclient/walletpage')">Delete Data</a>
+            <a class="dropdown-item" onclick="doLocation('/dataclient/walletpageç')">Upload Encrypted Data</a>
+          </div>
+        </li>
+
       </ul>
+
 
       <div id="content-wrapper">
 
@@ -108,76 +145,40 @@
           <!-- Breadcrumbs-->
           <ol class="breadcrumb">
             <li class="breadcrumb-item">
-              <a href="#">Dashboard</a>
+              <a onclick="doLocation('/dataclient/index')">Dashboard</a>
             </li>
-            <li class="breadcrumb-item active">Tables</li>
+            <li class="breadcrumb-item active">Model Asking</li>
           </ol>
 
           <!-- DataTables Example -->
           <div class="card mb-3">
             <div class="card-header">
               <i class="fas fa-table"></i>
-              Data Table Example</div>
+              Model Asking</div>
             <div class="card-body">
               <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>Software Name</th>
-                      <th>Download link</th>
-                      <th>Documentation</th>
-                      <th>Platform(s)</th>
-
+                        <th>Metadata</th>
+                        <th>Wallet Address</th>
                     </tr>
                   </thead>
                   <tfoot>
                     <tr>
-                      <th>Software Name</th>
-                      <th>Download link</th>
-                      <th>Documentation</th>
-                      <th>Platform(s)</th>
-
+                        <th>Metadata</th>
+                        <th>Wallet Address</th>
                     </tr>
                   </tfoot>
-                  <tbody>
+                  <tbody id="tb">
                     <tr>
                       <td>Swagger-Cli</td>
-                      <td>https://www.npmjs.com/package/swagger-cli</td>
-                      <td>https://swagger.io/docs/open-source-tools/swagger-codegen/</td>
-                      <td>Win/Mac OS/Linux</td>
-
-                    </tr>
-                    <tr>
-                      <td>Swagger-Cli</td>
-                      <td>https://www.npmjs.com/package/swagger-cli</td>
-                      <td>https://swagger.io/docs/open-source-tools/swagger-codegen/</td>
                       <td>Win/Mac OS/Linux</td>
                     </tr>
                     <tr>
-                      <td>Swagger-Cli</td>
-                      <td>https://www.npmjs.com/package/swagger-cli</td>
-                      <td>https://swagger.io/docs/open-source-tools/swagger-codegen/</td>
-                      <td>Win/Mac OS/Linux</td>
+                        <td>Swagger-Cli</td>
+                        <td>Win/Mac OS/Linux</td>
                     </tr>
-                    <tr>
-                      <td>Swagger-Cli</td>
-                      <td>https://www.npmjs.com/package/swagger-cli</td>
-                      <td>https://swagger.io/docs/open-source-tools/swagger-codegen/</td>
-                      <td>Win/Mac OS/Linux</td>
-                    </tr>
-                    <tr>
-                      <td>Swagger-Cli</td>
-                      <td>https://www.npmjs.com/package/swagger-cli</td>
-                      <td>https://swagger.io/docs/open-source-tools/swagger-codegen/</td>
-                      <td>Win/Mac OS/Linux</td>
-                    </tr>
-                    <tr>
-                      <td>Swagger-Cli</td>
-                      <td>https://www.npmjs.com/package/swagger-cli</td>
-                      <td>https://swagger.io/docs/open-source-tools/swagger-codegen/</td>
-                      <td>Win/Mac OS/Linux</td>
-                    </tr>
-
                   </tbody>
                 </table>
               </div>
@@ -192,11 +193,14 @@
         </div>
         <!-- /.container-fluid -->
 
+        </div>
+        <!-- /.container-fluid -->
+
         <!-- Sticky Footer -->
         <footer class="sticky-footer">
           <div class="container my-auto">
             <div class="copyright text-center my-auto">
-              <span>Copyright © Your Website 2018</span>
+              <span>Copyright © DistributedAI Website 2019</span>
             </div>
           </div>
         </footer>
@@ -238,25 +242,64 @@
     <!-- Core plugin JavaScript-->
     <script src="../static/vendor/jquery-easing/jquery.easing.min.js"></script>
 
-    <!-- Page level plugin JavaScript-->
-    <script src="../static/vendor/datatables/jquery.dataTables.js"></script>
-    <script src="../static/vendor/datatables/dataTables.bootstrap4.js"></script>
-
     <!-- Custom scripts for all pages-->
     <script src="../static/js/sb-admin.min.js"></script>
 
-    <!-- Demo scripts for this page-->
-    <script src="../static/js/demo/datatables-demo.js"></script>
-
   </body>
+
   <script type="text/javascript">
+
     var interfaceAddress = getAddress();
     function doLocation(url)
     {
       window.location.href =interfaceAddress+ url;
     }
+    // //前端Ajax持续调用服务端，称为Ajax轮询技术
+    // var gettingComputingAgree = {
+    //   url:interfaceAddress+'/data/client/monitorcomputingaggree',
+    //   type:'post',
+    //   dataType : 'text', // use json instead of text
+    //   data:"",
+    //   success : function(data){
+    //     console.log(data);//
+    //     var jsonObj = $.parseJSON(data);
+    //     alert("收到运算方请求"+jsonObj.msg);
+    //     $.ajax(gettingComputingAgree); //成功也要再次请求
+    //   },
+    //   fail : function (data) { //当请求时间过长（默认为60秒），就再次调用ajax长轮询
+    //     console.log(data);//？
+    //     alert("正无运算方请求");
+    //     $.ajax(gettingComputingAgree); //关键在这里，回调函数内再次请求Ajax
+    //
+    //   },
+    //   error:function(data){   //当请求时间过长（默认为60秒），就再次调用ajax长轮询
+    //     console.log(data);//？
+    //     alert("正无运算方请求");
+    //     $.ajax(gettingComputingAgree);
+    //   }
+    //
+    // };
+    //
+    // $.ajax(gettingComputingAgree);
 
+
+    function ShowingData(json){
+ 
+        // var dataArray = $.parseJSON(data.jsonData); 
+        
+        $.each(json,function(i,item){
+            var html = '<tr>';
+            html += '<td>'+item.metadata+'</td>';
+            html += '<td>'+item.account+'</td>';
+            html +='</tr>';
+            
+            $('#tb').append(html);
+        });
+ 
+    }
+
+
+    
   </script>
-
 
 </html>

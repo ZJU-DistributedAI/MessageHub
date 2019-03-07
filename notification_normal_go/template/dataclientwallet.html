@@ -31,7 +31,7 @@
 
     <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 
-      <a class="navbar-brand mr-1" href="index.html">Data Client</a>
+      <a class="navbar-brand mr-1" onclick="doLocation('/dataclient/index')">Data Client</a>
 
       <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
         <i class="fas fa-bars"></i>
@@ -108,11 +108,17 @@
         </li>
 
 
-        <li class="nav-item dropdown">
-            <a class="nav-link" onclick="doLocation('/dataclient/availablecomputingpage')">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Computing Resources</span></a>
-        </li>
+          <li class="nav-item dropdown">
+              <a class="nav-link" onclick="doLocation('/dataclient/availablecomputingpage')">
+                  <i class="fas fa-fw fa-table"></i>
+                  <span>Check Computing</span></a>
+          </li>
+
+          <li class="nav-item dropdown">
+              <a class="nav-link" onclick="doLocation('/dataclient/modelaskingpage')">
+                  <i class="fas fa-fw fa-table"></i>
+                  <span>Check Model</span></a>
+          </li>
         
         <li class="nav-item active">
           <a class="nav-link dropdown-toggle" href="#" id="WalletDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -169,7 +175,7 @@
                   </br>
                 <div class="form-label-group">
                    <input name="add_hash" type="text" id="add_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="add_hash">hash: 需要添加的数据资源的IPFS地址</label>
+                  <label for="add_hash">hash: 需要添加的数据资源metadata的IPFShash</label>
                 </div>
 
               </div>
@@ -198,7 +204,7 @@
                   </br>
                 <div class="form-label-group">
                    <input name="agree_data_hash" type="text" id="agree_data_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="agree_data_hash">hash: 需要同意的数据资源的IPFS地址</label>
+                  <label for="agree_data_hash">hash: 需要同意的数据资源的IPFShash</label>
                 </div>
                   <div class="form-label-group">
                       <input name="agree_to" type="text" id="agree_to" class="form-control" required="required" autofocus="autofocus" >
@@ -467,8 +473,8 @@
                   type:'post',
                   dataType : 'text',
                   data: "from="+$('#upload_from').val()+"&password="+$('#upload_password').val()
-                      + "dataIpfsHash="+$('#upload_encrypt_data_hash').val()+"&modelAddress="+$('#upload_to').val()
-                        +"dataMetadataIpfsHash"+$('#upload_metadata_hash'),
+                      + "&dataIpfsHash="+$('#upload_encrypt_data_hash').val()+"&modelAddress="+$('#upload_to').val()
+                        +"&dataMetadataIpfsHash="+$('#upload_metadata_hash').val(),
                   success : function(data){
                       console.log(data);//
                       var jsonObj = $.parseJSON(data)
