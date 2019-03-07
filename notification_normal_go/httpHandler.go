@@ -251,7 +251,7 @@ func CheckLoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// todo test
+
 func DataClientAvaCompHandle(w http.ResponseWriter, r *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -267,8 +267,25 @@ func DataClientAvaCompHandle(w http.ResponseWriter, r *http.Request) {
 	}
 	t.Execute(w, "")
 }
+// todo test
+func DataClientModelAskHandle(w http.ResponseWriter, r *http.Request) {
+	// header
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
-// todo: test
+	// login view
+	var t *template.Template
+	var err error
+	t, err = template.ParseFiles("template/data_model_ask.html")
+	if err != nil {
+		utils.ErrorPanic(err)
+		return
+	}
+	t.Execute(w, "")
+}
+
+
+
 func ModelClientAvaDataHandle(w http.ResponseWriter, r *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -350,6 +367,14 @@ func DownloadToolPageHandle(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 }
 
+func ComputingClientTrainPageHandle(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	t, _ := template.ParseFiles("template/computing_train.html")
+	t.Execute(w, nil)
+}
+
+
 func CreateWalletHandler(w http.ResponseWriter, r *http.Request) {
 
 	/**
@@ -401,6 +426,12 @@ func ComputingClientWalletPageHandler(w http.ResponseWriter, request *http.Reque
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	t, _ := template.ParseFiles("template/computingclientwallet.html")
+	t.Execute(w, nil)
+}
+func ComputingClientDataAskHandle(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	t, _ := template.ParseFiles("template/computing_data_ask.html")
 	t.Execute(w, nil)
 }
 
@@ -897,15 +928,6 @@ func ComputingClientDeleteComputingHashHandler(w http.ResponseWriter, request *h
 	js, _ := json.Marshal(data)
 	w.Write(js)
 }
-
-func ComputingClientTrainPageHandle(w http.ResponseWriter, request *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-	t, _ := template.ParseFiles("template/computing_train.html")
-	t.Execute(w, nil)
-}
-
-
 
 func ComputingClientTrainReceiptHandler(w http.ResponseWriter, request *http.Request){
 

@@ -107,6 +107,17 @@
         </li>
 
         <li class="nav-item dropdown">
+            <a class="nav-link"  onclick="doLocation('/computingclient/trainpage')">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Train</span></a>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link"  onclick="doLocation('/computingclient/dataaskingpage')">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Check data</span></a>
+        </li>
+
+        <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="WalletDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-fw fa-folder"></i>
                 <span>Wallet</span>
@@ -119,7 +130,7 @@
                 <a class="dropdown-item" onclick="doLocation('/computingclient/walletpage')">Add data</a>
                 <a class="dropdown-item" onclick="doLocation('/computingclient/walletpage')">Agree Request</a>
                 <a class="dropdown-item" onclick="doLocation('/computingclient/walletpage')">Delete Data</a>
-                <a class="dropdown-item" onclick="doLocation('/computingclient/walletpage')">Train</a>
+                <a class="dropdown-item" onclick="doLocation('/computingclient/trainpage')">Train</a>
                 <a class="dropdown-item" onclick="doLocation('/computingclient/walletpage')">Upload Encrypted Data</a>
             </div>
         </li>
@@ -227,40 +238,6 @@
         </div>
 
 
- 		<div class="card mb-3">
-            <div class="card-header">Train</div>
-            <div class="card-body">
-             <form action="" method=post>
-              <div class="form-group">
-                <div class="form-label-group">
-                  <input name="train_ETH_key" type="text" id="train_ETH_key" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="train_ETH_key">ETH_key: ETH private key for transaction </label>
-               
-                </div>
-                  </br>
-                <div class="form-label-group">
-                   <input name="train_computing_hash" type="text" id="train_computing_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="train_computing_hash">computing_hash: computing resourse hash</label>
-                </div>
-                 </br>
-                <div class="form-label-group">
-                   <input name="train_contract_hash" type="text" id="train_contract_hash" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="train_contract_hash">contract_hash: smart contract hash</label>
-                </div>
-
-                 </br>
-                <div class="form-label-group">
-                   <input name="train_public_key" type="text" id="train_public_key" class="form-control" required="required" autofocus="autofocus" >
-                  <label for="train_public_key">public_key: ETH public key(Wallet address)</label>
-                </div>
-
-              </div>
-
-              <button id="Train" class="btn btn-primary btn-block" type="button">Submit</button>
-             </form>
-          </div>
-        </div>
-       
 
         <div class="card mb-3">
             <div class="card-header">Upload Encrypted Data</div>

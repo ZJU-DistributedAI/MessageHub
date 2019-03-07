@@ -35,6 +35,8 @@ func startWebService() {
 	http.HandleFunc("/dataclient/index", IndexDataHandle)                                    //font OK, back ok
 	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler)                   //font OK, back ok
 	http.HandleFunc("/dataclient/availablecomputingpage", DataClientAvaCompHandle)           //font OK, back ok
+	http.HandleFunc("/dataclient/modelaskingpage", DataClientModelAskHandle)           //font OK, back ok
+
 	http.HandleFunc("/dataclient/askcomputing", DataClientAskComputingHandler)               //font OK,
 	http.HandleFunc("/dataclient/deletedata", DataClientDeleteDataHandler)                   //font OK,
 	http.HandleFunc("/dataclient/monitormetadata", DataClientMonitorMetaDataHandler)
@@ -55,13 +57,13 @@ func startWebService() {
 	http.HandleFunc("/computingclient/index", IndexComputingHandle)                                 //font OK, back ok
 	http.HandleFunc("/computingclient/walletpage", ComputingClientWalletPageHandler)                //font OK, back ok
 	http.HandleFunc("/computingclient/trainpage", ComputingClientTrainPageHandle)                                 //font OK, back ok
-
+	http.HandleFunc("/computingclient/dataaskingpage", ComputingClientDataAskHandle)           //font OK, back ok
 	http.HandleFunc("/computingclient/adddata", ComputingClientAddDataHandler)                      //font OK,
 	http.HandleFunc("/computingclient/agreerequest", ComputingClientAggreeRequestHandler)           //font OK,
 	http.HandleFunc("/computingclient/deletedcomputing", ComputingClientDeleteComputingHashHandler) //font OK,
 
-	http.HandleFunc("/computingclient/trainrequest", ComputingClientTrainReceiptHandler)
-	http.HandleFunc("/computingclient/train", ComputingClientTrainHandler)
+	http.HandleFunc("/computingclient/trainrequest", ComputingClientTrainReceiptHandler)//font OK,
+	http.HandleFunc("/computingclient/train", ComputingClientTrainHandler)//font OK,
 	http.HandleFunc("/computingclient/uploadencrypteddata", ComputingClientUploadEncryptedDataHandler)
 	http.HandleFunc("/computingclient/monitordataclient", ComputingClientMonitorDataClientHandler)
 

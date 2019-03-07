@@ -111,12 +111,12 @@
                 <i class="fas fa-fw fa-table"></i>
                 <span>Train</span></a>
         </li>
+
         <li class="nav-item dropdown">
             <a class="nav-link"  onclick="doLocation('/computingclient/dataaskingpage')">
                 <i class="fas fa-fw fa-table"></i>
                 <span>Check data</span></a>
         </li>
-
 
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="WalletDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -147,47 +147,15 @@
             <li class="breadcrumb-item">
               <a onclick="doLocation('/computingclient/index')">Dashboard</a>
             </li>
-            <li class="breadcrumb-item active">Computing Client Train</li>
+            <li class="breadcrumb-item active">Computing Client Check Data Request</li>
           </ol>
 
           <!-- Page Content -->
-          <h1>Computing Client Train</h1>
+          <h1>Computing Client Check Data Request</h1>
           <hr>
-          <p>Train.</p>
+          <p>Result.</p>
 
-            <div class="card mb-3">
-                <div class="card-header">Train</div>
-                <div class="card-body">
-                    <form action="" method=post>
-                        <div class="form-group">
-                            <div class="form-label-group">
-                                <input name="train_modelIpfsHash" type="text" id="train_modelIpfsHash" class="form-control" required="required" autofocus="autofocus" >
-                                <label for="train_modelIpfsHash">model IPFShash: 模型的IPFShash </label>
 
-                            </div>
-                            </br>
-                            <div class="form-label-group">
-                                <input name="train_modelFrom" type="text" id="train_modelFrom" class="form-control" required="required" autofocus="autofocus" >
-                                <label for="train_modelFrom">model wallet: 模型方的钱包地址</label>
-                            </div>
-                            </br>
-                            <div class="form-label-group">
-                                <input name="train_dataIpfshash" type="text" id="train_dataIpfshash" class="form-control" required="required" autofocus="autofocus" >
-                                <label for="train_dataIpfshash">data IPFShash: 数据的IPFShash</label>
-                            </div>
-
-                            </br>
-                            <div class="form-label-group">
-                                <input name="train_dataFrom" type="text" id="train_dataFrom" class="form-control" required="required" autofocus="autofocus" >
-                                <label for="train_dataFrom">data wallet: 数据方的钱包地址</label>
-                            </div>
-
-                        </div>
-
-                        <button id="BeginTrain" class="btn btn-primary btn-block" type="button">Submit</button>
-                    </form>
-                </div>
-            </div>
 
         <!-- /.container-fluid -->
 
