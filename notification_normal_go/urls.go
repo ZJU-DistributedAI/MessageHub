@@ -66,6 +66,11 @@ func startWebService() {
 	http.HandleFunc("/computingclient/train", ComputingClientTrainHandler)//font OK,
 	http.HandleFunc("/computingclient/uploadencrypteddata", ComputingClientUploadEncryptedDataHandler)
 	http.HandleFunc("/computingclient/monitordataclient", ComputingClientMonitorDataClientHandler)
+	http.HandleFunc("/computingclient/getdockerstatus", ComputingClientGetDockerStatus)
+
+	//DockerBackend CallBack
+	http.HandleFunc("/callback/updatedockerstatus", UpdateDockerStatusHandler)
+
 
 	// 启动web服务，监听9090端口
 	err := http.ListenAndServe(":9090", nil)

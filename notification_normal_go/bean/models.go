@@ -3,7 +3,12 @@ package bean
 
 
 type User struct {
-	 Id string
+	 Id int
 	 Useraccount string
 }
 
+type UserDockerStatus struct {
+	Id int
+	UserId int
+	DockerStatus byte
+}

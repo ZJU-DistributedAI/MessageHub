@@ -15,6 +15,7 @@ import (
 	"log"
 	"net/http"
 	"net/rpc"
+	"strconv"
 	"strings"
 )
 
@@ -1025,7 +1026,8 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 	//utils.DownloadFile(modelIpfsHash, path+"model_"+modelIpfsHash)
 	//utils.DownloadFile(dataIpfsHash, path+"data_"+dataIpfsHash)
 
-	_, err := http.Get("http://127.0.0.1:9091/dockerbackend/starttrain")
+	from := request.PostFormValue("from")
+	_, err := http.Get("http://127.0.0.1:9091/dockerbackend/starttrain?from="+from)
 	if err != nil {
 		log.Println("运算方删除computingHash失败", err)
 		data = Data{Msg: "运算方删除computingHash失败", Code: 500}
@@ -1040,6 +1042,56 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 }
 
 
+
+
+func ComputingClientGetDockerStatus(w http.ResponseWriter, request *http.Request){
+
+	/**
+		获取docker状态
+	 */
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+	useraccount := request.PostFormValue("from")
+
+	status := utils.GetDockerStatus(useraccount)
+
+	var data Data
+
+	if status == 0 {
+		data = Data{Msg: "获取状态失败", Code:500}
+	}else {
+		data = Data{Msg: string(status), Code:200}
+	}
+	js, _ := json.Marshal(data)
+	w.Write(js)
+
+}
+
+
+
+func UpdateDockerStatusHandler(w http.ResponseWriter, request *http.Request){
+	/**
+		DockerBackend回调函数
+	 */
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+	useraccount := request.FormValue("from")
+	dockerstatus := request.FormValue("dockerstatus")
+
+	status, err:= strconv.Atoi(dockerstatus)
+	if err != nil {
+		log.Println("数据类型转化失败")
+
+	}
+	utils.UpdateDockerStatus(useraccount, status)
+
+
+
+}
+
 // TODO: test
 func ComputingClientUploadEncryptedDataHandler(w http.ResponseWriter, request *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -1049,6 +1101,10 @@ func ComputingClientUploadEncryptedDataHandler(w http.ResponseWriter, request *h
 	//
 	//t, _ = template.ParseFiles("template/indexcomputer.html")
 }
+
+
+
+
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
