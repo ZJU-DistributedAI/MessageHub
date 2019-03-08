@@ -11,12 +11,17 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"html/template"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/rpc"
+	"os"
+	"os/exec"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 )
 
 type MetaDataList struct {
@@ -1101,8 +1106,146 @@ func ComputingClientUploadEncryptedDataHandler(w http.ResponseWriter, request *h
 	//t, _ = template.ParseFiles("template/indexcomputer.html")
 }
 
+func DataClientUplodFile(w http.ResponseWriter, r *http.Request) {
+	// header
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+	// handle
+	var data Data
+	fileName, err := saveFileToLocal(r)
+	if err != nil {
+		data = Data{Msg: "文件保存失败", Code:500}
+	} else {
+		hash, err := upload_file(fileName)
+		if err != nil {
+			data = Data{Msg:"上传文件至ipfs失败", Code: 500}
+		} else {
+			data = Data{Msg: hash, Code: 200}
+		}
+	}
+
+	// response
+	jsonStr, _ := json.Marshal(data)
+	log.Println(string(jsonStr))
+	w.Write(jsonStr)
+}
+
+func ModelClientUploadFile(w http.ResponseWriter, r *http.Request) {
+	// header
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+	// handle
+	var data Data
+	fileName, err := saveFileToLocal(r)
+	if err != nil {
+		data = Data{Msg: "文件保存失败", Code:500}
+	} else {
+		hash, err := upload_file(fileName)
+		if err != nil {
+			data = Data{Msg:"上传文件至ipfs失败", Code: 500}
+		} else {
+			data = Data{Msg: hash, Code: 200}
+		}
+	}
+
+	// response
+	jsonStr, _ := json.Marshal(data)
+	log.Println(string(jsonStr))
+	w.Write(jsonStr)
+}
 
 
+func ComputingClientUploadFile(w http.ResponseWriter, r *http.Request) {
+	// header
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+	// handle
+	var data Data
+	fileName, err := saveFileToLocal(r)
+	if err != nil {
+		data = Data{Msg: "文件保存失败", Code:500}
+	} else {
+		hash, err := upload_file(fileName)
+		if err != nil {
+			data = Data{Msg:"上传文件至ipfs失败", Code: 500}
+		} else {
+			data = Data{Msg: hash, Code: 200}
+		}
+	}
+
+	// response
+	jsonStr, _ := json.Marshal(data)
+	log.Println(string(jsonStr))
+	w.Write(jsonStr)
+}
+
+
+func upload_file(filename string) (string, error){
+	// run ipfs add -r filename
+	cmd := exec.Command("ipfs", "add", "-r", filename)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		// run: ipfs daemon
+		cmdIpfsDaemon := exec.Command("ipfs", "daemon")
+		cmdIpfsDaemon.Run()
+		// try again
+		cmd := exec.Command("ipfs", "add", "-r", filename)
+		cmd.Stdout = &out
+		err := cmd.Run()
+
+		if err != nil {
+			log.Print(err)
+			os.Remove(filename)
+			return "", err
+		}
+	}
+	out_str := strings.Split(out.String(), " ")
+	hash := out_str[1]
+	os.Remove(filename)
+	return hash, nil
+}
+
+func saveFileToLocal(r *http.Request)(string, error){
+	fileName := "file_" + getTimeStamp()
+	// 根据字段名获取表单文件
+	formFile, _, err := r.FormFile("uploadfile")
+	if err != nil {
+		log.Printf("Get form file failed: %s\n", err)
+		return "", err
+	}
+	defer formFile.Close()
+
+	// 创建保存文件
+	destFile, err := os.Create("upload_file/" + fileName)
+	if err != nil {
+		log.Printf("Create failed: %s\n", err)
+		return "", err
+	}
+	defer destFile.Close()
+
+	// 读取表单文件，写入保存文件
+	_, err = io.Copy(destFile, formFile)
+	if err != nil {
+		log.Printf("Write file failed: %s\n", err)
+		return "", err
+	}
+	return "./upload_file/" + fileName, nil
+}
+
+// get unique timestamp string
+var time_mutex sync.Mutex
+func getTimeStamp()string{
+	time_mutex.Lock()
+	time_stamp := strconv.FormatInt(time.Now().UnixNano(), 10)
+	time.Sleep(1)
+	time_mutex.Unlock()
+	return time_stamp
+}
 
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
