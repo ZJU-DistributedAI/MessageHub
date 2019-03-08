@@ -105,7 +105,8 @@ func UpdateDockerStatus(useraccount string, dockerstatus int) {
 		if err != nil {
 			log.Println("prepare fail: ", err)
 		}
-		_, err = ptmt.Exec(result.LastInsertId(), 0)
+		lastid, _ := result.LastInsertId()
+		_, err = ptmt.Exec(lastid, 0)
 		if err != nil {
 			tx.Rollback()
 		} else {
