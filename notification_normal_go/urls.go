@@ -28,7 +28,7 @@ func startWebService() {
 	http.HandleFunc("/user/downloadtool", DownloadToolPageHandle)
 
 	//data client
-
+	http.HandleFunc("/dataclient/uploadfile", DataClientUplodFile)
 	http.HandleFunc("/dataclient/addmetadata", DataClientAddMetaDataHandler)                 //font OK,
 	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler) //font OK,
 	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)     //font OK,
@@ -43,6 +43,7 @@ func startWebService() {
 	http.HandleFunc("/data/client/monitorcomputingaggree", DataClientMonitorComputingAggreeHandler)
 
 	//model client
+	http.HandleFunc("/modelclient/uploadfile", ModelClientUploadFile)
 	http.HandleFunc("/modelclient/index", IndexModelHandle)                     //font OK, back ok
 	http.HandleFunc("/modelclient/walletpage", ModelClientWalletPageHandler)    //font OK, back ok
 	http.HandleFunc("/modelclient/availabledatapage", ModelClientAvaDataHandle) //font OK, back ok
@@ -53,7 +54,7 @@ func startWebService() {
 	http.HandleFunc("/modelclient/monitordataclient", ModelClientMonitorDataClientResultHandler)
 
 	//computing client
-
+	http.HandleFunc("/computingclient/uploadfile", ComputingClientUploadFile)
 	http.HandleFunc("/computingclient/index", IndexComputingHandle)                                 //font OK, back ok
 	http.HandleFunc("/computingclient/walletpage", ComputingClientWalletPageHandler)                //font OK, back ok
 	http.HandleFunc("/computingclient/trainpage", ComputingClientTrainPageHandle)                                 //font OK, back ok
