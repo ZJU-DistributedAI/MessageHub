@@ -82,6 +82,8 @@ func init() {
 	utils.Connect2Eth()
 	//连接redis
 	utils.Connect2Redis()
+	//连接mysql
+	utils.InitMysqlConnection()
 	//获取配置文件对象
 	// utils.InitConfig("")
 
