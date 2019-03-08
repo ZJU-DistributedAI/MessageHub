@@ -148,13 +148,12 @@ func dealNewTransactions(client *rpc.Client, filterId string, conn redis.Conn) {
 
 func GetModelClientPullDataReceipt()(ModelClientPullDataReceipt){
 
-	for{
-		modelClientPullDataReceipt:= <-modelClientPullDataChannel
-		if &modelClientPullDataReceipt != nil{
-			return modelClientPullDataReceipt
-		}
-		time.Sleep(1000)
+
+	modelClientPullDataReceipt:= <-modelClientPullDataChannel
+	if &modelClientPullDataReceipt != nil{
+		return modelClientPullDataReceipt
 	}
+	return ModelClientPullDataReceipt{}
 }
 
 
@@ -176,27 +175,28 @@ func GetDataAskComputingReceipt()(DataAskComputingReceipt){
 
 func GetDataClientMonitorComputingAggreeReceipt()(DataClientMonitorComputingAggreeReciept){
 
-	for{
-		dataClientMonitorComputingAggreeReciept := <- dataClientMonitorComputingAggreeChannel
 
-		if &dataClientMonitorComputingAggreeReciept != nil {
-			return dataClientMonitorComputingAggreeReciept
-		}
-		time.Sleep(1000)
+	dataClientMonitorComputingAggreeReciept := <- dataClientMonitorComputingAggreeChannel
+
+	if &dataClientMonitorComputingAggreeReciept != nil {
+		return dataClientMonitorComputingAggreeReciept
 	}
+
+	return DataClientMonitorComputingAggreeReciept{}
+
 
 }
 
 func GetDataClientIsAggreeReceipt()(DataClientIsAggreeReceipt){
 
-	for{
-		dataClientIsAggreeReceipt := <- dataClientIsAggreeChannel
 
-		if &dataClientIsAggreeReceipt != nil {
-			return dataClientIsAggreeReceipt
-		}
-		time.Sleep(1000)
+	dataClientIsAggreeReceipt := <- dataClientIsAggreeChannel
+
+	if &dataClientIsAggreeReceipt != nil {
+		return dataClientIsAggreeReceipt
 	}
+
+	return DataClientIsAggreeReceipt{}
 
 }
 
