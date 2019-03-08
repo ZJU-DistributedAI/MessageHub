@@ -11,10 +11,10 @@ import (
 
 const (
 	userName = "root"
-	password = "Abcd_1234"
-	ip       = "212.64.85.208"
+	password = "123456"
+	ip       = "127.0.0.1"
 	port     = "3306"
-	dbName   = "loginserver"
+	dbName   = "distributeai"
 )
 
 var db *sql.DB
@@ -31,10 +31,11 @@ func InitMysqlConnection() {
 					"?charset=utf8"}, "")
 
 				//打开数据库,前者是驱动名，所以要导入： _ "github.com/go-sql-driver/mysql"
-				db, err := sql.Open("mysql", path)
+				conn, err := sql.Open("mysql", path)
 				if err != nil {
 					log.Println(err)
 				}
+				db = conn
 				//设置数据库最大连接数
 				db.SetConnMaxLifetime(100)
 				//设置上数据库最大闲置连接数
