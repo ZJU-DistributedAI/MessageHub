@@ -3,6 +3,7 @@ package utils
 import (
 	"../bean"
 	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"strings"
 	"time"
@@ -10,8 +11,8 @@ import (
 
 const (
 	userName = "root"
-	password = "123456"
-	ip       = "127.0.0.1"
+	password = "Abcd_1234"
+	ip       = "212.64.85.208"
 	port     = "3306"
 	dbName   = "loginserver"
 )
@@ -30,7 +31,10 @@ func InitMysqlConnection() {
 					"?charset=utf8"}, "")
 
 				//打开数据库,前者是驱动名，所以要导入： _ "github.com/go-sql-driver/mysql"
-				db, _ = sql.Open("mysql", path)
+				db, err := sql.Open("mysql", path)
+				if err != nil {
+					log.Println(err)
+				}
 				//设置数据库最大连接数
 				db.SetConnMaxLifetime(100)
 				//设置上数据库最大闲置连接数
