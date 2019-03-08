@@ -160,16 +160,15 @@ func GetModelClientPullDataReceipt()(ModelClientPullDataReceipt){
 
 func GetDataAskComputingReceipt()(DataAskComputingReceipt){
 
-	for{
 
-		dataAskComputingReceipt := <- dataAskComputingChannel
 
-		if &dataAskComputingReceipt != nil {
-			return dataAskComputingReceipt
-		}
-		time.Sleep(1000)
+	dataAskComputingReceipt := <- dataAskComputingChannel
 
+	if &dataAskComputingReceipt != nil {
+		return dataAskComputingReceipt
 	}
+
+	return DataAskComputingReceipt{}
 
 }
 
