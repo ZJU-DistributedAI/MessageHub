@@ -43,13 +43,13 @@ func DownloadFile(hash string, filename string) {
 
 func MakeDirectory(dirname string)(path string){
 
-	cmd := exec.Command("mkdir","-p", "C:\\Users\\huyifan01\\Documents\\MachineLearning\\"+dirname)
+	cmd := exec.Command("mkdir","-p", "//root//"+dirname)
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println(err)
 		return ""
 	}
-	return "C:\\Users\\huyifan01\\Documents\\MachineLearning\\"+dirname+"\\"
+	return "//root//"+dirname+"//"
 }
 
 

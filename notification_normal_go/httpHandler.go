@@ -1016,18 +1016,17 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 	*/
 	var data Data
 
-	//modelIpfsHash := request.PostFormValue("modelIpfsHash")
-	//dataIpfsHash := request.PostFormValue("dataIpfshash")
-	//modelFrom := request.PostFormValue("modelFrom")
-	//dataFrom := request.PostFormValue("dataFrom")
-	//
-	//
-	//path := utils.MakeDirectory("train_"+modelFrom+"_"+dataFrom)
-	//utils.DownloadFile(modelIpfsHash, path+"model_"+modelIpfsHash)
-	//utils.DownloadFile(dataIpfsHash, path+"data_"+dataIpfsHash)
+	modelIpfsHash := request.PostFormValue("modelIpfsHash")
+	dataIpfsHash := request.PostFormValue("dataIpfshash")
 
-	from := request.PostFormValue("from")
-	_, err := http.Get("http://127.0.0.1:9091/dockerbackend/starttrain?from="+from)
+	computingfrom := request.PostFormValue("computingfrom")
+
+	path := utils.MakeDirectory("train_"+computingfrom)
+	utils.DownloadFile(modelIpfsHash, path+"modelFile.json")
+	utils.DownloadFile(dataIpfsHash, path+"dataFile.json")
+
+
+	_, err := http.Get("http://127.0.0.1:9091/dockerbackend/starttrain?from="+computingfrom+"&directorypath="+path)
 	if err != nil {
 		log.Println("运算方删除computingHash失败", err)
 		data = Data{Msg: "运算方删除computingHash失败", Code: 500}
