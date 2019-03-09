@@ -630,10 +630,12 @@ func DataClientPushDataToComputingHandler(w http.ResponseWriter, request *http.R
 	dataMetadataIpfsHash := request.PostFormValue("dataMetadataIpfsHash")
 
 	if password == "" || dataIpfsHash == "" || dataMetadataIpfsHash == "" || modelAddress == "" {
+		log.Println("参数不完全")
 		data = Data{Msg: "参数不完全", Code: 500}
 	} else {
-		value := "dpush:" + dataIpfsHash + ":" + modelAddress + ":" + dataMetadataIpfsHash
+		value := "dpush:" + dataIpfsHash + ":" + modelAddress + ":" + from
 		to := common.HexToAddress("")
+		log.Println("value: ",value)
 		//发起交易到以太坊
 		message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
 			"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
@@ -852,7 +854,7 @@ func ComputingClientMonitorDataClientHandler(w http.ResponseWriter, request *htt
 	// handle
 	var data Data
 	dataAskComputingReceipt := GetDataAskComputingReceipt()
-	data = Data{Msg: dataAskComputingReceipt.ComputingHash + ":" + dataAskComputingReceipt.From, Code: 200}
+	data = Data{Msg: dataAskComputingReceipt.DataIpfsHash + ":" + dataAskComputingReceipt.From+ ":" + dataAskComputingReceipt.ModelAddress, Code: 200}
 
 	// response
 	js, _ := json.Marshal(data)
@@ -1021,6 +1023,8 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 
 	computingfrom := request.PostFormValue("computingfrom")
 
+	fmt.Println("computingfrom: ",computingfrom)
+
 	uploadPath, directoryPath:= utils.MakeDirectory("train_"+computingfrom)
 	if uploadPath != "" {
 		utils.DownloadFile(modelIpfsHash, uploadPath+"modelFile.json")
@@ -1033,8 +1037,8 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 
 	_, err := http.Get("http://127.0.0.1:9093/dockerbackend/starttrain?from="+computingfrom+"&directorypath="+directoryPath)
 	if err != nil {
-		log.Println("运算方删除computingHash失败", err)
-		data = Data{Msg: "运算方删除computingHash失败", Code: 500}
+		log.Println("运算方调用容器后端失败", err)
+		data = Data{Msg: "运算方调用容器后端失败", Code: 500}
 	} else {
 		result := utils.ReadFile("//root//MachineLearning//parameters.json")
 		data = Data{Msg: result, Code: 200}

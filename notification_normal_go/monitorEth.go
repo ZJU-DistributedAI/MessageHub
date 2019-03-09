@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/garyburd/redigo/redis"
+	"log"
 	"strings"
 	"time"
 )
@@ -27,6 +28,8 @@ type DataClientAddMetaDataReceipt struct {
 }
 
 type DataAskComputingReceipt struct {
+	DataIpfsHash string
+	ModelAddress string
 	ComputingHash string
 	From string
 }
@@ -101,11 +104,30 @@ func createGoRoutine(client *rpc.Client, txHashes []string) {
 
 //开启的第一个协程为监听是否有交易已经被封装到区块里，然后将其插入到redis
 //开启的第二个协程为监听是否有交易(pending交易)提交到以太坊
+
 func dealNewTransactions(client *rpc.Client, filterId string, conn redis.Conn) {
+
+
+
+	//监听以太坊
+	go func(client *rpc.Client){
+		log.Println("开始监听以太坊")
+		for {
+			result, _ := utils.GetFilterChanges(client, filterId)
+
+			//获取到处于pending状态的交易Hash
+			if len(result) != 0 {
+				fmt.Println(result)
+				go createGoRoutine(client, result)
+			}
+
+			time.Sleep(100)
+		}
+	}(client)
 
 	go func(conn redis.Conn) {
 
-		fmt.Println("通道开始监听是否有完成交易")
+		log.Println("开始监听通道是否有完成交易")
 		for {
 			flag := <-mindedTransactionHashChannel
 			fmt.Println("接受到交易: ", flag.TransactionHash)
@@ -127,18 +149,8 @@ func dealNewTransactions(client *rpc.Client, filterId string, conn redis.Conn) {
 
 	}(conn)
 
-	//监听以太坊
-	for {
-		result, _ := utils.GetFilterChanges(client, filterId)
 
-		//获取到处于pending状态的交易Hash
-		if len(result) != 0 {
-			fmt.Println(result)
-			go createGoRoutine(client, result)
-		}
 
-		time.Sleep(100)
-	}
 
 }
 
@@ -221,6 +233,9 @@ func distributeTransactionByInput(from string,input string,conn redis.Conn){
 	splits:=strings.Split(input,":")
 	if splits[0] == "dadd"{ //数据方上传元数据
 		utils.Sadd2Redis(conn,"metaDataHash", from, splits[1])
+	}else if splits[0] == "dpush"{
+		dataAskComputingChannel <- DataAskComputingReceipt{DataIpfsHash:splits[1], ModelAddress:splits[2],
+			ComputingHash:"", From:splits[3]}
 	}else if splits[0] == "ddelete" {
 		utils.SremFromRedis(conn, "metaDataHash", from, splits[1])
 	}else if splits[0] == "mpull" {//模型方请求数据方数据
