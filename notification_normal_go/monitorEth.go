@@ -143,6 +143,23 @@ func dealNewTransactions(client *rpc.Client, filterId string, conn redis.Conn) {
 }
 
 
+func InitEthereumTransactionMonitor(){
+
+	client := utils.Connect2Eth()
+
+	conn := utils.Connect2Redis()
+
+	filterId, err := utils.CreateNewPendingTransactionFilter(client)
+
+	if err != nil {
+		fmt.Println("创建交易过滤器失败")
+		return
+	}
+
+	//不使用协程池，监听以太坊
+	dealNewTransactions(client, filterId, conn)
+}
+
 
 
 
@@ -268,15 +285,7 @@ func main() {
 	mindedTransactionHashChannel = make(chan TransactionReceipt)
 	modelClientPullDataChannel = make(chan ModelClientPullDataReceipt)
 
-	filterId, err := utils.CreateNewPendingTransactionFilter(client)
 
-	if err != nil {
-		fmt.Println("创建交易过滤器失败")
-		return
-	}
-
-	//不使用协程池，监听以太坊
-	dealNewTransactions(client, filterId, conn)
 
 
 	//使用协程池

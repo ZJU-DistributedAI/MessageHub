@@ -25,17 +25,17 @@ func startWebService() {
 	http.HandleFunc("/user/checklogin", CheckLoginHandler)
 	http.HandleFunc("/user/createwallet", CreateWalletHandler)
 	http.HandleFunc("/user/createwalletpage", CreateWalletPageHandler)
-	http.HandleFunc("/user/downloadtool", DownloadToolPageHandle)
+	http.HandleFunc("/user/downloadtool", DownloadToolPageHandler)
 
 	//data client
-	http.HandleFunc("/dataclient/uploadfile", DataClientUplodFile)
+	http.HandleFunc("/dataclient/uploadfile", DataClientUplodFileHandler)
 	http.HandleFunc("/dataclient/addmetadata", DataClientAddMetaDataHandler)                 //font OK,
 	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler) //font OK,
 	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)     //font OK,
-	http.HandleFunc("/dataclient/index", IndexDataHandle)                                    //font OK, back ok
+	http.HandleFunc("/dataclient/index", IndexDataHandler)                                    //font OK, back ok
 	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler)                   //font OK, back ok
-	http.HandleFunc("/dataclient/availablecomputingpage", DataClientAvaCompHandle)           //font OK, back ok
-	http.HandleFunc("/dataclient/modelaskingpage", DataClientModelAskHandle)           //font OK, back ok
+	http.HandleFunc("/dataclient/availablecomputingpage", DataClientAvaCompHandler)           //font OK, back ok
+	http.HandleFunc("/dataclient/modelaskingpage", DataClientModelAskHandler)           //font OK, back ok
 
 	http.HandleFunc("/dataclient/askcomputing", DataClientAskComputingHandler)               //font OK,
 	http.HandleFunc("/dataclient/deletedata", DataClientDeleteDataHandler)                   //font OK,
@@ -43,10 +43,10 @@ func startWebService() {
 	http.HandleFunc("/data/client/monitorcomputingaggree", DataClientMonitorComputingAggreeHandler)
 
 	//model client
-	http.HandleFunc("/modelclient/uploadfile", ModelClientUploadFile)
-	http.HandleFunc("/modelclient/index", IndexModelHandle)                     //font OK, back ok
+	http.HandleFunc("/modelclient/uploadfile", ModelClientUploadFileHandler)
+	http.HandleFunc("/modelclient/index", IndexModelHandler)                     //font OK, back ok
 	http.HandleFunc("/modelclient/walletpage", ModelClientWalletPageHandler)    //font OK, back ok
-	http.HandleFunc("/modelclient/availabledatapage", ModelClientAvaDataHandle) //font OK, back ok
+	http.HandleFunc("/modelclient/availabledatapage", ModelClientAvaDataHandler) //font OK, back ok
 	http.HandleFunc("/modelclient/askdata", ModelClientAskDataHandler)          //font OK,
 	http.HandleFunc("/modelclient/createcontract", ModelClientCreateContractHandler)
 	http.HandleFunc("/modelclient/uploadmodel", ModelClientUploadModelHandler) //font OK,
@@ -54,11 +54,11 @@ func startWebService() {
 	http.HandleFunc("/modelclient/monitordataclient", ModelClientMonitorDataClientResultHandler)
 
 	//computing client
-	http.HandleFunc("/computingclient/uploadfile", ComputingClientUploadFile)
-	http.HandleFunc("/computingclient/index", IndexComputingHandle)                                 //font OK, back ok
+	http.HandleFunc("/computingclient/uploadfile", ComputingClientUploadFileHandler)
+	http.HandleFunc("/computingclient/index", IndexComputingHandler)                                 //font OK, back ok
 	http.HandleFunc("/computingclient/walletpage", ComputingClientWalletPageHandler)                //font OK, back ok
-	http.HandleFunc("/computingclient/trainpage", ComputingClientTrainPageHandle)                                 //font OK, back ok
-	http.HandleFunc("/computingclient/dataaskingpage", ComputingClientDataAskHandle)           //font OK, back ok
+	http.HandleFunc("/computingclient/trainpage", ComputingClientTrainPageHandler)                                 //font OK, back ok
+	http.HandleFunc("/computingclient/dataaskingpage", ComputingClientDataAskHandler)           //font OK, back ok
 	http.HandleFunc("/computingclient/adddata", ComputingClientAddDataHandler)                      //font OK,
 	http.HandleFunc("/computingclient/agreerequest", ComputingClientAggreeRequestHandler)           //font OK,
 	http.HandleFunc("/computingclient/deletedcomputing", ComputingClientDeleteComputingHashHandler) //font OK,
@@ -90,9 +90,9 @@ func init() {
 	utils.Connect2Redis()
 	//连接mysql
 	utils.InitMysqlConnection()
-	//获取配置文件对象
-	// utils.InitConfig("")
-
+	//初始化以太坊监听器
+	InitEthereumTransactionMonitor()
+	//初始化通道
 	InitChannels()
 
 }

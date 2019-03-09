@@ -11,17 +11,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"html/template"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/rpc"
-	"os"
-	"os/exec"
 	"strconv"
 	"strings"
-	"sync"
-	"time"
 )
 
 type MetaDataList struct {
@@ -209,7 +204,7 @@ func ListAskedComputing(w http.ResponseWriter, r *http.Request) {
 //	t.Execute(w, nil)
 //}
 
-func IndexDataHandle(w http.ResponseWriter, r *http.Request) {
+func IndexDataHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
@@ -218,7 +213,7 @@ func IndexDataHandle(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func IndexModelHandle(w http.ResponseWriter, r *http.Request) {
+func IndexModelHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
@@ -226,7 +221,7 @@ func IndexModelHandle(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 }
 
-func IndexComputingHandle(w http.ResponseWriter, r *http.Request) {
+func IndexComputingHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
@@ -262,7 +257,7 @@ func CheckLoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func DataClientAvaCompHandle(w http.ResponseWriter, r *http.Request) {
+func DataClientAvaCompHandler(w http.ResponseWriter, r *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
@@ -278,7 +273,7 @@ func DataClientAvaCompHandle(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, "")
 }
 
-func DataClientModelAskHandle(w http.ResponseWriter, r *http.Request) {
+func DataClientModelAskHandler(w http.ResponseWriter, r *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
@@ -294,7 +289,7 @@ func DataClientModelAskHandle(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, "")
 }
 
-func ModelClientAvaDataHandle(w http.ResponseWriter, r *http.Request) {
+func ModelClientAvaDataHandler(w http.ResponseWriter, r *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
@@ -366,7 +361,7 @@ func CreateWalletPageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 }
 
-func DownloadToolPageHandle(w http.ResponseWriter, r *http.Request) {
+func DownloadToolPageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	var t *template.Template
@@ -375,7 +370,7 @@ func DownloadToolPageHandle(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 }
 
-func ComputingClientTrainPageHandle(w http.ResponseWriter, request *http.Request) {
+func ComputingClientTrainPageHandler(w http.ResponseWriter, request *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	t, _ := template.ParseFiles("template/computing_train.html")
@@ -438,7 +433,7 @@ func ComputingClientWalletPageHandler(w http.ResponseWriter, request *http.Reque
 	t.Execute(w, nil)
 }
 
-func ComputingClientDataAskHandle(w http.ResponseWriter, request *http.Request) {
+func ComputingClientDataAskHandler(w http.ResponseWriter, request *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	t, _ := template.ParseFiles("template/computing_data_ask.html")
@@ -1026,12 +1021,17 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 
 	computingfrom := request.PostFormValue("computingfrom")
 
-	path := utils.MakeDirectory("train_"+computingfrom)
-	utils.DownloadFile(modelIpfsHash, path+"modelFile.json")
-	utils.DownloadFile(dataIpfsHash, path+"dataFile.json")
+	uploadPath, directoryPath:= utils.MakeDirectory("train_"+computingfrom)
+	if uploadPath != "" {
+		utils.DownloadFile(modelIpfsHash, uploadPath+"modelFile.json")
+		utils.DownloadFile(dataIpfsHash, uploadPath+"dataFile.json")
+		utils.CopyTrainCode(directoryPath)
+	}
 
 
-	_, err := http.Get("http://127.0.0.1:9091/dockerbackend/starttrain?from="+computingfrom+"&directorypath="+path)
+
+
+	_, err := http.Get("http://127.0.0.1:9091/dockerbackend/starttrain?from="+computingfrom+"&directorypath="+directoryPath)
 	if err != nil {
 		log.Println("运算方删除computingHash失败", err)
 		data = Data{Msg: "运算方删除computingHash失败", Code: 500}
@@ -1106,18 +1106,18 @@ func ComputingClientUploadEncryptedDataHandler(w http.ResponseWriter, request *h
 	//t, _ = template.ParseFiles("template/indexcomputer.html")
 }
 
-func DataClientUplodFile(w http.ResponseWriter, r *http.Request) {
+func DataClientUplodFileHandler(w http.ResponseWriter, r *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	// handle
 	var data Data
-	fileName, err := saveFileToLocal(r)
+	fileName, err := utils.SaveFileToLocal(r)
 	if err != nil {
 		data = Data{Msg: "文件保存失败", Code:500}
 	} else {
-		hash, err := upload_file(fileName)
+		hash, err := utils.UploadFile(fileName)
 		if err != nil {
 			data = Data{Msg:"上传文件至ipfs失败", Code: 500}
 		} else {
@@ -1131,44 +1131,18 @@ func DataClientUplodFile(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonStr)
 }
 
-func ModelClientUploadFile(w http.ResponseWriter, r *http.Request) {
+func ModelClientUploadFileHandler(w http.ResponseWriter, r *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	// handle
 	var data Data
-	fileName, err := saveFileToLocal(r)
+	fileName, err := utils.SaveFileToLocal(r)
 	if err != nil {
 		data = Data{Msg: "文件保存失败", Code:500}
 	} else {
-		hash, err := upload_file(fileName)
-		if err != nil {
-			data = Data{Msg:"上传文件至ipfs失败", Code: 500}
-		} else {
-			data = Data{Msg: hash, Code: 200}
-		}
-	}
-
-	// response
-	jsonStr, _ := json.Marshal(data)
-	log.Println(string(jsonStr))
-	w.Write(jsonStr)
-}
-
-
-func ComputingClientUploadFile(w http.ResponseWriter, r *http.Request) {
-	// header
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-
-	// handle
-	var data Data
-	fileName, err := saveFileToLocal(r)
-	if err != nil {
-		data = Data{Msg: "文件保存失败", Code:500}
-	} else {
-		hash, err := upload_file(fileName)
+		hash, err := utils.UploadFile(fileName)
 		if err != nil {
 			data = Data{Msg:"上传文件至ipfs失败", Code: 500}
 		} else {
@@ -1183,69 +1157,35 @@ func ComputingClientUploadFile(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func upload_file(filename string) (string, error){
-	// run ipfs add -r filename
-	cmd := exec.Command("ipfs", "add", "-r", filename)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	err := cmd.Run()
-	if err != nil {
-		// run: ipfs daemon
-		cmdIpfsDaemon := exec.Command("ipfs", "daemon")
-		cmdIpfsDaemon.Run()
-		// try again
-		cmd := exec.Command("ipfs", "add", "-r", filename)
-		cmd.Stdout = &out
-		err := cmd.Run()
+func ComputingClientUploadFileHandler(w http.ResponseWriter, r *http.Request) {
+	// header
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
+	// handle
+	var data Data
+	fileName, err := utils.SaveFileToLocal(r)
+	if err != nil {
+		data = Data{Msg: "文件保存失败", Code:500}
+	} else {
+		hash, err := utils.UploadFile(fileName)
 		if err != nil {
-			log.Print(err)
-			os.Remove(filename)
-			return "", err
+			data = Data{Msg:"上传文件至ipfs失败", Code: 500}
+		} else {
+			data = Data{Msg: hash, Code: 200}
 		}
 	}
-	out_str := strings.Split(out.String(), " ")
-	hash := out_str[1]
-	os.Remove(filename)
-	return hash, nil
+
+	// response
+	jsonStr, _ := json.Marshal(data)
+	log.Println(string(jsonStr))
+	w.Write(jsonStr)
 }
 
-func saveFileToLocal(r *http.Request)(string, error){
-	fileName := "file_" + getTimeStamp()
-	// 根据字段名获取表单文件
-	formFile, _, err := r.FormFile("uploadfile")
-	if err != nil {
-		log.Printf("Get form file failed: %s\n", err)
-		return "", err
-	}
-	defer formFile.Close()
 
-	// 创建保存文件
-	destFile, err := os.Create("upload_file/" + fileName)
-	if err != nil {
-		log.Printf("Create failed: %s\n", err)
-		return "", err
-	}
-	defer destFile.Close()
 
-	// 读取表单文件，写入保存文件
-	_, err = io.Copy(destFile, formFile)
-	if err != nil {
-		log.Printf("Write file failed: %s\n", err)
-		return "", err
-	}
-	return "./upload_file/" + fileName, nil
-}
 
-// get unique timestamp string
-var time_mutex sync.Mutex
-func getTimeStamp()string{
-	time_mutex.Lock()
-	time_stamp := strconv.FormatInt(time.Now().UnixNano(), 10)
-	time.Sleep(1)
-	time_mutex.Unlock()
-	return time_stamp
-}
+
 
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {

@@ -2,14 +2,34 @@ package utils
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/hex"
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
+	"sync"
+	"time"
 )
+
+
+
+const(
+
+
+	WINdOSPATH = "D://distribute_ai_users//"
+	WINDOSCODEPATH = "D://MNISTCode//."
+
+
+	LINUXPATH = "//root//distribute_ai_users//"
+	LINUXCODEPATH = "//root//MNISTCode//."
+
+)
+
 
 
 var myMap map[string]string
@@ -41,17 +61,99 @@ func DownloadFile(hash string, filename string) {
 	}
 }
 
-func MakeDirectory(dirname string)(path string){
+func MakeDirectory(dirname string)(userPath string, directortPath string){
 
-	cmd := exec.Command("mkdir","-p", "//root//"+dirname)
+	cmd := exec.Command("mkdir","-p", LINUXPATH+dirname)
 	err := cmd.Run()
 	if err != nil {
-		fmt.Println(err)
-		return ""
+		fmt.Println("create user directory fail: ", err)
+		return "",""
 	}
-	return "//root//"+dirname+"//"
+	cmd = exec.Command("mkdir","-p", LINUXPATH+dirname+"//upload")
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println("create upload directory fail: ", err)
+		return "",""
+	}
+	return LINUXPATH+dirname+"//upload//", LINUXPATH+dirname+"//"
 }
 
+func CopyTrainCode(directoryPath string){
+
+	cmd := exec.Command("cp","-r", LINUXCODEPATH, directoryPath)
+	err := cmd.Run()
+	if err != nil {
+		fmt.Println("copy train code fial: ", err)
+	}
+
+}
+
+// get unique timestamp string
+var time_mutex sync.Mutex
+func getTimeStamp()string{
+	time_mutex.Lock()
+	time_stamp := strconv.FormatInt(time.Now().UnixNano(), 10)
+	time.Sleep(1)
+	time_mutex.Unlock()
+	return time_stamp
+}
+
+
+func UploadFile(filename string) (string, error){
+	// run ipfs add -r filename
+	cmd := exec.Command("ipfs", "add", "-r", filename)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		// run: ipfs daemon
+		cmdIpfsDaemon := exec.Command("ipfs", "daemon")
+		cmdIpfsDaemon.Run()
+		// try again
+		cmd := exec.Command("ipfs", "add", "-r", filename)
+		cmd.Stdout = &out
+		err := cmd.Run()
+
+		if err != nil {
+			log.Print(err)
+			os.Remove(filename)
+			return "", err
+		}
+	}
+	out_str := strings.Split(out.String(), " ")
+	hash := out_str[1]
+	os.Remove(filename)
+	return hash, nil
+}
+
+
+
+func SaveFileToLocal(r *http.Request)(string, error){
+	fileName := "file_" + getTimeStamp()
+	// 根据字段名获取表单文件
+	formFile, _, err := r.FormFile("uploadfile")
+	if err != nil {
+		log.Printf("Get form file failed: %s\n", err)
+		return "", err
+	}
+	defer formFile.Close()
+
+	// 创建保存文件
+	destFile, err := os.Create("upload_file/" + fileName)
+	if err != nil {
+		log.Printf("Create failed: %s\n", err)
+		return "", err
+	}
+	defer destFile.Close()
+
+	// 读取表单文件，写入保存文件
+	_, err = io.Copy(destFile, formFile)
+	if err != nil {
+		log.Printf("Write file failed: %s\n", err)
+		return "", err
+	}
+	return "./upload_file/" + fileName, nil
+}
 
 func ReadFile(filepath string)(string){
 

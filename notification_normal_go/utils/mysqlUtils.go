@@ -11,7 +11,7 @@ import (
 
 const (
 	userName = "root"
-	password = "12345678"
+	password = "123456"
 	ip       = "127.0.0.1"
 	port     = "3306"
 	dbName   = "distributeai"
@@ -34,12 +34,14 @@ func InitMysqlConnection() {
 				conn, err := sql.Open("mysql", path)
 				if err != nil {
 					log.Println(err)
+				}else{
+					db = conn
+					//设置数据库最大连接数
+					db.SetConnMaxLifetime(100)
+					//设置上数据库最大闲置连接数
+					db.SetMaxIdleConns(10)
 				}
-				db = conn
-				//设置数据库最大连接数
-				db.SetConnMaxLifetime(100)
-				//设置上数据库最大闲置连接数
-				db.SetMaxIdleConns(10)
+
 				//验证连接
 				if err := db.Ping(); err != nil {
 					log.Println("opon database fail", err)
