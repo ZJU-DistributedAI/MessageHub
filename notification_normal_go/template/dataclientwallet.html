@@ -156,6 +156,19 @@
           <hr>
           <p>Manage your wallet.</p>
 
+            <div class="card mb-3">
+                <div class="card-header">上传文件</div>
+                <div class="card-body">
+                    <FORM ENCTYPE="multipart/form-data" ACTION="/dataclient/uploadfile" METHOD=POST>
+
+                        <INPUT NAME="uploadfile" TYPE="file">
+
+                        <INPUT TYPE="submit" VALUE="Upload File">
+
+                    </FORM>
+                </div>
+            </div>
+
           <div class="card mb-3">
             <div class="card-header">添加数据的metadata</div>
             <div class="card-body">

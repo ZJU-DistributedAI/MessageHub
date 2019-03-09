@@ -171,7 +171,7 @@ func InitEthereumTransactionMonitor(){
 	filterId, err := utils.CreateNewPendingTransactionFilter(client)
 
 	if err != nil {
-		fmt.Println("创建交易过滤器失败")
+		fmt.Println("创建交易过滤器失败", err)
 		return
 	}
 
