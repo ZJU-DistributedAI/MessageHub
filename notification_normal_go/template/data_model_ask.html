@@ -264,18 +264,18 @@
            console.log(data);//
            var jsonObj = $.parseJSON(data);
            alert("收到运算方请求"+jsonObj.msg);
-           $.ajax(gettingComputingAgree); //成功也要再次请求
+           //$.ajax(gettingComputingAgree); //成功也要再次请求
          },
          fail : function (data) { //当请求时间过长（默认为60秒），就再次调用ajax长轮询
            console.log(data);//？
            alert("正无运算方请求");
-           $.ajax(gettingComputingAgree); //关键在这里，回调函数内再次请求Ajax
+           // $.ajax(gettingComputingAgree); //关键在这里，回调函数内再次请求Ajax
 
          },
          error:function(data){   //当请求时间过长（默认为60秒），就再次调用ajax长轮询
            console.log(data);//？
            alert("正无运算方请求");
-           $.ajax(gettingComputingAgree);
+           // $.ajax(gettingComputingAgree);
          }
 
        };

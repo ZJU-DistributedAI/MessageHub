@@ -229,18 +229,18 @@
                   console.log(data);//
                   var jsonObj = $.parseJSON(data);
                   alert("收到训练结果"+jsonObj.msg);
-                  $.ajax(gettingTrainResult); //成功也要再次请求？
+                  // $.ajax(gettingTrainResult); //成功也要再次请求？
               },
               fail : function (data) { //当请求时间过长（默认为60秒），就再次调用ajax长轮询
                   console.log(data);//？
                   alert("正在训练中");
-                  $.ajax(gettingTrainResult); //关键在这里，回调函数内再次请求Ajax
+                  // $.ajax(gettingTrainResult); //关键在这里，回调函数内再次请求Ajax
 
               },
               error:function(data){   //当请求时间过长（默认为60秒），就再次调用ajax长轮询
                   console.log(data);//？
                   alert("正在训练中");
-                  $.ajax(gettingTrainResult);
+                  // $.ajax(gettingTrainResult);
               }
 
           };
