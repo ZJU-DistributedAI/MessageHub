@@ -465,7 +465,7 @@ func DataClientAddMetaDataHandler(w http.ResponseWriter, request *http.Request) 
 		data = Data{Msg: "参数不完全", Code: 201}
 	} else {
 		value := "dadd:" + metaDataIpfsHash
-		to := common.HexToAddress("")
+		to := common.HexToAddress("0x313e7e442c0d5998df30691242e13a4ca9881a18")
 		//发起交易到以太坊
 		message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
 			"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")

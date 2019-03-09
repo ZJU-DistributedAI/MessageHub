@@ -254,33 +254,33 @@
     {
       window.location.href =interfaceAddress+ url;
     }
-    // //前端Ajax持续调用服务端，称为Ajax轮询技术
-    // var gettingComputingAgree = {
-    //   url:interfaceAddress+'/data/client/monitorcomputingaggree',
-    //   type:'post',
-    //   dataType : 'text', // use json instead of text
-    //   data:"",
-    //   success : function(data){
-    //     console.log(data);//
-    //     var jsonObj = $.parseJSON(data);
-    //     alert("收到运算方请求"+jsonObj.msg);
-    //     $.ajax(gettingComputingAgree); //成功也要再次请求
-    //   },
-    //   fail : function (data) { //当请求时间过长（默认为60秒），就再次调用ajax长轮询
-    //     console.log(data);//？
-    //     alert("正无运算方请求");
-    //     $.ajax(gettingComputingAgree); //关键在这里，回调函数内再次请求Ajax
-    //
-    //   },
-    //   error:function(data){   //当请求时间过长（默认为60秒），就再次调用ajax长轮询
-    //     console.log(data);//？
-    //     alert("正无运算方请求");
-    //     $.ajax(gettingComputingAgree);
-    //   }
-    //
-    // };
-    //
-    // $.ajax(gettingComputingAgree);
+    //前端Ajax持续调用服务端，称为Ajax轮询技术
+    var gettingComputingAgree = {
+    url:interfaceAddress+'/data/client/monitorcomputingaggree',
+        type:'post',
+        dataType : 'text', // use json instead of text
+        data:"",
+        success : function(data){
+           console.log(data);//
+           var jsonObj = $.parseJSON(data);
+           alert("收到运算方请求"+jsonObj.msg);
+           $.ajax(gettingComputingAgree); //成功也要再次请求
+         },
+         fail : function (data) { //当请求时间过长（默认为60秒），就再次调用ajax长轮询
+           console.log(data);//？
+           alert("正无运算方请求");
+           $.ajax(gettingComputingAgree); //关键在这里，回调函数内再次请求Ajax
+
+         },
+         error:function(data){   //当请求时间过长（默认为60秒），就再次调用ajax长轮询
+           console.log(data);//？
+           alert("正无运算方请求");
+           $.ajax(gettingComputingAgree);
+         }
+
+       };
+
+       $.ajax(gettingComputingAgree);
 
 
     function ShowingData(json){
