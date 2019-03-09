@@ -1031,7 +1031,7 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 
 
 
-	_, err := http.Get("http://127.0.0.1:9091/dockerbackend/starttrain?from="+computingfrom+"&directorypath="+directoryPath)
+	_, err := http.Get("http://127.0.0.1:9093/dockerbackend/starttrain?from="+computingfrom+"&directorypath="+directoryPath)
 	if err != nil {
 		log.Println("运算方删除computingHash失败", err)
 		data = Data{Msg: "运算方删除computingHash失败", Code: 500}
