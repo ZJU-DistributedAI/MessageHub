@@ -74,6 +74,7 @@ func startWebService() {
 
 
 	// 启动web服务，监听9090端口
+	log.Println("Start Listen")
 	err := http.ListenAndServe(":9092", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
