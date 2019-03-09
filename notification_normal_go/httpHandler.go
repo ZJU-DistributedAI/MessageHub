@@ -842,7 +842,7 @@ func ModelClientUploadResultHandler(w http.ResponseWriter, request *http.Request
 }
 
 // TODO: test
-func ComputingClientMonitorDataClientHandler(w http.ResponseWriter, request *http.Request) {
+func ComputingClientMonitorDataHandler(w http.ResponseWriter, request *http.Request) {
 	/**
 	ajax长连接
 	运算方监听是否有数据方的运算资源请求
@@ -853,8 +853,26 @@ func ComputingClientMonitorDataClientHandler(w http.ResponseWriter, request *htt
 
 	// handle
 	var data Data
-	dataAskComputingReceipt := GetDataAskComputingReceipt()
-	data = Data{Msg: dataAskComputingReceipt.DataIpfsHash + ":" + dataAskComputingReceipt.From+ ":" + dataAskComputingReceipt.ModelAddress, Code: 200}
+	computingGetDataReceipt := GetComputingGetDataReceipt()
+	data = Data{Msg: computingGetDataReceipt.DataIpfsHash + ":" + computingGetDataReceipt.From+ ":" + computingGetDataReceipt.ModelAddress, Code: 200}
+
+	// response
+	js, _ := json.Marshal(data)
+	w.Write(js)
+}
+func ComputingClientMonitorModelHandler(w http.ResponseWriter, request *http.Request) {
+	/**
+	ajax长连接
+	运算方监听是否有数据方的运算资源请求
+	*/
+	// header
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+	// handle
+	var data Data
+	computingGetModelReceipt := GetComputingGetModelReceipt()
+	data = Data{Msg: computingGetModelReceipt.ModelIpfsHash + ":" + computingGetModelReceipt.ContractHash ,Code: 200}
 
 	// response
 	js, _ := json.Marshal(data)

@@ -66,7 +66,8 @@ func startWebService() {
 	http.HandleFunc("/computingclient/trainrequest", ComputingClientTrainReceiptHandler)//font OK,
 	http.HandleFunc("/computingclient/train", ComputingClientTrainHandler)//font OK,
 	http.HandleFunc("/computingclient/uploadencrypteddata", ComputingClientUploadEncryptedDataHandler)
-	http.HandleFunc("/computingclient/monitordataclient", ComputingClientMonitorDataClientHandler)
+	http.HandleFunc("/computingclient/monitordata", ComputingClientMonitorDataHandler)
+	http.HandleFunc("/computingclient/monitormodel", ComputingClientMonitorModelHandler)
 	http.HandleFunc("/computingclient/getdockerstatus", ComputingClientGetDockerStatus)
 
 	//DockerBackend CallBack

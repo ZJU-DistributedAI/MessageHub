@@ -27,7 +27,12 @@ type DataClientAddMetaDataReceipt struct {
 
 }
 
-type DataAskComputingReceipt struct {
+type ComputingGetModelReceipt struct {
+	ModelIpfsHash string
+	ContractHash string
+}
+
+type ComputingGetDataReceipt struct {
 	DataIpfsHash string
 	ModelAddress string
 	ComputingHash string
@@ -55,7 +60,8 @@ type DataClientIsAggreeReceipt struct {
 var mindedTransactionHashChannel chan TransactionReceipt
 var modelClientPullDataChannel chan ModelClientPullDataReceipt
 var dataAggreeChannel chan DataAggreeReceipt
-var dataAskComputingChannel chan DataAskComputingReceipt
+var computingGetDataChannel chan ComputingGetDataReceipt
+var computingGetModelChannel chan ComputingGetModelReceipt
 var dataClientMonitorComputingAggreeChannel chan DataClientMonitorComputingAggreeReciept
 var dataClientIsAggreeChannel chan DataClientIsAggreeReceipt
 
@@ -65,7 +71,8 @@ func InitChannels(){
 	mindedTransactionHashChannel = make(chan TransactionReceipt)
 	modelClientPullDataChannel = make(chan ModelClientPullDataReceipt)
 	dataAggreeChannel = make(chan DataAggreeReceipt)
-	dataAskComputingChannel = make(chan DataAskComputingReceipt)
+	computingGetModelChannel = make(chan ComputingGetModelReceipt)
+	computingGetDataChannel = make(chan ComputingGetDataReceipt)
 	dataClientMonitorComputingAggreeChannel = make(chan DataClientMonitorComputingAggreeReciept)
 	dataClientIsAggreeChannel = make(chan DataClientIsAggreeReceipt)
 
@@ -187,19 +194,31 @@ func GetModelClientPullDataReceipt()(ModelClientPullDataReceipt){
 
 
 
-func GetDataAskComputingReceipt()(DataAskComputingReceipt){
+func GetComputingGetDataReceipt()(ComputingGetDataReceipt){
 
 
 
-	dataAskComputingReceipt := <- dataAskComputingChannel
+	dataAskComputingReceipt := <- computingGetDataChannel
 
 	if &dataAskComputingReceipt != nil {
 		return dataAskComputingReceipt
 	}
 
-	return DataAskComputingReceipt{}
+	return ComputingGetDataReceipt{}
 
 }
+
+
+func GetComputingGetModelReceipt()(ComputingGetModelReceipt){
+
+	computingGetModelReceipt := <- computingGetModelChannel
+
+	if &computingGetModelReceipt != nil {
+		return computingGetModelReceipt
+	}
+	return ComputingGetModelReceipt{}
+}
+
 
 func GetDataClientMonitorComputingAggreeReceipt()(DataClientMonitorComputingAggreeReciept){
 
@@ -234,7 +253,7 @@ func distributeTransactionByInput(from string,input string,conn redis.Conn){
 	if splits[0] == "dadd"{ //数据方上传元数据
 		utils.Sadd2Redis(conn,"metaDataHash", from, splits[1])
 	}else if splits[0] == "dpush"{
-		dataAskComputingChannel <- DataAskComputingReceipt{DataIpfsHash:splits[1], ModelAddress:splits[2],
+		computingGetDataChannel <- ComputingGetDataReceipt{DataIpfsHash:splits[1], ModelAddress:splits[2],
 			ComputingHash:"", From:splits[3]}
 	}else if splits[0] == "ddelete" {
 		utils.SremFromRedis(conn, "metaDataHash", from, splits[1])
@@ -243,7 +262,8 @@ func distributeTransactionByInput(from string,input string,conn redis.Conn){
 	}else if splits[0] == "daggree" {//数据方同意模型方的请求
 		dataAggreeChannel <- DataAggreeReceipt{DataIpfsHash: splits[1], From: from}
 	}else if splits[0]=="madd" { //模型方上传模型Hash
-		utils.Sadd2Redis(conn,"modelHash",from,splits[1])
+		computingGetModelChannel <- ComputingGetModelReceipt{ModelIpfsHash: splits[1], ContractHash:splits[2]}
+		//utils.Sadd2Redis(conn,"modelHash",from,splits[1])
 	}else if splits[0]=="cadd" { //运算方上传运算资源Hash
 		utils.Sadd2Redis(conn,"computingHash",from,splits[1])
 	}else if splits[0]== "mask" { //模型方请求数据，根据上传的metaDataHash参数
