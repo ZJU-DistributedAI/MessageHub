@@ -153,11 +153,11 @@
             <li class="breadcrumb-item">
               <a onclick="doLocation('/computingclient/index')">Dashboard</a>
             </li>
-            <li class="breadcrumb-item active">Computing Client Check Data Request</li>
+            <li class="breadcrumb-item active">Computing Client Check Model Request</li>
           </ol>
 
           <!-- Page Content -->
-          <h1>Computing Client Check Data Request</h1>
+          <h1>Computing Client Check Model Request</h1>
           <hr>
           <p>Result.</p>
 
@@ -226,14 +226,14 @@
 
 
       var gettingTrainResult = {
-          url:interfaceAddress+'/computingclient/monitordata',
+          url:interfaceAddress+'/computingclient/monitormodel',
           type:'post',
           dataType : 'text', // use json instead of text
           data: "",
           success : function(data){
               console.log(data);//
               var jsonObj = $.parseJSON(data);
-              alert("收到数据方信息"+jsonObj.msg);
+              alert("收到模型方信息"+jsonObj.msg);
           },
           fail : function (data) { //当请求时间过长（默认为60秒），就再次调用ajax长轮询
               console.log(data);//

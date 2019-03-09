@@ -59,6 +59,7 @@ func startWebService() {
 	http.HandleFunc("/computingclient/walletpage", ComputingClientWalletPageHandler)                //font OK, back ok
 	http.HandleFunc("/computingclient/trainpage", ComputingClientTrainPageHandler)                                 //font OK, back ok
 	http.HandleFunc("/computingclient/dataaskingpage", ComputingClientDataAskHandler)           //font OK, back ok
+	http.HandleFunc("/computingclient/modelaskingpage", ComputingClientModelAskHandler)
 	http.HandleFunc("/computingclient/adddata", ComputingClientAddDataHandler)                      //font OK,
 	http.HandleFunc("/computingclient/agreerequest", ComputingClientAggreeRequestHandler)           //font OK,
 	http.HandleFunc("/computingclient/deletedcomputing", ComputingClientDeleteComputingHashHandler) //font OK,

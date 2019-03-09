@@ -439,7 +439,12 @@ func ComputingClientDataAskHandler(w http.ResponseWriter, request *http.Request)
 	t, _ := template.ParseFiles("template/computing_data_ask.html")
 	t.Execute(w, nil)
 }
-
+func ComputingClientModelAskHandler(w http.ResponseWriter, request *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+	t, _ := template.ParseFiles("template/computing_model_ask.html")
+	t.Execute(w, nil)
+}
 // TODO: test SendTransaction
 func DataClientAddMetaDataHandler(w http.ResponseWriter, request *http.Request) {
 
