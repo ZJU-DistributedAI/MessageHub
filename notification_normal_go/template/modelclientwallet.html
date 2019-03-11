@@ -150,11 +150,11 @@
           <div class="card mb-3">
             <div class="card-header">上传文件</div>
             <div class="card-body">
-              <FORM ENCTYPE="multipart/form-data" ACTION="/dataclient/uploadfile" METHOD=POST>
+              <FORM>
 
-                <INPUT NAME="uploadfile" TYPE="file">
+                <INPUT NAME="uploadfile" TYPE="file" ID="uploadFileId">
 
-                <INPUT TYPE="submit" VALUE="Upload File">
+                <INPUT ID="upload_btn" TYPE="submit" VALUE="Upload File">
 
               </FORM>
             </div>
@@ -438,7 +438,25 @@
               });
           });
 
-
+          $("#upload_btn").on('click', function () {
+            console.log("click upload file ok");
+            var file_obj = document.getElementById('uploadFileId').files[0];
+            var fd = new FormData();
+            fd.append('uploadfile', file_obj);
+            $.ajax({
+              url:interfaceAddress+'/dataclient/uploadfile',
+              type: 'post',
+              data: fd,
+              processData:false,
+              contentType: false,
+              success : function(data) {
+                console.log(data);//
+                var jsonObj = $.parseJSON(data);
+                alert(jsonObj.msg);
+              }
+            });
+            return false;
+          });
 
 
       })
