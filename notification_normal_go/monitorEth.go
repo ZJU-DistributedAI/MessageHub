@@ -55,6 +55,12 @@ type DataClientIsAggreeReceipt struct {
 	From string
 }
 
+type ModelClientGetParamterReceipt struct {
+
+	Result string
+	From string
+}
+
 
 
 var mindedTransactionHashChannel chan TransactionReceipt
@@ -65,6 +71,7 @@ var computingGetModelChannel chan ComputingGetModelReceipt
 var dataClientMonitorComputingAggreeChannel chan DataClientMonitorComputingAggreeReciept
 var dataClientIsAggreeChannel chan DataClientIsAggreeReceipt
 
+var modelClientGetParamaterChannel chan ModelClientGetParamterReceipt
 
 
 func InitChannels(){
@@ -75,7 +82,7 @@ func InitChannels(){
 	computingGetDataChannel = make(chan ComputingGetDataReceipt)
 	dataClientMonitorComputingAggreeChannel = make(chan DataClientMonitorComputingAggreeReciept)
 	dataClientIsAggreeChannel = make(chan DataClientIsAggreeReceipt)
-
+	modelClientGetParamaterChannel = make(chan ModelClientGetParamterReceipt)
 }
 
 //为每次获取到处于pending状态的交易时，对其创建协程进行监听
