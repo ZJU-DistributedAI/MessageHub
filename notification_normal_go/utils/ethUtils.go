@@ -77,7 +77,7 @@ func Connect2Eth() (*rpc.Client) {
 		if clientConnect == nil {
 			mutex.Lock()
 			if clientConnect == nil{
-				client, err := rpc.Dial(SERVERPATH)
+				client, err := rpc.Dial(LOCALPATH)
 				if err != nil {
 					ErrorPanic(err)
 					time.Sleep(500) //等待0.5秒后重新尝试连接

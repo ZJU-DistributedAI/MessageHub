@@ -52,6 +52,7 @@ func startWebService() {
 	http.HandleFunc("/modelclient/uploadmodel", ModelClientUploadModelHandler) //font OK,
 	http.HandleFunc("/modelclient/uploadresult", ModelClientUploadResultHandler)
 	http.HandleFunc("/modelclient/monitordataclient", ModelClientMonitorDataClientResultHandler)
+	http.HandleFunc("/modelclient/monitorparameter", ModelClientMonitorParamterHandler)
 
 	//computing client
 	http.HandleFunc("/computingclient/uploadfile", ComputingClientUploadFileHandler)

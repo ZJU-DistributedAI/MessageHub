@@ -176,6 +176,16 @@ func ReadFile(filepath string)(string){
 
 }
 
+func GetFederateLearningResult()(result string){
+
+
+
+
+	return ""
+
+}
+
+
 
 func InitConfig(path string) map[string]string {
 	//初始化

@@ -836,6 +836,22 @@ func ModelClientUploadModelHandler(w http.ResponseWriter, request *http.Request)
 
 }
 
+
+func ModelClientMonitorParamterHandler(w http.ResponseWriter, request *http.Request){
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+	result := utils.GetFederateLearningResult()
+
+
+	data := Data{Msg: result, Code:200}
+
+	js, _ := json.Marshal(data)
+	w.Write(js)
+
+}
+
 // TODO: test
 func ModelClientUploadResultHandler(w http.ResponseWriter, request *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -1056,14 +1072,15 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 	}
 
 
-
-
 	_, err := http.Get("http://127.0.0.1:9093/dockerbackend/starttrain?from="+computingfrom+"&directorypath="+directoryPath)
 	if err != nil {
 		log.Println("运算方调用容器后端失败", err)
 		data = Data{Msg: "运算方调用容器后端失败", Code: 500}
 	} else {
 		result := utils.ReadFile("//root//MachineLearning//parameters.json")
+
+		modelClientGetParamaterChannel <- ModelClientGetParamterReceipt{Result:result, From:computingfrom}
+
 		data = Data{Msg: result, Code: 200}
 	}
 
