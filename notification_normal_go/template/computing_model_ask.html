@@ -235,14 +235,14 @@
               var jsonObj = $.parseJSON(data);
               alert("收到模型方信息"+jsonObj.msg);
           },
-          fail : function (data) { //当请求时间过长（默认为60秒），就再次调用ajax长轮询
+          fail : function (data) {
               console.log(data);//
               alert("暂无消息");
 
 
           },
-          error:function(data){   //当请求时间过长（默认为60秒），就再次调用ajax长轮询
-              console.log(data);//
+          error:function(data){
+              console.log(data);
               alert("暂无消息");
 
           }

@@ -39,8 +39,8 @@ func startWebService() {
 
 	http.HandleFunc("/dataclient/askcomputing", DataClientAskComputingHandler)               //font OK,
 	http.HandleFunc("/dataclient/deletedata", DataClientDeleteDataHandler)                   //font OK,
-	http.HandleFunc("/dataclient/monitormetadata", DataClientMonitorMetaDataHandler)
-	http.HandleFunc("/data/client/monitorcomputingaggree", DataClientMonitorComputingAggreeHandler)
+	http.HandleFunc("/dataclient/monitormetadata", DataClientMonitorMetaDataHandler)//font ok
+	http.HandleFunc("/data/client/monitorcomputingaggree", DataClientMonitorComputingAggreeHandler)//font ok
 
 	//model client
 	http.HandleFunc("/modelclient/uploadfile", ModelClientUploadFileHandler)
@@ -48,7 +48,7 @@ func startWebService() {
 	http.HandleFunc("/modelclient/walletpage", ModelClientWalletPageHandler)    //font OK, back ok
 	http.HandleFunc("/modelclient/availabledatapage", ModelClientAvaDataHandler) //font OK, back ok
 	http.HandleFunc("/modelclient/askdata", ModelClientAskDataHandler)          //font OK,
-	http.HandleFunc("/modelclient/createcontract", ModelClientCreateContractHandler)
+	http.HandleFunc("/modelclient/createcontract", ModelClientCreateContractHandler) //font ok
 	http.HandleFunc("/modelclient/uploadmodel", ModelClientUploadModelHandler) //font OK,
 	http.HandleFunc("/modelclient/uploadresult", ModelClientUploadResultHandler)
 	http.HandleFunc("/modelclient/monitordataclient", ModelClientMonitorDataClientResultHandler)
@@ -60,7 +60,7 @@ func startWebService() {
 	http.HandleFunc("/computingclient/walletpage", ComputingClientWalletPageHandler)                //font OK, back ok
 	http.HandleFunc("/computingclient/trainpage", ComputingClientTrainPageHandler)                                 //font OK, back ok
 	http.HandleFunc("/computingclient/dataaskingpage", ComputingClientDataAskHandler)           //font OK, back ok
-	http.HandleFunc("/computingclient/modelaskingpage", ComputingClientModelAskHandler)
+	http.HandleFunc("/computingclient/modelaskingpage", ComputingClientModelAskHandler)   //font OK, back ok
 	http.HandleFunc("/computingclient/adddata", ComputingClientAddDataHandler)                      //font OK,
 	http.HandleFunc("/computingclient/agreerequest", ComputingClientAggreeRequestHandler)           //font OK,
 	http.HandleFunc("/computingclient/deletedcomputing", ComputingClientDeleteComputingHashHandler) //font OK,
@@ -68,8 +68,8 @@ func startWebService() {
 	http.HandleFunc("/computingclient/trainrequest", ComputingClientTrainReceiptHandler)//font OK,
 	http.HandleFunc("/computingclient/train", ComputingClientTrainHandler)//font OK,
 	http.HandleFunc("/computingclient/uploadencrypteddata", ComputingClientUploadEncryptedDataHandler)
-	http.HandleFunc("/computingclient/monitordata", ComputingClientMonitorDataHandler)
-	http.HandleFunc("/computingclient/monitormodel", ComputingClientMonitorModelHandler)
+	http.HandleFunc("/computingclient/monitordata", ComputingClientMonitorDataHandler)//font OK,
+	http.HandleFunc("/computingclient/monitormodel", ComputingClientMonitorModelHandler)//font OK,
 	http.HandleFunc("/computingclient/getdockerstatus", ComputingClientGetDockerStatus)
 
 	//DockerBackend CallBack

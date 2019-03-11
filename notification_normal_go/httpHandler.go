@@ -499,15 +499,14 @@ func DataClientMonitorMetaDataHandler(w http.ResponseWriter, request *http.Reque
 	*/
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-	var t *template.Template
+	log.Println("收到请求DataClientMonitorMetaDataHandler")
 	var data Data
-	t, _ = template.ParseFiles("template/indexdata.html")
 
 	modelClientPullDataReceipt := GetModelClientPullDataReceipt()
 
 	data = Data{Msg: modelClientPullDataReceipt.Metadata + ":" + modelClientPullDataReceipt.From, Code: 200}
 	js, _ := json.Marshal(data)
-	t.Execute(w, js)
+	w.Write(js)
 }
 
 // TODO: test SendTransaction

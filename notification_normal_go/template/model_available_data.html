@@ -164,13 +164,10 @@
                     </tr>
                   </tfoot>
                   <tbody id="tb">
+
                     <tr>
-                      <td>Swagger-Cli</td>
-                      <td>Win/Mac OS/Linux</td>
-                    </tr>
-                    <tr>
-                        <td>Swagger-Cli</td>
-                        <td>Win/Mac OS/Linux</td>
+                        <td> </td>
+                        <td> </td>
                     </tr>
                   </tbody>
                 </table>
@@ -248,27 +245,36 @@
       window.location.href =interfaceAddress+ url;
     }
 
-    // $(window).on('load', function() {
-    //     console.log("hello");
-    //
-    //     $.ajax({
-    //         url:'http://127.0.0.1:3000/user/createwallet',
-    //         type:'post',
-    //         dataType : 'text', // use json instead of text
-    //         data: "",
-    //         success : function(data){
-    //             console.log(data);// for name use data.data.name
-    //             alert("操作成功");
-    //             ShowingData(data) ;
-    //
-    //         },
-    //         fail : function (data) {
-    //             console.log(data);// for name use data.data.name
-    //             alert("请求失败");
-    //         }
-    //     });
-    //
-    // });
+    $(window).on('load', function() {
+        console.log("hello");
+
+        $.ajax({
+            url:interfaceAddress+'/modelclient/monitordataclient',
+            type:'post',
+            dataType : 'text', // use json instead of text
+            data: "",
+            success : function(data){
+
+                console.log(data);//
+                var jsonObj = $.parseJSON(data);
+                alert("收到数据方请求"+jsonObj.msg);
+              // ShowingData(data) ;
+
+            },
+            fail : function (data) {
+              console.log(data);
+              alert("正无数据方请求");
+
+
+            },
+            error:function(data){
+              console.log(data);
+              alert("正无数据方请求");
+
+          }
+        });
+
+    });
 
     function ShowingData(json){
  
