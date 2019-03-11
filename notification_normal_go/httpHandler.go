@@ -858,7 +858,6 @@ func ModelClientUploadResultHandler(w http.ResponseWriter, request *http.Request
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	//var t *template.Template
 	//var data Data
-	//t, _ = template.ParseFiles("template/indexmodel.html")
 
 }
 
@@ -1077,11 +1076,9 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 		log.Println("运算方调用容器后端失败", err)
 		data = Data{Msg: "运算方调用容器后端失败", Code: 500}
 	} else {
-		result := utils.ReadFile("//root//MachineLearning//parameters.json")
+		//result := utils.ReadFile(directoryPath+"//parameters.json")
 
-		modelClientGetParamaterChannel <- ModelClientGetParamterReceipt{Result:result, From:computingfrom}
-
-		data = Data{Msg: result, Code: 200}
+		data = Data{Msg: "训练完成", Code: 200}
 	}
 
 	// response
