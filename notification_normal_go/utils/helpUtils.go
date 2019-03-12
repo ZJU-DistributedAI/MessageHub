@@ -170,18 +170,18 @@ func ReadFile(filepath string) string {
 
 // ------ start GetFederating ------
 type weightsStruct struct {
-	num int
+	Num int
 	W1  [][]float64
-	b1  [][]float64
+	B1  []float64
 	W2  [][]float64
-	b2  [][]float64
+	B2  []float64
 	W3  [][]float64
-	b3  [][]float64
+	B3  []float64
 }
 
 func GetFederateLearningResult() (result string) {
 	// 模型文件 参数 路径
-	modelfiles := []string{"./parameters.json", "./parameters.json"}
+	modelfiles := []string{"./parameter.json", "./parameter1.json", "./parameter2.json"}
 	// var allWeights weightsStruct = weightsStruct{}
 	allWeights := new(weightsStruct)
 	// fmt.Println(allWeights.W1)
@@ -189,47 +189,55 @@ func GetFederateLearningResult() (result string) {
 	for index := 0; index < len(modelfiles); index++ {
 		tempWeights := getModelFileWeights(modelfiles[index])
 		if index == 0 {
-			allWeights.num = tempWeights.num
-			countNum = tempWeights.num
-			allWeights.W1 = tempWeights.W1
-			allWeights.b1 = tempWeights.b1
-			allWeights.W2 = tempWeights.W2
-			allWeights.b2 = tempWeights.b2
-			allWeights.W3 = tempWeights.W3
-			allWeights.b3 = tempWeights.b3
-			// fmt.Println(tempWeights.W2)
-			break
+			allWeights.Num = tempWeights.Num
+			countNum = tempWeights.Num
+			// allWeights.W1 = tempWeights.W1
+			// allWeights.B1 = tempWeights.B1
+			// allWeights.W2 = tempWeights.W2
+			// allWeights.B2 = tempWeights.B2
+			// allWeights.W3 = tempWeights.W3
+			// allWeights.B3 = tempWeights.B3
+			allWeights.W1 = numMul(tempWeights.W1, tempWeights.Num)
+			allWeights.B1 = vectorNumMul(tempWeights.B1, tempWeights.Num)
+			allWeights.W2 = numMul(tempWeights.W2, tempWeights.Num)
+			allWeights.B2 = vectorNumMul(tempWeights.B2, tempWeights.Num)
+			allWeights.W3 = numMul(tempWeights.W3, tempWeights.Num)
+			allWeights.B3 = vectorNumMul(tempWeights.B3, tempWeights.Num)
+			// fmt.Println(tempWeights.B2)
+			continue
 		}
-
-		allWeights.W1 = matrixAdd(numMul(allWeights.W1, allWeights.num), numMul(tempWeights.W1, tempWeights.num))
-		allWeights.b1 = matrixAdd(numMul(allWeights.b1, allWeights.num), numMul(tempWeights.b1, tempWeights.num))
-		allWeights.W2 = matrixAdd(numMul(allWeights.W2, allWeights.num), numMul(tempWeights.W2, tempWeights.num))
-		allWeights.b2 = matrixAdd(numMul(allWeights.b2, allWeights.num), numMul(tempWeights.b2, tempWeights.num))
-		allWeights.W3 = matrixAdd(numMul(allWeights.W3, allWeights.num), numMul(tempWeights.W3, tempWeights.num))
-		allWeights.b3 = matrixAdd(numMul(allWeights.b3, allWeights.num), numMul(tempWeights.b3, tempWeights.num))
-		countNum += tempWeights.num
+		// fmt.Println(tempWeights.Num)
+		// fmt.Println(allWeights.Num)
+		allWeights.W1 = matrixAdd(allWeights.W1, numMul(tempWeights.W1, tempWeights.Num))
+		allWeights.B1 = vectorAdd(allWeights.B1, vectorNumMul(tempWeights.B1, tempWeights.Num))
+		allWeights.W2 = matrixAdd(allWeights.W2, numMul(tempWeights.W2, tempWeights.Num))
+		allWeights.B2 = vectorAdd(allWeights.B2, vectorNumMul(tempWeights.B2, tempWeights.Num))
+		allWeights.W3 = matrixAdd(allWeights.W3, numMul(tempWeights.W3, tempWeights.Num))
+		allWeights.B3 = vectorAdd(allWeights.B3, vectorNumMul(tempWeights.B3, tempWeights.Num))
+		countNum += tempWeights.Num
+		// fmt.Println(index, countNum)
 	}
-
+	// fmt.Println("countNum:", countNum)
+	// fmt.Println("1 allWeights.W1", allWeights.W1[:1][:1])
 	allWeights.W1 = matrixDiv(allWeights.W1, countNum)
-	allWeights.b1 = matrixDiv(allWeights.b1, countNum)
+	allWeights.B1 = vectorDiv(allWeights.B1, countNum)
 	allWeights.W2 = matrixDiv(allWeights.W2, countNum)
-	allWeights.b2 = matrixDiv(allWeights.b2, countNum)
+	allWeights.B2 = vectorDiv(allWeights.B2, countNum)
 	allWeights.W3 = matrixDiv(allWeights.W3, countNum)
-	allWeights.b3 = matrixDiv(allWeights.b3, countNum)
-	// fmt.Println(allWeights.W1)
-	// allWeights := getModelFileWeights("./parameters.json")
-	// fmt.Println(len(allWeights.W1))
+	allWeights.B3 = vectorDiv(allWeights.B3, countNum)
+	// fmt.Println("2 allWeights.W1", len(allWeights.W1))
+	// fmt.Println("2 allWeights.W1", allWeights.W1[:1][:1])
+
 	str, _ := json.Marshal(allWeights)
 	write2json(str)
-	fmt.Printf("%s\n", str)
-	return "ss"
+	// fmt.Printf("%s\n", str)
+	return "done"
 }
 
 func getModelFileWeights(modelfile string) (weights weightsStruct) {
 	JsonParse := NewJsonStruct()
 	weights = weightsStruct{}
 	JsonParse.Load(modelfile, &weights)
-	// fmt.Println(weights)
 	return weights
 }
 
@@ -244,17 +252,20 @@ func (jst *JsonStruct) Load(filename string, v interface{}) {
 
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
+		fmt.Println("%v", err)
 		return
 	}
 
 	err = json.Unmarshal(data, v)
 	if err != nil {
+		fmt.Println("%v", err)
 		return
 	}
 }
 
 // matrix add
 func matrixAdd(a [][]float64, b [][]float64) (c [][]float64) {
+
 	for i := 0; i < len(a); i++ {
 		t := []float64{}
 		for j := 0; j < len(a[0]); j++ {
@@ -263,16 +274,25 @@ func matrixAdd(a [][]float64, b [][]float64) (c [][]float64) {
 		}
 		c = append(c, t)
 	}
+
+	return c
+}
+func vectorAdd(a []float64, b []float64) (c []float64) {
+	t := []float64{}
+	for i := 0; i < len(a); i++ {
+		temp := a[i] + b[i]
+		t = append(t, temp)
+	}
+	c = t
 	return c
 }
 
 // matrix div
 func matrixDiv(a [][]float64, num int) (c [][]float64) {
 	if num == 0 {
+		fmt.Println("matrix div num", num)
 		return
 	}
-	// fmt.Println(len(a))
-	// fmt.Println(len(a[0]))
 	for i := 0; i < len(a); i++ {
 		t := []float64{}
 		for j := 0; j < len(a[0]); j++ {
@@ -284,8 +304,23 @@ func matrixDiv(a [][]float64, num int) (c [][]float64) {
 	return c
 }
 
-func numMul(a [][]float64, num int) (c [][]float64) {
+func vectorDiv(a []float64, num int) (c []float64) {
 	if num == 0 {
+		fmt.Println("vectorDiv num", num)
+		return
+	}
+
+	for i := 0; i < len(a); i++ {
+		temp := a[i] / float64(num)
+		c = append(c, temp)
+	}
+	return c
+}
+
+func numMul(a [][]float64, num int) (c [][]float64) {
+
+	if num == 0 {
+		fmt.Println("num", num)
 		return
 	}
 	for i := 0; i < len(a); i++ {
@@ -295,6 +330,18 @@ func numMul(a [][]float64, num int) (c [][]float64) {
 			t = append(t, temp)
 		}
 		c = append(c, t)
+	}
+
+	return c
+}
+
+func vectorNumMul(a []float64, num int) (c []float64) {
+	if num == 0 {
+		return
+	}
+	for i := 0; i < len(a); i++ {
+		temp := a[i] * float64(num)
+		c = append(c, temp)
 	}
 	return c
 }
