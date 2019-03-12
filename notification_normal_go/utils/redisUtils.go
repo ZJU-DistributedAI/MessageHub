@@ -14,28 +14,22 @@ var connect_redis redis.Conn
 func Connect2Redis() (conn redis.Conn) {
 
 
-	for {
 
-		if connect_redis == nil {
-			mutex.Lock()
-			if connect_redis == nil{
-				//conn, err := redis.Dial("tcp", "212.64.85.208:6379")
-				conn, err := redis.Dial("tcp", "127.0.0.1:6379")
-				if err != nil {
-					ErrorPanic(err)
-					time.Sleep(100) //等待0.1秒后重新尝试连接
-				} else {
-					connect_redis = conn
-				}
+	if connect_redis == nil {
+		mutex.Lock()
+		if connect_redis == nil{
+			//conn, err := redis.Dial("tcp", "212.64.85.208:6379")
+			conn, err := redis.Dial("tcp", "127.0.0.1:6379")
+			if err != nil {
+				ErrorPanic(err)
+				time.Sleep(100) //等待0.1秒后重新尝试连接
+			} else {
+				connect_redis = conn
 			}
-			mutex.Unlock()
-			if connect_redis != nil{
-				break
-			}
-		}else{
-			break
 		}
+		mutex.Unlock()
 	}
+
 	return connect_redis
 
 }

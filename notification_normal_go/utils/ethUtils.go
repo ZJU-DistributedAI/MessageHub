@@ -72,26 +72,20 @@ var clientConnect *rpc.Client
 
 func Connect2Eth() (*rpc.Client) {
 
-	for {
 
-		if clientConnect == nil {
-			mutex.Lock()
-			if clientConnect == nil{
-				client, err := rpc.Dial(LOCALPATH)
-				if err != nil {
-					ErrorPanic(err)
-					time.Sleep(500) //等待0.5秒后重新尝试连接
-				} else {
-					clientConnect = client
-				}
+	if clientConnect == nil {
+		mutex.Lock()
+		if clientConnect == nil{
+			client, err := rpc.Dial(LOCALPATH)
+			if err != nil {
+				ErrorPanic(err)
+				time.Sleep(500) //等待0.5秒后重新尝试连接
+			} else {
+				clientConnect = client
 			}
-			mutex.Unlock()
-			if clientConnect != nil{
-				break
-			}
-		}else{
-			break
 		}
+		mutex.Unlock()
+
 	}
 	return clientConnect
 
