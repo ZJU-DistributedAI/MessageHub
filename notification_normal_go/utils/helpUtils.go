@@ -170,13 +170,13 @@ func ReadFile(filepath string) string {
 
 // ------ start GetFederating ------
 type weightsStruct struct {
-	// num int
-	W1 [][]float64
-	b1 [][]float64
-	W2 [][]float64
-	b2 [][]float64
-	W3 [][]float64
-	b3 [][]float64
+	num int
+	W1  [][]float64
+	b1  [][]float64
+	W2  [][]float64
+	b2  [][]float64
+	W3  [][]float64
+	b3  [][]float64
 }
 
 func GetFederateLearningResult() (result string) {
@@ -185,9 +185,12 @@ func GetFederateLearningResult() (result string) {
 	// var allWeights weightsStruct = weightsStruct{}
 	allWeights := new(weightsStruct)
 	// fmt.Println(allWeights.W1)
+	countNum := 0
 	for index := 0; index < len(modelfiles); index++ {
 		tempWeights := getModelFileWeights(modelfiles[index])
 		if index == 0 {
+			allWeights.num = tempWeights.num
+			countNum = tempWeights.num
 			allWeights.W1 = tempWeights.W1
 			allWeights.b1 = tempWeights.b1
 			allWeights.W2 = tempWeights.W2
@@ -197,20 +200,22 @@ func GetFederateLearningResult() (result string) {
 			// fmt.Println(tempWeights.W2)
 			break
 		}
-		allWeights.W1 = matrixAdd(allWeights.W1, tempWeights.W1)
-		allWeights.b1 = matrixAdd(allWeights.b1, tempWeights.b1)
-		allWeights.W2 = matrixAdd(allWeights.W2, tempWeights.W2)
-		allWeights.b2 = matrixAdd(allWeights.b2, tempWeights.b2)
-		allWeights.W3 = matrixAdd(allWeights.W3, tempWeights.W3)
-		allWeights.b3 = matrixAdd(allWeights.b3, tempWeights.b3)
+
+		allWeights.W1 = matrixAdd(numMul(allWeights.W1, allWeights.num), numMul(tempWeights.W1, tempWeights.num))
+		allWeights.b1 = matrixAdd(numMul(allWeights.b1, allWeights.num), numMul(tempWeights.b1, tempWeights.num))
+		allWeights.W2 = matrixAdd(numMul(allWeights.W2, allWeights.num), numMul(tempWeights.W2, tempWeights.num))
+		allWeights.b2 = matrixAdd(numMul(allWeights.b2, allWeights.num), numMul(tempWeights.b2, tempWeights.num))
+		allWeights.W3 = matrixAdd(numMul(allWeights.W3, allWeights.num), numMul(tempWeights.W3, tempWeights.num))
+		allWeights.b3 = matrixAdd(numMul(allWeights.b3, allWeights.num), numMul(tempWeights.b3, tempWeights.num))
+		countNum += tempWeights.num
 	}
 
-	allWeights.W1 = matrixDiv(allWeights.W1, len(modelfiles))
-	allWeights.b1 = matrixDiv(allWeights.b1, len(modelfiles))
-	allWeights.W2 = matrixDiv(allWeights.W2, len(modelfiles))
-	allWeights.b2 = matrixDiv(allWeights.b2, len(modelfiles))
-	allWeights.W3 = matrixDiv(allWeights.W3, len(modelfiles))
-	allWeights.b3 = matrixDiv(allWeights.b3, len(modelfiles))
+	allWeights.W1 = matrixDiv(allWeights.W1, countNum)
+	allWeights.b1 = matrixDiv(allWeights.b1, countNum)
+	allWeights.W2 = matrixDiv(allWeights.W2, countNum)
+	allWeights.b2 = matrixDiv(allWeights.b2, countNum)
+	allWeights.W3 = matrixDiv(allWeights.W3, countNum)
+	allWeights.b3 = matrixDiv(allWeights.b3, countNum)
 	// fmt.Println(allWeights.W1)
 	// allWeights := getModelFileWeights("./parameters.json")
 	// fmt.Println(len(allWeights.W1))
