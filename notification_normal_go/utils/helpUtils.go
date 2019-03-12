@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -16,27 +18,19 @@ import (
 	"time"
 )
 
-
-
-const(
-
-
-	WINdOSPATH = "D://distribute_ai_users//"
+const (
+	WINdOSPATH     = "D://distribute_ai_users//"
 	WINDOSCODEPATH = "D://MNISTCode//."
 
-
-	LINUXPATH = "//root//distribute_ai_users//"
+	LINUXPATH     = "//root//distribute_ai_users//"
 	LINUXCODEPATH = "//root//MNISTCode//."
-
 )
-
-
 
 var myMap map[string]string
 
-func DecryptTransactionInput(input string)(string){
+func DecryptTransactionInput(input string) string {
 
-	input=input[2:]
+	input = input[2:]
 
 	test, _ := hex.DecodeString(input)
 
@@ -44,9 +38,9 @@ func DecryptTransactionInput(input string)(string){
 
 }
 
-func EncryptTransactionInput(input string)string{
+func EncryptTransactionInput(input string) string {
 
-	test:=hex.EncodeToString([]byte(input))
+	test := hex.EncodeToString([]byte(input))
 
 	return test
 }
@@ -61,26 +55,26 @@ func DownloadFile(hash string, filename string) {
 	}
 }
 
-func MakeDirectory(dirname string)(userPath string, directortPath string){
+func MakeDirectory(dirname string) (userPath string, directortPath string) {
 
-	cmd := exec.Command("mkdir","-p", LINUXPATH+dirname)
+	cmd := exec.Command("mkdir", "-p", LINUXPATH+dirname)
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("create user directory fail: ", err)
-		return "",""
+		return "", ""
 	}
-	cmd = exec.Command("mkdir","-p", LINUXPATH+dirname+"//upload")
+	cmd = exec.Command("mkdir", "-p", LINUXPATH+dirname+"//upload")
 	err = cmd.Run()
 	if err != nil {
 		fmt.Println("create upload directory fail: ", err)
-		return "",""
+		return "", ""
 	}
-	return LINUXPATH+dirname+"//upload//", LINUXPATH+dirname+"//"
+	return LINUXPATH + dirname + "//upload//", LINUXPATH + dirname + "//"
 }
 
-func CopyTrainCode(directoryPath string){
+func CopyTrainCode(directoryPath string) {
 
-	cmd := exec.Command("cp","-r", LINUXCODEPATH, directoryPath)
+	cmd := exec.Command("cp", "-r", LINUXCODEPATH, directoryPath)
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("copy train code fial: ", err)
@@ -90,7 +84,8 @@ func CopyTrainCode(directoryPath string){
 
 // get unique timestamp string
 var time_mutex sync.Mutex
-func getTimeStamp()string{
+
+func getTimeStamp() string {
 	time_mutex.Lock()
 	time_stamp := strconv.FormatInt(time.Now().UnixNano(), 10)
 	time.Sleep(1)
@@ -98,8 +93,7 @@ func getTimeStamp()string{
 	return time_stamp
 }
 
-
-func UploadFile(filename string) (string, error){
+func UploadFile(filename string) (string, error) {
 	// run ipfs add -r filename
 	cmd := exec.Command("ipfs", "add", "-r", filename)
 	var out bytes.Buffer
@@ -126,9 +120,7 @@ func UploadFile(filename string) (string, error){
 	return hash, nil
 }
 
-
-
-func SaveFileToLocal(r *http.Request)(string, error){
+func SaveFileToLocal(r *http.Request) (string, error) {
 	fileName := "file_" + getTimeStamp()
 	// 根据字段名获取表单文件
 	formFile, _, err := r.FormFile("uploadfile")
@@ -155,11 +147,11 @@ func SaveFileToLocal(r *http.Request)(string, error){
 	return "./upload_file/" + fileName, nil
 }
 
-func ReadFile(filepath string)(string){
+func ReadFile(filepath string) string {
 
 	f, err := os.Open(filepath)
 
-	if err != nil{
+	if err != nil {
 		log.Printf("打开文件失败: ", err)
 	}
 	defer f.Close()
@@ -169,23 +161,151 @@ func ReadFile(filepath string)(string){
 	b, _, err := r.ReadLine()
 
 	if err != io.EOF {
-		log.Println("读取文件失败: ",err)
+		log.Println("读取文件失败: ", err)
 	}
 
 	return string(b)
 
 }
 
-func GetFederateLearningResult()(result string){
-
-
-
-
-	return ""
-
+// ------ start GetFederating ------
+type weightsStruct struct {
+	// num int
+	W1 [][]float64
+	b1 [][]float64
+	W2 [][]float64
+	b2 [][]float64
+	W3 [][]float64
+	b3 [][]float64
 }
 
+func GetFederateLearningResult() (result string) {
+	// 模型文件 参数 路径
+	modelfiles := []string{"./parameters.json", "./parameters.json"}
+	// var allWeights weightsStruct = weightsStruct{}
+	allWeights := new(weightsStruct)
+	// fmt.Println(allWeights.W1)
+	for index := 0; index < len(modelfiles); index++ {
+		tempWeights := getModelFileWeights(modelfiles[index])
+		if index == 0 {
+			allWeights.W1 = tempWeights.W1
+			allWeights.b1 = tempWeights.b1
+			allWeights.W2 = tempWeights.W2
+			allWeights.b2 = tempWeights.b2
+			allWeights.W3 = tempWeights.W3
+			allWeights.b3 = tempWeights.b3
+			// fmt.Println(tempWeights.W2)
+			break
+		}
+		allWeights.W1 = matrixAdd(allWeights.W1, tempWeights.W1)
+		allWeights.b1 = matrixAdd(allWeights.b1, tempWeights.b1)
+		allWeights.W2 = matrixAdd(allWeights.W2, tempWeights.W2)
+		allWeights.b2 = matrixAdd(allWeights.b2, tempWeights.b2)
+		allWeights.W3 = matrixAdd(allWeights.W3, tempWeights.W3)
+		allWeights.b3 = matrixAdd(allWeights.b3, tempWeights.b3)
+	}
 
+	allWeights.W1 = matrixDiv(allWeights.W1, len(modelfiles))
+	allWeights.b1 = matrixDiv(allWeights.b1, len(modelfiles))
+	allWeights.W2 = matrixDiv(allWeights.W2, len(modelfiles))
+	allWeights.b2 = matrixDiv(allWeights.b2, len(modelfiles))
+	allWeights.W3 = matrixDiv(allWeights.W3, len(modelfiles))
+	allWeights.b3 = matrixDiv(allWeights.b3, len(modelfiles))
+	// fmt.Println(allWeights.W1)
+	// allWeights := getModelFileWeights("./parameters.json")
+	// fmt.Println(len(allWeights.W1))
+	str, _ := json.Marshal(allWeights)
+	write2json(str)
+	fmt.Printf("%s\n", str)
+	return "ss"
+}
+
+func getModelFileWeights(modelfile string) (weights weightsStruct) {
+	JsonParse := NewJsonStruct()
+	weights = weightsStruct{}
+	JsonParse.Load(modelfile, &weights)
+	// fmt.Println(weights)
+	return weights
+}
+
+type JsonStruct struct {
+}
+
+func NewJsonStruct() *JsonStruct {
+	return &JsonStruct{}
+}
+
+func (jst *JsonStruct) Load(filename string, v interface{}) {
+
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(data, v)
+	if err != nil {
+		return
+	}
+}
+
+// matrix add
+func matrixAdd(a [][]float64, b [][]float64) (c [][]float64) {
+	for i := 0; i < len(a); i++ {
+		t := []float64{}
+		for j := 0; j < len(a[0]); j++ {
+			temp := a[i][j] + b[i][j]
+			t = append(t, temp)
+		}
+		c = append(c, t)
+	}
+	return c
+}
+
+// matrix div
+func matrixDiv(a [][]float64, num int) (c [][]float64) {
+	if num == 0 {
+		return
+	}
+	// fmt.Println(len(a))
+	// fmt.Println(len(a[0]))
+	for i := 0; i < len(a); i++ {
+		t := []float64{}
+		for j := 0; j < len(a[0]); j++ {
+			temp := a[i][j] / float64(num)
+			t = append(t, temp)
+		}
+		c = append(c, t)
+	}
+	return c
+}
+
+func numMul(a [][]float64, num int) (c [][]float64) {
+	if num == 0 {
+		return
+	}
+	for i := 0; i < len(a); i++ {
+		t := []float64{}
+		for j := 0; j < len(a[0]); j++ {
+			temp := a[i][j] * float64(num)
+			t = append(t, temp)
+		}
+		c = append(c, t)
+	}
+	return c
+}
+func write2json(data []byte) {
+	fp, err := os.OpenFile("allWeights.json", os.O_RDWR|os.O_CREATE, 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fp.Close()
+	_, err = fp.Write(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// ------ end GetFederating ------
 
 func InitConfig(path string) map[string]string {
 	//初始化
@@ -241,8 +361,6 @@ func InitConfig(path string) map[string]string {
 	}
 	return myMap
 }
-
-
 
 //
 //func main(){
