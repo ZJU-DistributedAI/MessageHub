@@ -23,6 +23,7 @@ const (
 	WINDOSCODEPATH = "D://MNISTCode//."
 
 	LINUXPATH     = "//root//distribute_ai_users//"
+	LINUXRESULTPATH = "//root//distribute_ai_users//result"
 	LINUXCODEPATH = "//root//MNISTCode//."
 )
 
@@ -67,6 +68,12 @@ func MakeDirectory(dirname string) (userPath string, directortPath string) {
 	err = cmd.Run()
 	if err != nil {
 		fmt.Println("create upload directory fail: ", err)
+		return "", ""
+	}
+	cmd = exec.Command("mkdir", "-p", LINUXPATH+dirname+"//result")
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println("create result directory fail: ", err)
 		return "", ""
 	}
 	return LINUXPATH + dirname + "//upload//", LINUXPATH + dirname + "//"
@@ -181,7 +188,8 @@ type weightsStruct struct {
 
 func GetFederateLearningResult(modeladdress string) (result string) {
 	// 模型文件 参数 路径
-	modelfiles := []string{"./parameter.json", "./parameter1.json", "./parameter2.json"}
+	modelfiles := []string{LINUXRESULTPATH+"//parameter.json", LINUXRESULTPATH+"//parameter1.json",
+		LINUXRESULTPATH+"//parameter2.json"}
 	// var allWeights weightsStruct = weightsStruct{}
 	allWeights := new(weightsStruct)
 	// fmt.Println(allWeights.W1)
@@ -229,9 +237,9 @@ func GetFederateLearningResult(modeladdress string) (result string) {
 	// fmt.Println("2 allWeights.W1", allWeights.W1[:1][:1])
 
 	str, _ := json.Marshal(allWeights)
-	write2json(str)
+	write2json(str, LINUXRESULTPATH)
 	// fmt.Printf("%s\n", str)
-	return "done"
+	return string(str)
 }
 
 func getModelFileWeights(modelfile string) (weights weightsStruct) {
@@ -345,8 +353,8 @@ func vectorNumMul(a []float64, num int) (c []float64) {
 	}
 	return c
 }
-func write2json(data []byte) {
-	fp, err := os.OpenFile("allWeights.json", os.O_RDWR|os.O_CREATE, 0755)
+func write2json(data []byte, path string) {
+	fp, err := os.OpenFile(path+"allWeights.json", os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		log.Fatal(err)
 	}
