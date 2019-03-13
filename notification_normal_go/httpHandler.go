@@ -841,7 +841,10 @@ func ModelClientMonitorParamterHandler(w http.ResponseWriter, request *http.Requ
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
-	result := utils.GetFederateLearningResult()
+
+	modelAddress := request.PostFormValue("modeladdress")
+
+	result := utils.GetFederateLearningResult(modelAddress)
 
 
 	data := Data{Msg: result, Code:200}
@@ -1058,11 +1061,11 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 	modelIpfsHash := request.PostFormValue("modelIpfsHash")
 	dataIpfsHash := request.PostFormValue("dataIpfshash")
 
-	computingfrom := request.PostFormValue("computingfrom")
+	modelAddress := request.PostFormValue("train_modelFrom")
 
-	fmt.Println("computingfrom: ",computingfrom)
+	fmt.Println("modelAddress: ",modelAddress)
 
-	uploadPath, directoryPath:= utils.MakeDirectory("train_"+computingfrom)
+	uploadPath, directoryPath:= utils.MakeDirectory("train_"+modelAddress)
 	if uploadPath != "" {
 		utils.DownloadFile(modelIpfsHash, uploadPath+"modelFile.json")
 		utils.DownloadFile(dataIpfsHash, uploadPath+"dataFile.json")
@@ -1070,7 +1073,7 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 	}
 
 
-	_, err := http.Get("http://127.0.0.1:9093/dockerbackend/starttrain?from="+computingfrom+"&directorypath="+directoryPath)
+	_, err := http.Get("http://127.0.0.1:9093/dockerbackend/starttrain?from="+modelAddress+"&directorypath="+directoryPath)
 	if err != nil {
 		log.Println("运算方调用容器后端失败", err)
 		data = Data{Msg: "运算方调用容器后端失败", Code: 500}

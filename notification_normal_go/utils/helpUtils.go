@@ -179,7 +179,7 @@ type weightsStruct struct {
 	B3  []float64
 }
 
-func GetFederateLearningResult() (result string) {
+func GetFederateLearningResult(modeladdress string) (result string) {
 	// 模型文件 参数 路径
 	modelfiles := []string{"./parameter.json", "./parameter1.json", "./parameter2.json"}
 	// var allWeights weightsStruct = weightsStruct{}
