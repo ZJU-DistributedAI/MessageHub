@@ -181,8 +181,13 @@ type weightsStruct struct {
 
 func GetFederateLearningResult(modeladdress string) (result string) {
 	// 模型文件 参数 路径
-	modelfiles := []string{"./parameter.json", "./parameter1.json", "./parameter2.json"}
-	// var allWeights weightsStruct = weightsStruct{}
+	filePath := "./modelfile"
+	modelfiles := []string{}
+
+	files, _ := ioutil.ReadDir(filePath)
+	for _, f := range files {
+		modelfiles = append(modelfiles, filePath+"/"+f.Name())
+	}
 	allWeights := new(weightsStruct)
 	// fmt.Println(allWeights.W1)
 	countNum := 0
