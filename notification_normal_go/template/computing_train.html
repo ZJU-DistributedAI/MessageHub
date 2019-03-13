@@ -261,7 +261,7 @@
               url:interfaceAddress+'/computingclient/train',
               type:'post',
               dataType : 'text', // use json instead of text
-              data: "modelIpfsHash="+$('#train_modelIpfsHash').val()+"&modelFrom="+$('#train_modelFrom').val()
+              data: "modelIpfsHash="+$('#train_modelIpfsHash').val()+"&train_modelFrom="+$('#train_modelFrom').val()
                   +"&dataIpfshash="+$('#train_dataIpfshash').val()+"&dataFrom="+$('#train_dataFrom').val(),
               success : function(data){
                   console.log(data);//
