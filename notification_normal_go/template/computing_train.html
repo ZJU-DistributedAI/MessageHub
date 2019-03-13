@@ -262,12 +262,12 @@
               type:'post',
               dataType : 'text', // use json instead of text
               data: "modelIpfsHash="+$('#train_modelIpfsHash').val()+"&modelFrom="+$('#train_modelFrom').val()
-                  +"dataIpfshash="+$('#train_dataIpfshash').val()+"&dataFrom="+$('#train_dataFrom').val(),
+                  +"&dataIpfshash="+$('#train_dataIpfshash').val()+"&dataFrom="+$('#train_dataFrom').val(),
               success : function(data){
                   console.log(data);//
                   var jsonObj = $.parseJSON(data);
                   alert("收到训练结果"+jsonObj.msg);
-                  $.ajax(gettingTrainResult); //成功也要再次请求？
+                  //$.ajax(gettingTrainResult); //成功也要再次请求？
               },
               fail : function (data) { //当请求时间过长（默认为60秒），就再次调用ajax长轮询
                   console.log(data);//？
