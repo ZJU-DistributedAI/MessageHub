@@ -22,9 +22,9 @@ const (
 	WINdOSPATH     = "D://distribute_ai_users//"
 	WINDOSCODEPATH = "D://MNISTCode//."
 
-	LINUXPATH     = "//root//distribute_ai_users//"
+	LINUXPATH       = "//root//distribute_ai_users//"
 	LINUXRESULTPATH = "//root//distribute_ai_users//result"
-	LINUXCODEPATH = "//root//MNISTCode//."
+	LINUXCODEPATH   = "//root//MNISTCode//."
 )
 
 var myMap map[string]string
@@ -205,23 +205,16 @@ func GetFederateLearningResult(modeladdress string) (result string) {
 		if index == 0 {
 			allWeights.Num = tempWeights.Num
 			countNum = tempWeights.Num
-			// allWeights.W1 = tempWeights.W1
-			// allWeights.B1 = tempWeights.B1
-			// allWeights.W2 = tempWeights.W2
-			// allWeights.B2 = tempWeights.B2
-			// allWeights.W3 = tempWeights.W3
-			// allWeights.B3 = tempWeights.B3
 			allWeights.W1 = numMul(tempWeights.W1, tempWeights.Num)
 			allWeights.B1 = vectorNumMul(tempWeights.B1, tempWeights.Num)
 			allWeights.W2 = numMul(tempWeights.W2, tempWeights.Num)
 			allWeights.B2 = vectorNumMul(tempWeights.B2, tempWeights.Num)
 			allWeights.W3 = numMul(tempWeights.W3, tempWeights.Num)
 			allWeights.B3 = vectorNumMul(tempWeights.B3, tempWeights.Num)
-			// fmt.Println(tempWeights.B2)
+
 			continue
 		}
-		// fmt.Println(tempWeights.Num)
-		// fmt.Println(allWeights.Num)
+
 		allWeights.W1 = matrixAdd(allWeights.W1, numMul(tempWeights.W1, tempWeights.Num))
 		allWeights.B1 = vectorAdd(allWeights.B1, vectorNumMul(tempWeights.B1, tempWeights.Num))
 		allWeights.W2 = matrixAdd(allWeights.W2, numMul(tempWeights.W2, tempWeights.Num))
@@ -229,18 +222,15 @@ func GetFederateLearningResult(modeladdress string) (result string) {
 		allWeights.W3 = matrixAdd(allWeights.W3, numMul(tempWeights.W3, tempWeights.Num))
 		allWeights.B3 = vectorAdd(allWeights.B3, vectorNumMul(tempWeights.B3, tempWeights.Num))
 		countNum += tempWeights.Num
-		// fmt.Println(index, countNum)
+
 	}
-	// fmt.Println("countNum:", countNum)
-	// fmt.Println("1 allWeights.W1", allWeights.W1[:1][:1])
+
 	allWeights.W1 = matrixDiv(allWeights.W1, countNum)
 	allWeights.B1 = vectorDiv(allWeights.B1, countNum)
 	allWeights.W2 = matrixDiv(allWeights.W2, countNum)
 	allWeights.B2 = vectorDiv(allWeights.B2, countNum)
 	allWeights.W3 = matrixDiv(allWeights.W3, countNum)
 	allWeights.B3 = vectorDiv(allWeights.B3, countNum)
-	// fmt.Println("2 allWeights.W1", len(allWeights.W1))
-	// fmt.Println("2 allWeights.W1", allWeights.W1[:1][:1])
 
 	str, _ := json.Marshal(allWeights)
 	write2json(str, LINUXRESULTPATH)

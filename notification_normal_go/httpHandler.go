@@ -1,15 +1,10 @@
 package main
 
 import (
-	"./abi"
-	"./utils"
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -17,6 +12,12 @@ import (
 	"net/rpc"
 	"strconv"
 	"strings"
+
+	"./abi"
+	"./utils"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 type MetaDataList struct {
@@ -119,8 +120,6 @@ func ListMetaData(w http.ResponseWriter, r *http.Request) {
 
 	js, _ := json.Marshal(metaDataList)
 
-
-
 	w.Write([]byte(string(js)))
 
 }
@@ -143,7 +142,6 @@ func ListComputing(w http.ResponseWriter, r *http.Request) {
 	}
 
 	js, _ := json.Marshal(metaDataList)
-
 
 	w.Write([]byte(string(js)))
 
@@ -445,6 +443,7 @@ func ComputingClientModelAskHandler(w http.ResponseWriter, request *http.Request
 	t, _ := template.ParseFiles("template/computing_model_ask.html")
 	t.Execute(w, nil)
 }
+
 // TODO: test SendTransaction
 func DataClientAddMetaDataHandler(w http.ResponseWriter, request *http.Request) {
 
@@ -567,7 +566,7 @@ func ModelClientAskDataHandler(w http.ResponseWriter, request *http.Request) {
 	from := request.PostFormValue("from")
 	metaDataInfo := request.PostFormValue("metaDataInfo")
 
-	if password == "" || metaDataInfo == ""{
+	if password == "" || metaDataInfo == "" {
 		data = Data{Msg: "参数不完全", Code: 500}
 	} else {
 		value := "mpull:" + metaDataInfo
@@ -639,7 +638,7 @@ func DataClientPushDataToComputingHandler(w http.ResponseWriter, request *http.R
 	} else {
 		value := "dpush:" + dataIpfsHash + ":" + modelAddress + ":" + from
 		to := common.HexToAddress("")
-		log.Println("value: ",value)
+		log.Println("value: ", value)
 		//发起交易到以太坊
 		message := utils.NewMessage(common.HexToAddress(from), &to, "0x10",
 			"0x"+utils.EncryptTransactionInput(value), "0x295f05", "0x77359400")
@@ -794,7 +793,6 @@ func ModelClientCreateContractHandler(w http.ResponseWriter, request *http.Reque
 	//t, _ = template.ParseFiles("template/indexmodel.html")
 }
 
-
 // TODO: test SendTransaction
 func ModelClientUploadModelHandler(w http.ResponseWriter, request *http.Request) {
 
@@ -835,21 +833,18 @@ func ModelClientUploadModelHandler(w http.ResponseWriter, request *http.Request)
 
 }
 
-
-func ModelClientMonitorParamterHandler(w http.ResponseWriter, request *http.Request){
+func ModelClientMonitorParamterHandler(w http.ResponseWriter, request *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
-
 
 	modelAddress := request.PostFormValue("modeladdress")
 
 	result := utils.GetFederateLearningResult(modelAddress)
 
+	response := Data{Msg: result, Code: 200}
 
-	data := Data{Msg: result, Code:200}
-
-	js, _ := json.Marshal(data)
+	js, _ := json.Marshal(response)
 	w.Write(js)
 
 }
@@ -863,7 +858,7 @@ func ModelClientUploadResultHandler(w http.ResponseWriter, request *http.Request
 
 }
 
-// TODO: test
+// ComputingClientMonitorDataHandler ComputingClient listen data client request
 func ComputingClientMonitorDataHandler(w http.ResponseWriter, request *http.Request) {
 	/**
 	ajax长连接
@@ -874,34 +869,36 @@ func ComputingClientMonitorDataHandler(w http.ResponseWriter, request *http.Requ
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	// handle
-	var data Data
+	var response Data
 	computingGetDataReceipt := GetComputingGetDataReceipt()
-	data = Data{Msg: computingGetDataReceipt.DataIpfsHash + ":" + computingGetDataReceipt.From+ ":" + computingGetDataReceipt.ModelAddress, Code: 200}
+	response = Data{Msg: computingGetDataReceipt.DataIpfsHash + ":" + computingGetDataReceipt.From + ":" + computingGetDataReceipt.ModelAddress, Code: 200}
 
 	// response
-	js, _ := json.Marshal(data)
+	js, _ := json.Marshal(response)
 	w.Write(js)
 }
+
+// ComputingClientMonitorModelHandler ComputingClient listen model client request
 func ComputingClientMonitorModelHandler(w http.ResponseWriter, request *http.Request) {
 	/**
 	ajax长连接
-	运算方监听是否有数据方的运算资源请求
+	运算方监听是否有model方的运算资源请求
 	*/
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	// handle
-	var data Data
+	var response Data
 	computingGetModelReceipt := GetComputingGetModelReceipt()
-	data = Data{Msg: computingGetModelReceipt.ModelIpfsHash + ":" + computingGetModelReceipt.ContractHash ,Code: 200}
+	response = Data{Msg: computingGetModelReceipt.ModelIpfsHash + ":" + computingGetModelReceipt.ContractHash, Code: 200}
 
 	// response
-	js, _ := json.Marshal(data)
+	js, _ := json.Marshal(response)
 	w.Write(js)
 }
 
-// TODO: test SendTransaction
+// ComputingClientAddDataHandler Computing client upload computing resources to ethereum
 func ComputingClientAddDataHandler(w http.ResponseWriter, request *http.Request) {
 	/**
 	运算方将运算资源提交的以太坊
@@ -915,13 +912,14 @@ func ComputingClientAddDataHandler(w http.ResponseWriter, request *http.Request)
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	// handle
-	var data Data
+	var response Data
 	computingIpfsHash := request.PostFormValue("computingIpfsHash")
 	from := request.PostFormValue("from")
 	password := request.PostFormValue("password")
 
 	if computingIpfsHash == "" {
-		data = Data{Msg: "参数不完全", Code: 201}
+		// response = Data{Msg: "参数不完全", Code: 201}
+		response = Data{Msg: "parameters is invalid", Code: 201}
 	} else {
 		value := "cadd:" + computingIpfsHash
 		to := common.HexToAddress("")
@@ -934,19 +932,20 @@ func ComputingClientAddDataHandler(w http.ResponseWriter, request *http.Request)
 
 		if err != nil {
 			log.Println("运算方上传运算资源到区块链失败", err)
-			data = Data{Msg: "运算方上传运算资源到区块链失败", Code: 500}
+			// response = Data{Msg: "运算方上传运算资源到区块链失败", Code: 500}
+			response = Data{Msg: "Computing client failed upload computing resources ", Code: 500}
 
 		} else {
-			data = Data{Msg: txHash, Code: 200}
+			response = Data{Msg: txHash, Code: 200}
 		}
 	}
 
 	// response
-	js, _ := json.Marshal(data)
+	js, _ := json.Marshal(response)
 	w.Write(js)
 }
 
-// TODO: test SendTransaction
+// ComputingClientAggreeRequestHandler Computing client agree data request
 func ComputingClientAggreeRequestHandler(w http.ResponseWriter, request *http.Request) {
 	/**
 	运算方同意数据方的请求
@@ -960,14 +959,15 @@ func ComputingClientAggreeRequestHandler(w http.ResponseWriter, request *http.Re
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	// model address
-	var data Data
+	var response Data
 	from := request.PostFormValue("from")
 	password := request.PostFormValue("password")
 	dataAddress := request.PostFormValue("dataAddress")
 	modelAddress := request.PostFormValue("modelAddress")
 
 	if dataAddress == "" || modelAddress == "" {
-		data = Data{Msg: "参数不完全", Code: 201}
+		// response = Data{Msg: "参数不完全", Code: 201}
+		response = Data{Msg: "parameters is invalid", Code: 201}
 	} else {
 		value := "caggree:" + dataAddress + ":" + modelAddress
 		to := common.HexToAddress("")
@@ -979,30 +979,31 @@ func ComputingClientAggreeRequestHandler(w http.ResponseWriter, request *http.Re
 
 		if err != nil {
 			log.Println("运算方的同意交易生成失败", err)
-			data = Data{Msg: "运算方的同意交易生成失败", Code: 500}
+			// response = Data{Msg: "运算方的同意交易生成失败", Code: 500}
+			response = Data{Msg: "Computing client is failed to generate agree transaction", Code: 500}
 		} else {
-			data = Data{Msg: txHash, Code: 200}
+			response = Data{Msg: txHash, Code: 200}
 		}
 	}
 
 	// response
-	js, _ := json.Marshal(data)
+	js, _ := json.Marshal(response)
 	w.Write(js)
 }
 
-// TODO: test SendTransaction
+// ComputingClientDeleteComputingHashHandler Computing client delete computingHash
 func ComputingClientDeleteComputingHashHandler(w http.ResponseWriter, request *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	// handle
-	var data Data
+	var response Data
 	password := request.PostFormValue("password")
 	computingHash := request.PostFormValue("computinghash")
 	from := request.PostFormValue("from")
 	if computingHash == "" {
-		data = Data{Msg: "参数不完全", Code: 201}
+		response = Data{Msg: "The parameters is invalid", Code: 201}
 	} else {
 		value := "ddelete:" + computingHash
 		to := common.HexToAddress("")
@@ -1014,40 +1015,42 @@ func ComputingClientDeleteComputingHashHandler(w http.ResponseWriter, request *h
 
 		if err != nil {
 			log.Println("运算方删除computingHash失败", err)
-			data = Data{Msg: "运算方删除computingHash失败", Code: 500}
+			// response = Data{Msg: "运算方删除computingHash失败", Code: 500}
+			response = Data{Msg: "Computing client delete computingHash failed", Code: 500}
 		} else {
-			data = Data{Msg: txHash, Code: 200}
+			response = Data{Msg: txHash, Code: 200}
 		}
 	}
 
 	// response
-	js, _ := json.Marshal(data)
+	js, _ := json.Marshal(response)
 	w.Write(js)
 }
 
-// todo test
-func ComputingClientTrainReceiptHandler(w http.ResponseWriter, request *http.Request){
+// ComputingClientTrainReceiptHandler Computing client send train
+func ComputingClientTrainReceiptHandler(w http.ResponseWriter, request *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	// handle
-	var data Data
+	var response Data
 	_, err := http.Get("http://127.0.0.1:9091/dockerbackend/trainrequest")
 	if err != nil {
 		log.Println("与容器后端通信失败", err)
-		data = Data{Msg: "与容器后端通信失败", Code: 500}
-	}else{
-		data = Data{Msg: "接受到训练请求", Code: 200}
+		// response = Data{Msg: "与容器后端通信失败", Code: 500}
+		response = Data{Msg: "send message docker backend failed", Code: 500}
+	} else {
+		// response = Data{Msg: "接受到训练请求", Code: 200}
+		response = Data{Msg: "receipt train request", Code: 200}
 	}
 
 	//response
-	js, _ := json.Marshal(data)
+	js, _ := json.Marshal(response)
 	w.Write(js)
 }
 
-
-// TODO: test
+// ComputingClientTrainHandler operate docker backend to train model
 func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -1056,46 +1059,44 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 	/**
 	调用容器后端接口训练模型
 	*/
-	var data Data
+	var response Data
 
 	modelIpfsHash := request.PostFormValue("modelIpfsHash")
 	dataIpfsHash := request.PostFormValue("dataIpfshash")
 
 	modelAddress := request.PostFormValue("train_modelFrom")
 
-	fmt.Println("modelAddress: ",modelAddress)
+	fmt.Println("modelAddress: ", modelAddress)
 
-	uploadPath, directoryPath:= utils.MakeDirectory("train_"+modelAddress)
+	uploadPath, directoryPath := utils.MakeDirectory("train_" + modelAddress)
 	if uploadPath != "" {
 		utils.DownloadFile(modelIpfsHash, uploadPath+"modelFile.json")
 		utils.DownloadFile(dataIpfsHash, uploadPath+"dataFile.json")
 		utils.CopyTrainCode(directoryPath)
 	}
 
-
-	_, err := http.Get("http://127.0.0.1:9093/dockerbackend/starttrain?from="+modelAddress+"&directorypath="+directoryPath)
+	_, err := http.Get("http://127.0.0.1:9093/dockerbackend/starttrain?from=" + modelAddress + "&directorypath=" + directoryPath)
 	if err != nil {
 		log.Println("运算方调用容器后端失败", err)
-		data = Data{Msg: "运算方调用容器后端失败", Code: 500}
+		// response = Data{Msg: "运算方调用容器后端失败", Code: 500}
+		response = Data{Msg: "Computing client contact docker backend", Code: 500}
 	} else {
 		//result := utils.ReadFile(directoryPath+"//parameters.json")
 
-		data = Data{Msg: "训练完成", Code: 200}
+		response = Data{Msg: "Train success", Code: 200}
 	}
 
 	// response
-	js, _ := json.Marshal(data)
+	js, _ := json.Marshal(response)
 	w.Write(js)
 }
 
-
-
-
-func ComputingClientGetDockerStatus(w http.ResponseWriter, request *http.Request){
+// ComputingClientGetDockerStatus Computing client get docker status
+func ComputingClientGetDockerStatus(w http.ResponseWriter, request *http.Request) {
 
 	/**
-		获取docker状态
-	 */
+	获取docker状态
+	*/
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
@@ -1104,38 +1105,36 @@ func ComputingClientGetDockerStatus(w http.ResponseWriter, request *http.Request
 
 	status := utils.GetDockerStatus(useraccount)
 
-	var data Data
+	var response Data
 
 	if status == 0 {
-		data = Data{Msg: "获取状态失败", Code:500}
-	}else {
-		data = Data{Msg: string(status), Code:200}
+		// response = Data{Msg: "获取状态失败", Code: 500}
+		response = Data{Msg: "get docker status failed", Code: 500}
+	} else {
+		response = Data{Msg: string(status), Code: 200}
 	}
-	js, _ := json.Marshal(data)
+	js, _ := json.Marshal(response)
 	w.Write(js)
 
 }
 
-
-
-func UpdateDockerStatusHandler(w http.ResponseWriter, request *http.Request){
+// UpdateDockerStatusHandler update docker status
+func UpdateDockerStatusHandler(w http.ResponseWriter, request *http.Request) {
 	/**
-		DockerBackend回调函数
-	 */
+	DockerBackend回调函数
+	*/
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	useraccount := request.FormValue("from")
 	dockerstatus := request.FormValue("dockerstatus")
 
-	status, err:= strconv.Atoi(dockerstatus)
+	status, err := strconv.Atoi(dockerstatus)
 	if err != nil {
 		log.Println("数据类型转化失败")
 
 	}
 	utils.UpdateDockerStatus(useraccount, status)
-
-
 
 }
 
@@ -1155,21 +1154,21 @@ func DataClientUplodFileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	// handle
-	var data Data
+	var response Data
 	fileName, err := utils.SaveFileToLocal(r)
 	if err != nil {
-		data = Data{Msg: "文件保存失败", Code:500}
+		response = Data{Msg: "文件保存失败", Code: 500}
 	} else {
 		hash, err := utils.UploadFile(fileName)
 		if err != nil {
-			data = Data{Msg:"上传文件至ipfs失败", Code: 500}
+			response = Data{Msg: "上传文件至ipfs失败", Code: 500}
 		} else {
-			data = Data{Msg: hash, Code: 200}
+			response = Data{Msg: hash, Code: 200}
 		}
 	}
 
 	// response
-	jsonStr, _ := json.Marshal(data)
+	jsonStr, _ := json.Marshal(response)
 	log.Println(string(jsonStr))
 	w.Write(jsonStr)
 }
@@ -1180,25 +1179,24 @@ func ModelClientUploadFileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	// handle
-	var data Data
+	var response Data
 	fileName, err := utils.SaveFileToLocal(r)
 	if err != nil {
-		data = Data{Msg: "文件保存失败", Code:500}
+		response = Data{Msg: "文件保存失败", Code: 500}
 	} else {
 		hash, err := utils.UploadFile(fileName)
 		if err != nil {
-			data = Data{Msg:"上传文件至ipfs失败", Code: 500}
+			response = Data{Msg: "上传文件至ipfs失败", Code: 500}
 		} else {
-			data = Data{Msg: hash, Code: 200}
+			response = Data{Msg: hash, Code: 200}
 		}
 	}
 
 	// response
-	jsonStr, _ := json.Marshal(data)
+	jsonStr, _ := json.Marshal(response)
 	log.Println(string(jsonStr))
 	w.Write(jsonStr)
 }
-
 
 func ComputingClientUploadFileHandler(w http.ResponseWriter, r *http.Request) {
 	// header
@@ -1206,30 +1204,26 @@ func ComputingClientUploadFileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	// handle
-	var data Data
+	var response Data
 	fileName, err := utils.SaveFileToLocal(r)
 	if err != nil {
-		data = Data{Msg: "文件保存失败", Code:500}
+		// response = Data{Msg: "文件保存失败", Code: 500}
+		response = Data{Msg: "file save failed", Code: 500}
 	} else {
 		hash, err := utils.UploadFile(fileName)
 		if err != nil {
-			data = Data{Msg:"上传文件至ipfs失败", Code: 500}
+			// response = Data{Msg: "上传文件至ipfs失败", Code: 500}
+			response = Data{Msg: "upload file to ipfs failed", Code: 500}
 		} else {
-			data = Data{Msg: hash, Code: 200}
+			response = Data{Msg: hash, Code: 200}
 		}
 	}
 
 	// response
-	jsonStr, _ := json.Marshal(data)
+	jsonStr, _ := json.Marshal(response)
 	log.Println(string(jsonStr))
 	w.Write(jsonStr)
 }
-
-
-
-
-
-
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
@@ -1241,5 +1235,3 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	t.Execute(w, nil)
 }
-
-
