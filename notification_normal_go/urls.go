@@ -10,61 +10,21 @@ import (
 
 func startWebService() {
 
-	fs := http.FileServer(http.Dir("static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
-	http.Handle("./template", http.FileServer(http.Dir("template")))
-
-	http.HandleFunc("/", HomeHandler)
-	//http.HandleFunc("/listWholeMetaData", ListMetaData)
-	//http.HandleFunc("/listWholeComputing", ListComputing)
-	//http.HandleFunc("/listAskedMetaData", ListAskedMetaData)
-	//http.HandleFunc("/listAskedComputing", ListAskedComputing)
-
-	//user
-	http.HandleFunc("/user/register", RegisterHandler)
-	http.HandleFunc("/user/login", LoginHandler)
-	http.HandleFunc("/user/checklogin", CheckLoginHandler)
-	http.HandleFunc("/user/createwallet", CreateWalletHandler)
-	http.HandleFunc("/user/createwalletpage", CreateWalletPageHandler)
-	http.HandleFunc("/user/downloadtool", DownloadToolPageHandler)
-
 	//data client
 	http.HandleFunc("/dataclient/uploadfile", DataClientUplodFileHandler)
-	http.HandleFunc("/dataclient/addmetadata", DataClientAddMetaDataHandler)                 //font OK,
-	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler) //font OK, back ok
-	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)     //font OK,
-	http.HandleFunc("/dataclient/index", IndexDataHandler)                                   //font OK, back ok
-	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler)                   //font OK, back ok
-	http.HandleFunc("/dataclient/availablecomputingpage", DataClientAvaCompHandler)          //font OK, back ok
-	http.HandleFunc("/dataclient/modelaskingpage", DataClientModelAskHandler)                //font OK, back ok
 
-	http.HandleFunc("/dataclient/askcomputing", DataClientAskComputingHandler)                      //font OK,
-	http.HandleFunc("/dataclient/deletedata", DataClientDeleteDataHandler)                          //font OK,
 	http.HandleFunc("/dataclient/monitormetadata", DataClientMonitorMetaDataHandler)                //font ok
 	http.HandleFunc("/data/client/monitorcomputingaggree", DataClientMonitorComputingAggreeHandler) //font ok
 
 	//model client
 	http.HandleFunc("/modelclient/uploadfile", ModelClientUploadFileHandler)
-	http.HandleFunc("/modelclient/index", IndexModelHandler)                         //font OK, back ok
-	http.HandleFunc("/modelclient/walletpage", ModelClientWalletPageHandler)         //font OK, back ok
-	http.HandleFunc("/modelclient/availabledatapage", ModelClientAvaDataHandler)     //font OK, back ok
-	http.HandleFunc("/modelclient/askdata", ModelClientAskDataHandler)               //font OK,
 	http.HandleFunc("/modelclient/createcontract", ModelClientCreateContractHandler) //font ok
-	http.HandleFunc("/modelclient/uploadmodel", ModelClientUploadModelHandler)       //font OK,
-	http.HandleFunc("/modelclient/uploadresult", ModelClientUploadResultHandler)
+
 	http.HandleFunc("/modelclient/monitordataclient", ModelClientMonitorDataClientResultHandler)
 	http.HandleFunc("/modelclient/monitorparameter", ModelClientMonitorParamterHandler)
 
 	//computing client
 	http.HandleFunc("/computingclient/uploadfile", ComputingClientUploadFileHandler)
-	http.HandleFunc("/computingclient/index", IndexComputingHandler)                                //font OK, back ok
-	http.HandleFunc("/computingclient/walletpage", ComputingClientWalletPageHandler)                //font OK, back ok
-	http.HandleFunc("/computingclient/trainpage", ComputingClientTrainPageHandler)                  //font OK, back ok
-	http.HandleFunc("/computingclient/dataaskingpage", ComputingClientDataAskHandler)               //font OK, back ok
-	http.HandleFunc("/computingclient/modelaskingpage", ComputingClientModelAskHandler)             //font OK, back ok
-	http.HandleFunc("/computingclient/adddata", ComputingClientAddDataHandler)                      //font OK,
-	http.HandleFunc("/computingclient/agreerequest", ComputingClientAggreeRequestHandler)           //font OK,
-	http.HandleFunc("/computingclient/deletedcomputing", ComputingClientDeleteComputingHashHandler) //font OK,
 
 	http.HandleFunc("/computingclient/trainrequest", ComputingClientTrainReceiptHandler) //font OK,
 	http.HandleFunc("/computingclient/train", ComputingClientTrainHandler)               //font OK,
