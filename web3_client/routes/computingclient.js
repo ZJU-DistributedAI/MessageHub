@@ -36,6 +36,7 @@ router.post('/adddata', function (req, res) {
     var from = req.body.from;
     var computingIpfsHash = req.body.computingIpfsHash;
 
+    // 参数判断
     if(password === undefined || password === ''||
         computingIpfsHash===undefined|| computingIpfsHash===''||
         from ===undefined|| from ==='') {
@@ -43,10 +44,12 @@ router.post('/adddata', function (req, res) {
         res.end(response);
     }
     else {
+        // 获取nonce
         privateKey = new Buffer(password, 'hex');
         txData = "cadd:" + computingIpfsHash;
         web3.eth.getTransactionCount(from).then(function (number) {
             number = number.toString(16);
+            // 封装交易
             rawTx = {
                 nonce: '0x' + number,
                 gasPrice: '0x09184e72a000',
@@ -55,9 +58,12 @@ router.post('/adddata', function (req, res) {
                 value: '0x00',
                 data: txData,
             };
+            // 离线签名
             tx = new Tx(rawTx);
             tx.sign(privateKey);
             serializedTx = tx.serialize();
+
+            // 发送交易
             web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
                 .then(function (data) {
                     response = completeRes(data.transactionHash, 200);
@@ -75,7 +81,7 @@ router.post('/agreerequest', function (req, res) {
     var dataAddress = req.body.dataAddress;
     var modelAddress = req.body.modelAddress;
 
-
+    // 参数判断
     if(password === undefined || password === ''||
         dataAddress===undefined|| dataAddress===''||
         modelAddress===undefined|| modelAddress===''||
@@ -84,10 +90,12 @@ router.post('/agreerequest', function (req, res) {
         res.end(response);
     }
     else {
+        // 获取nonce
         privateKey = new Buffer(password, 'hex');
         txData = "cagree:" + dataAddress + ":" + modelAddress;
         web3.eth.getTransactionCount(from).then(function (number) {
             number = number.toString(16);
+            // 封装交易
             rawTx = {
                 nonce: '0x' + number,
                 gasPrice: '0x09184e72a000',
@@ -96,9 +104,11 @@ router.post('/agreerequest', function (req, res) {
                 value: '0x00',
                 data: txData,
             };
+            // 离线签名
             tx = new Tx(rawTx);
             tx.sign(privateKey);
             serializedTx = tx.serialize();
+            // 发送交易
             web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
                 .then(function (data) {
                     response = completeRes(data.transactionHash, 200);
@@ -114,6 +124,7 @@ router.post('/deletedcomputing', function (req, res) {
     var from = req.body.from;
     var computinghash = req.body.computinghash;
 
+    // 参数判断
     if(password === undefined || password === ''||
         computinghash===undefined|| computinghash===''||
         from ===undefined|| from ==='') {
@@ -121,10 +132,12 @@ router.post('/deletedcomputing', function (req, res) {
         res.end(response);
     }
     else {
+        // 获取nonce
         privateKey = new Buffer(password, 'hex');
         txData = "cdelete:" + computinghash;
         web3.eth.getTransactionCount(from).then(function (number) {
             number = number.toString(16);
+            // 封装交易
             rawTx = {
                 nonce: '0x' + number,
                 gasPrice: '0x09184e72a000',
@@ -133,9 +146,11 @@ router.post('/deletedcomputing', function (req, res) {
                 value: '0x00',
                 data: txData,
             };
+            // 离线签名
             tx = new Tx(rawTx);
             tx.sign(privateKey);
             serializedTx = tx.serialize();
+            // 发送交易
             web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
                 .then(function (data) {
                     response = completeRes(data.transactionHash, 200);

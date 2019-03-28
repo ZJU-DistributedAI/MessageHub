@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -27,7 +26,7 @@ type ComputingList struct {
 	Computings []string
 }
 
-type Data struct {
+type Resp struct {
 	Msg  string `json:"msg"`
 	Code int    `json:"code"`
 }
@@ -52,7 +51,7 @@ func matchData(splits []string) {
 	}
 
 	defer resp.Body.Close()
-
+	// 读取response数据
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Println("读取response数据失败：%v", err)
@@ -83,7 +82,7 @@ func matchComputing(splits []string) {
 	}
 
 	defer resp.Body.Close()
-
+	// 读取response数据
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Println("读取response数据失败：%v", err)
@@ -104,15 +103,15 @@ func matchComputing(splits []string) {
 //TODO 返回数据描述信息列表，让ModelClient挑选最佳数据
 func ListMetaData(w http.ResponseWriter, r *http.Request) {
 	//这里我们用json的格式返回所有data描述信息
-
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
+	// 连接Redis
 	conn := utils.Connect2Redis()
 	defer conn.Close()
 
+	// 获取返回所有data描述信息
 	result := utils.SmembersFromRedis(conn, "metadata")
-
 	metaDataList := MetaDataList{
 		MetaList: result,
 	}
@@ -127,15 +126,15 @@ func ListMetaData(w http.ResponseWriter, r *http.Request) {
 //TODO 返回运算资源描述信息列表，让DataClient挑选最佳运算资源
 func ListComputing(w http.ResponseWriter, r *http.Request) {
 	//这里我们用json的格式返回所有computing描述信息
-
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
+	// 连接Redis
 	conn := utils.Connect2Redis()
 	defer conn.Close()
 
+	// 获取所有computing描述信息
 	result := utils.SmembersFromRedis(conn, "computing")
-
 	metaDataList := MetaDataList{
 		MetaList: result,
 	}
@@ -152,14 +151,15 @@ func ListAskedMetaData(w http.ResponseWriter, r *http.Request) {
 	conn := utils.Connect2Redis()
 	defer conn.Close()
 
+	// 获取所有的数据
 	result := utils.SmembersFromRedis(conn, r.FormValue("address"))
-
 	metaDataList := MetaDataList{
 		MetaList: result,
 	}
-
+	// 序列化
 	js, _ := json.Marshal(metaDataList)
 
+	// set header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
@@ -172,14 +172,14 @@ func ListAskedComputing(w http.ResponseWriter, r *http.Request) {
 	conn := utils.Connect2Redis()
 	defer conn.Close()
 
+	// 获取所有运算资源
 	result := utils.SmembersFromRedis(conn, r.FormValue("address"))
-
 	computingList := ComputingList{
 		Computings: result,
 	}
-
 	js, _ := json.Marshal(computingList)
 
+	// Set header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	w.Write([]byte(string(js)))
@@ -210,11 +210,10 @@ func DataClientMonitorMetaDataHandler(w http.ResponseWriter, request *http.Reque
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	log.Println("收到请求DataClientMonitorMetaDataHandler")
-	var data Data
-
+	var data Resp
+	// 获取模型方提交的metadata交易
 	modelClientPullDataReceipt := GetModelClientPullDataReceipt()
-
-	data = Data{Msg: modelClientPullDataReceipt.Metadata + ":" + modelClientPullDataReceipt.From, Code: 200}
+	data = Resp{Msg: modelClientPullDataReceipt.Metadata + ":" + modelClientPullDataReceipt.From, Code: 200}
 	js, _ := json.Marshal(data)
 	w.Write(js)
 }
@@ -228,16 +227,12 @@ func ModelClientMonitorDataClientResultHandler(w http.ResponseWriter, request *h
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
-	var t *template.Template
-	var data Data
-	t, _ = template.ParseFiles("template/indexmodel.html")
-
+	var data Resp
+	// 获取同意模型方的数据请求
 	dataClientIsAggreeReceipt := GetDataClientIsAggreeReceipt()
-
-	data = Data{Msg: dataClientIsAggreeReceipt.Message + ":" + dataClientIsAggreeReceipt.From, Code: 200}
+	data = Resp{Msg: dataClientIsAggreeReceipt.Message + ":" + dataClientIsAggreeReceipt.From, Code: 200}
 	js, _ := json.Marshal(data)
-	t.Execute(w, js)
-
+	w.Write(js)
 }
 
 // TODO: test
@@ -253,10 +248,10 @@ func DataClientMonitorComputingAggreeHandler(w http.ResponseWriter, request *htt
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	log.Println("收到请求DataClientMonitorComputingAggreeHandler")
 
-	// handle
-	var data Data
+	// 获取 运算方的同意交易的信息
+	var data Resp
 	dataClientMonitorComputingAggreeReceipt := GetDataClientMonitorComputingAggreeReceipt()
-	data = Data{Msg: dataClientMonitorComputingAggreeReceipt.ComputingHash + ":" + dataClientMonitorComputingAggreeReceipt.From,
+	data = Resp{Msg: dataClientMonitorComputingAggreeReceipt.ComputingHash + ":" + dataClientMonitorComputingAggreeReceipt.From,
 		Code: 200}
 
 	// response
@@ -268,11 +263,14 @@ const key = `{"address":"f448d0ae08287173002d06093abdab2ac1d7ce9a", "crypto":{"c
 
 // TODO: test
 func ModelClientCreateContractHandler(w http.ResponseWriter, request *http.Request) {
-
+	// header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
+
+	// 连接以太坊
 	rpcConn := utils.Connect2Eth()
 	ethConn := ethclient.NewClient(rpcConn)
+	// 获取参数
 	password := request.PostFormValue("password")
 	auth, err := bind.NewTransactor(strings.NewReader(key), password)
 	if err != nil {
@@ -284,19 +282,19 @@ func ModelClientCreateContractHandler(w http.ResponseWriter, request *http.Reque
 	if err != nil {
 		log.Fatalf("Failed to deploy new token contract: %v", err)
 	}
-
 	ctx := context.Background()
 	addressAfterMined, err := bind.WaitDeployed(ctx, ethConn, tx)
 	if err != nil {
 		log.Fatalf("failed to deploy contact when mining :%v", err)
 	}
 
+	// 判断
 	if bytes.Compare(address.Bytes(), addressAfterMined.Bytes()) != 0 {
 		log.Fatalf("mined address :%s,before mined address:%s", addressAfterMined, address)
 	}
 
 	//var t *template.Template
-	//var data Data
+	//var data Resp
 	//t, _ = template.ParseFiles("template/indexmodel.html")
 }
 
@@ -305,11 +303,10 @@ func ModelClientMonitorParamterHandler(w http.ResponseWriter, request *http.Requ
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
+	// 获取训练参数
 	modelAddress := request.PostFormValue("modeladdress")
-
 	result := utils.GetFederateLearningResult(modelAddress)
-
-	response := Data{Msg: result, Code: 200}
+	response := Resp{Msg: result, Code: 200}
 
 	js, _ := json.Marshal(response)
 	w.Write(js)
@@ -321,7 +318,7 @@ func ModelClientUploadResultHandler(w http.ResponseWriter, request *http.Request
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	//var t *template.Template
-	//var data Data
+	//var data Resp
 
 }
 
@@ -335,10 +332,10 @@ func ComputingClientMonitorDataHandler(w http.ResponseWriter, request *http.Requ
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
-	// handle
-	var response Data
+	// 获取数据方的运算资源请求
+	var response Resp
 	computingGetDataReceipt := GetComputingGetDataReceipt()
-	response = Data{Msg: computingGetDataReceipt.DataIpfsHash + ":" + computingGetDataReceipt.From + ":" + computingGetDataReceipt.ModelAddress, Code: 200}
+	response = Resp{Msg: computingGetDataReceipt.DataIpfsHash + ":" + computingGetDataReceipt.From + ":" + computingGetDataReceipt.ModelAddress, Code: 200}
 
 	// response
 	js, _ := json.Marshal(response)
@@ -355,10 +352,10 @@ func ComputingClientMonitorModelHandler(w http.ResponseWriter, request *http.Req
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
-	// handle
-	var response Data
+	// 获取model方的运算资源
+	var response Resp
 	computingGetModelReceipt := GetComputingGetModelReceipt()
-	response = Data{Msg: computingGetModelReceipt.ModelIpfsHash + ":" + computingGetModelReceipt.ContractHash, Code: 200}
+	response = Resp{Msg: computingGetModelReceipt.ModelIpfsHash + ":" + computingGetModelReceipt.ContractHash, Code: 200}
 
 	// response
 	js, _ := json.Marshal(response)
@@ -371,16 +368,16 @@ func ComputingClientTrainReceiptHandler(w http.ResponseWriter, request *http.Req
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
-	// handle
-	var response Data
+	// 与容器后端通信
+	var response Resp
 	_, err := http.Get("http://127.0.0.1:9091/dockerbackend/trainrequest")
 	if err != nil {
 		log.Println("与容器后端通信失败", err)
-		// response = Data{Msg: "与容器后端通信失败", Code: 500}
-		response = Data{Msg: "send message docker backend failed", Code: 500}
+		// response = Resp{Msg: "与容器后端通信失败", Code: 500}
+		response = Resp{Msg: "send message docker backend failed", Code: 500}
 	} else {
-		// response = Data{Msg: "接受到训练请求", Code: 200}
-		response = Data{Msg: "receipt train request", Code: 200}
+		// response = Resp{Msg: "接受到训练请求", Code: 200}
+		response = Resp{Msg: "receipt train request", Code: 200}
 	}
 
 	//response
@@ -397,31 +394,31 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 	/**
 	调用容器后端接口训练模型
 	*/
-	var response Data
+	var response Resp
 
+	// 获取参数
 	modelIpfsHash := request.PostFormValue("modelIpfsHash")
 	dataIpfsHash := request.PostFormValue("dataIpfshash")
-
 	modelAddress := request.PostFormValue("train_modelFrom")
 
-	fmt.Println("modelAddress: ", modelAddress)
-
+	// 新建文件夹
 	uploadPath, directoryPath := utils.MakeDirectory("train_" + modelAddress)
 	if uploadPath != "" {
+		// 下载文件
 		utils.DownloadFile(modelIpfsHash, uploadPath+"modelFile.json")
 		utils.DownloadFile(dataIpfsHash, uploadPath+"dataFile.json")
 		utils.CopyTrainCode(directoryPath)
 	}
 
+	// 运算方调用容器后端
 	_, err := http.Get("http://127.0.0.1:9093/dockerbackend/starttrain?from=" + modelAddress + "&directorypath=" + directoryPath)
 	if err != nil {
 		log.Println("运算方调用容器后端失败", err)
-		// response = Data{Msg: "运算方调用容器后端失败", Code: 500}
-		response = Data{Msg: "Computing client contact docker backend", Code: 500}
+		// response = Resp{Msg: "运算方调用容器后端失败", Code: 500}
+		response = Resp{Msg: "Computing client contact docker backend", Code: 500}
 	} else {
 		//result := utils.ReadFile(directoryPath+"//parameters.json")
-
-		response = Data{Msg: "Train success", Code: 200}
+		response = Resp{Msg: "Train success", Code: 200}
 	}
 
 	// response
@@ -439,17 +436,16 @@ func ComputingClientGetDockerStatus(w http.ResponseWriter, request *http.Request
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
+	// 获取from参数
 	useraccount := request.PostFormValue("from")
-
 	status := utils.GetDockerStatus(useraccount)
-
-	var response Data
-
+	var response Resp
 	if status == 0 {
-		// response = Data{Msg: "获取状态失败", Code: 500}
-		response = Data{Msg: "get docker status failed", Code: 500}
+		// 获取状态失败
+		// response = Resp{Msg: "获取状态失败", Code: 500}
+		response = Resp{Msg: "get docker status failed", Code: 500}
 	} else {
-		response = Data{Msg: string(status), Code: 200}
+		response = Resp{Msg: string(status), Code: 200}
 	}
 	js, _ := json.Marshal(response)
 	w.Write(js)
@@ -481,7 +477,7 @@ func ComputingClientUploadEncryptedDataHandler(w http.ResponseWriter, request *h
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 	//var t *template.Template
-	//var data Data
+	//var data Resp
 	//
 	//t, _ = template.ParseFiles("template/indexcomputer.html")
 }
@@ -492,16 +488,18 @@ func DataClientUplodFileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	// handle
-	var response Data
+	var response Resp
+	// 保存文件到本地
 	fileName, err := utils.SaveFileToLocal(r)
 	if err != nil {
-		response = Data{Msg: "文件保存失败", Code: 500}
+		response = Resp{Msg: "文件保存失败", Code: 500}
 	} else {
+		// 上传文件到IPFS
 		hash, err := utils.UploadFile(fileName)
 		if err != nil {
-			response = Data{Msg: "上传文件至ipfs失败", Code: 500}
+			response = Resp{Msg: "上传文件至ipfs失败", Code: 500}
 		} else {
-			response = Data{Msg: hash, Code: 200}
+			response = Resp{Msg: hash, Code: 200}
 		}
 	}
 
@@ -517,16 +515,18 @@ func ModelClientUploadFileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	// handle
-	var response Data
+	var response Resp
+	// 保存文件到本地
 	fileName, err := utils.SaveFileToLocal(r)
 	if err != nil {
-		response = Data{Msg: "文件保存失败", Code: 500}
+		response = Resp{Msg: "文件保存失败", Code: 500}
 	} else {
+		// 上传文件到IPFS
 		hash, err := utils.UploadFile(fileName)
 		if err != nil {
-			response = Data{Msg: "上传文件至ipfs失败", Code: 500}
+			response = Resp{Msg: "上传文件至ipfs失败", Code: 500}
 		} else {
-			response = Data{Msg: hash, Code: 200}
+			response = Resp{Msg: hash, Code: 200}
 		}
 	}
 
@@ -542,18 +542,20 @@ func ComputingClientUploadFileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Method", "POST,GET")
 
 	// handle
-	var response Data
+	var response Resp
+	// 保存文件到本地
 	fileName, err := utils.SaveFileToLocal(r)
 	if err != nil {
-		// response = Data{Msg: "文件保存失败", Code: 500}
-		response = Data{Msg: "file save failed", Code: 500}
+		// response = Resp{Msg: "文件保存失败", Code: 500}
+		response = Resp{Msg: "file save failed", Code: 500}
 	} else {
+		// 上传文件到IPFS
 		hash, err := utils.UploadFile(fileName)
 		if err != nil {
-			// response = Data{Msg: "上传文件至ipfs失败", Code: 500}
-			response = Data{Msg: "upload file to ipfs failed", Code: 500}
+			// response = Resp{Msg: "上传文件至ipfs失败", Code: 500}
+			response = Resp{Msg: "upload file to ipfs failed", Code: 500}
 		} else {
-			response = Data{Msg: hash, Code: 200}
+			response = Resp{Msg: hash, Code: 200}
 		}
 	}
 
@@ -561,15 +563,4 @@ func ComputingClientUploadFileHandler(w http.ResponseWriter, r *http.Request) {
 	jsonStr, _ := json.Marshal(response)
 	log.Println(string(jsonStr))
 	w.Write(jsonStr)
-}
-
-func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path == "/" {
-		http.Redirect(w, r, "/login/index", http.StatusFound)
-	}
-	t, err := template.ParseFiles("template/404.html")
-	if err != nil {
-		log.Println(err)
-	}
-	t.Execute(w, nil)
 }
