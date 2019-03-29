@@ -23,7 +23,7 @@ const (
 	WINDOSCODEPATH = "D://MNISTCode//."
 
 	LINUXPATH       = "//root//distribute_ai_users//"
-	LINUXRESULTPATH = "//root//distribute_ai_users//result"
+	LINUXRESULTPATH = "//root//distribute_ai_users//"
 	LINUXCODEPATH   = "//root//MNISTCode//."
 )
 
@@ -189,7 +189,7 @@ type weightsStruct struct {
 func GetFederateLearningResult(modeladdress string) (result string) {
 	// 模型文件 参数 路径
 
-	filePath := LINUXRESULTPATH
+	filePath := LINUXRESULTPATH+"//train_"+modeladdress+"//result"
 	modelfiles := []string{}
 
 	files, _ := ioutil.ReadDir(filePath)
@@ -233,7 +233,7 @@ func GetFederateLearningResult(modeladdress string) (result string) {
 	allWeights.B3 = vectorDiv(allWeights.B3, countNum)
 
 	str, _ := json.Marshal(allWeights)
-	write2json(str, LINUXRESULTPATH)
+	write2json(str, LINUXRESULTPATH+"//train_"+modeladdress+"//result")
 	// fmt.Printf("%s\n", str)
 	return string(str)
 }

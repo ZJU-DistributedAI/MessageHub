@@ -260,6 +260,7 @@ func distributeTransactionByInput(from string,input string,conn redis.Conn){
 	if splits[0] == "dadd"{ //数据方上传元数据
 		utils.Sadd2Redis(conn,"metaDataHash", from, splits[1])
 	}else if splits[0] == "dpush"{
+		log.Println("将获取的数据方数据放入运算方通道")
 		computingGetDataChannel <- ComputingGetDataReceipt{DataIpfsHash:splits[1], ModelAddress:splits[2],
 			ComputingHash:"", From:splits[3]}
 	}else if splits[0] == "ddelete" {
@@ -269,6 +270,7 @@ func distributeTransactionByInput(from string,input string,conn redis.Conn){
 	}else if splits[0] == "daggree" {//数据方同意模型方的请求
 		dataAggreeChannel <- DataAggreeReceipt{DataIpfsHash: splits[1], From: from}
 	}else if splits[0]=="madd" { //模型方上传模型Hash
+		log.Println("将获取的模型方方数据放入运算方通道")
 		computingGetModelChannel <- ComputingGetModelReceipt{ModelIpfsHash: splits[1], ContractHash:splits[2]}
 		//utils.Sadd2Redis(conn,"modelHash",from,splits[1])
 	}else if splits[0]=="cadd" { //运算方上传运算资源Hash
