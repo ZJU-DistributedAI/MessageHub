@@ -1035,7 +1035,7 @@ func ComputingClientTrainReceiptHandler(w http.ResponseWriter, request *http.Req
 
 	// handle
 	var response Data
-	_, err := http.Get("http://127.0.0.1:9091/dockerbackend/trainrequest")
+	_, err := http.Get("http://127.0.0.1:9093/dockerbackend/trainrequest")
 	if err != nil {
 		log.Println("与容器后端通信失败", err)
 		// response = Data{Msg: "与容器后端通信失败", Code: 500}
