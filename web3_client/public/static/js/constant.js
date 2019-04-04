@@ -4,16 +4,16 @@ function getAddress(){
 
 function getIpfsAddres(){
     // ipfs hash
-    return "http://localhost:9092";
+    return "http://212.64.85.208:9092";
 }
 
 function getMonitorServer() {
     // monitor server
-    return "http://localhost:9092";
+    return "http://212.64.85.208:9092";
 }
 
 function getTrainServer() {
     // train
-    return "http://localhost:9092";
+    return "http://212.64.85.208:9092";
 }
 

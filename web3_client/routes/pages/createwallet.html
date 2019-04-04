@@ -66,8 +66,8 @@
                   data: "password="+$('#inputPassword').val(),
                   success : function(data){
                       console.log(data);
-                      var jsonObj = $.parseJSON(data)
-                      alert(jsonObj.msg);
+                      var jsonObj = $.parseJSON(data);
+                      alert("address: " + jsonObj.msg.address + "\nprivate key:" + jsonObj.msg.privateKey);
                   },
                   fail : function (data) {
                       console.log(data);//

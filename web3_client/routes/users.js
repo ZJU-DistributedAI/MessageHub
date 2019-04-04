@@ -52,13 +52,15 @@ router.post('/createwallet', function (req, res) {
         response = completeRes("未找到password参数", 201);
     }
     else {
-        var account = web3.eth.personal.newAccount(password);
-        // account 是一个promise对象
-        account.then(function(data){
-            response = completeRes(data,200);
-            res.end(response);
-        });
+        var account = web3.eth.accounts.create();
+        var data = {
+            address: account.address,
+            privateKey: account.privateKey
+        };
+        response = completeRes(data,200);
+        console.log(response);
     }
+    res.end(response);
 });
 
 router.get('/createwalletpage', function (req, res) {
