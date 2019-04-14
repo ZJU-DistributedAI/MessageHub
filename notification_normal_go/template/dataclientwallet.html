@@ -482,7 +482,7 @@
           $("#UploadEncryptedData").on('click', function() {  //添加点击事件
               console.log("click UploadEncryptedData ok");
               $.ajax({
-                  url:interfaceAddress+'/dataclient/pushdatatocomputing',
+                  url:interfaceAddress+'/dataclient/pushdatatoblockchain',
                   type:'post',
                   dataType : 'text',
                   data: "from="+$('#upload_from').val()+"&password="+$('#upload_password').val()

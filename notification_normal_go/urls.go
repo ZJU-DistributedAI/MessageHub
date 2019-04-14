@@ -31,7 +31,7 @@ func startWebService() {
 	//data client
 	http.HandleFunc("/dataclient/uploadfile", DataClientUplodFileHandler)
 	http.HandleFunc("/dataclient/addmetadata", DataClientAddMetaDataHandler)                 //font OK,
-	http.HandleFunc("/dataclient/pushdatatocomputing", DataClientPushDataToComputingHandler) //font OK, back ok
+	http.HandleFunc("/dataclient/pushdatatoblockchain", DataClientPushDataToComputingHandler) //font OK, back ok
 	http.HandleFunc("/dataclient/aggreemodelclient", DataClientAggreeModelClientHandler)     //font OK,
 	http.HandleFunc("/dataclient/index", IndexDataHandler)                                   //font OK, back ok
 	http.HandleFunc("/dataclient/walletpage", DataClientWalletPageHandler)                   //font OK, back ok

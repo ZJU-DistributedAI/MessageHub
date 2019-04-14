@@ -9,7 +9,7 @@
 ## 数据方接口
 - **/dataclient/adddata**  
 数据方上传你数据到区块链接口(交易形式,已实现)
-- **/dataclient/pushdatatocomputing**  
+- **/dataclient/pushdatatoblockchain**  
 数据方将原数据发送给计算方(交易形式,已实现)
 - **/dataclient/aggreemodelclient**  
 数据方同意模型方的交易(交易形式，已实现)
