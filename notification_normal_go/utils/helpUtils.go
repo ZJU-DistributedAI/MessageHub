@@ -19,8 +19,10 @@ import (
 )
 
 const (
-	WINdOSPATH     = "D://distribute_ai_users//"
+	WINDOSPATH     = "D://distribute_ai_users//"
 	WINDOSCODEPATH = "D://MNISTCode//."
+	WINDOSRESULTPATH = "D://distribute_ai_users//result"
+
 
 	LINUXPATH       = "//root//distribute_ai_users//"
 	LINUXRESULTPATH = "//root//distribute_ai_users//"
@@ -138,10 +140,11 @@ func SaveFileToLocal(r *http.Request) (string, error) {
 	defer formFile.Close()
 
 	// 创建保存文件
-	destFile, err := os.Create("upload_file/" + fileName)
+
+	destFile, err := os.Create("./upload_file/" + fileName)
 	if err != nil {
-		log.Printf("Create failed: %s\n", err)
-		return "", err
+		os.MkdirAll("./upload_file", 0777)
+		destFile, err = os.Create("./upload_file/" + fileName)
 	}
 	defer destFile.Close()
 

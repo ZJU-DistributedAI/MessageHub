@@ -1,4 +1,4 @@
-var address = "http://212.64.85.208:9092";
+var address = "http://47.100.205.196:9092";
 function getAddress(){
     return address;
 }

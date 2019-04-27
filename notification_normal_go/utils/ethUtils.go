@@ -12,7 +12,7 @@ import (
 
 const(
 
-	SERVERPATH = "http://47.52.163.119:8545"
+	SERVERPATH = "http://47.100.205.196:8545"
 	LOCALPATH = "http://127.0.0.1:8545"
 
 
@@ -128,7 +128,7 @@ func SendTransaction(client *rpc.Client, tx *Message, password string, ctx conte
 
 	var txHash string
 	err := client.CallContext(ctx, &txHash, "personal_signAndSendTransaction", tx, password)
-	//err:=client.rpcClient.Call(&result,"eth_sendTransaction",tx)
+	//err:=client.Call(&txHash,"eth_sendTransaction",tx)
 	return txHash, err
 }
 
