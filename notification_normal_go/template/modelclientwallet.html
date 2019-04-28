@@ -422,7 +422,7 @@
             url:interfaceAddress+'/modelclient/monitorparameter',
             type:'post',
             dataType : 'text',
-            data: "password="+$('#param_password').val(),
+            data: "modeladdress="+$('#modeladdress').val(),
             success : function(data){
               console.log(data);
               var jsonObj = $.parseJSON(data)
