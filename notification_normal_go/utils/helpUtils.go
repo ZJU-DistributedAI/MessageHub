@@ -192,7 +192,7 @@ type weightsStruct struct {
 func GetFederateLearningResult(modeladdress string) (result string) {
 	// 模型文件 参数 路径
 
-	filePath := LINUXRESULTPATH+"//train_"+modeladdress+"//result"
+	filePath := LINUXRESULTPATH+"train_"+modeladdress+"//result"
 	modelfiles := []string{}
 
 	files, _ := ioutil.ReadDir(filePath)
