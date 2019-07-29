@@ -12,7 +12,7 @@ import (
 
 const(
 
-	SERVERPATH = "http://47.52.163.119:8545"
+	SERVERPATH = "http://47.100.205.196:8545"
 	LOCALPATH = "http://127.0.0.1:8545"
 
 
@@ -76,7 +76,7 @@ func Connect2Eth() (*rpc.Client) {
 	if clientConnect == nil {
 		mutex.Lock()
 		if clientConnect == nil{
-			client, err := rpc.Dial(SERVERPATH)
+			client, err := rpc.Dial(LOCALPATH)
 			if err != nil {
 				ErrorPanic(err)
 				time.Sleep(500) //等待0.5秒后重新尝试连接

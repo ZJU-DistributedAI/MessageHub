@@ -21,6 +21,7 @@ import (
 const (
 	WINDOSPATH     = "D://distribute_ai_users//"
 	WINDOSCODEPATH = "D://MNISTCode//."
+	WINDOSRESULTPATH = "D://distribute_ai_users//result"
 
 	LINUXPATH       = "//root//distribute_ai_users//"
 	LINUXRESULTPATH = "//root//distribute_ai_users//result"
@@ -58,34 +59,35 @@ func DownloadFile(hash string, filename string) {
 
 func MakeDirectory(dirname string) (userPath string, directortPath string) {
 
-	cmd := exec.Command("mkdir", "-p", LINUXPATH+dirname)
+	cmd := exec.Command("mkdir", "-p", WINDOSPATH+dirname)
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("create user directory fail: ", err)
 		return "", ""
 	}
-	cmd = exec.Command("mkdir", "-p", LINUXPATH+dirname+"//upload")
+	cmd = exec.Command("mkdir", "-p", WINDOSPATH+dirname+"//upload")
 	err = cmd.Run()
 	if err != nil {
 		fmt.Println("create upload directory fail: ", err)
 		return "", ""
 	}
-	cmd = exec.Command("mkdir", "-p", LINUXPATH+dirname+"//result")
+	cmd = exec.Command("mkdir", "-p", WINDOSPATH+dirname+"//result")
 	err = cmd.Run()
 	if err != nil {
 		fmt.Println("create result directory fail: ", err)
 		return "", ""
 	}
-	return LINUXPATH + dirname + "//upload//", LINUXPATH + dirname + "//"
+	return WINDOSPATH + dirname + "//upload//", WINDOSPATH + dirname + "//"
 }
 
 func CopyTrainCode(srcpath string,directoryPath string) {
-
+	
 	if srcpath == ""{
 		srcpath = LINUXCODEPATH
 	}
 
 	cmd := exec.Command("cp", "-r", srcpath, directoryPath)
+
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("copy train code fial: ", err)
@@ -193,7 +195,7 @@ type weightsStruct struct {
 func GetFederateLearningResult(modeladdress string) (result string) {
 	// 模型文件 参数 路径
 
-	filePath := LINUXRESULTPATH
+	filePath := WINDOSRESULTPATH
 	modelfiles := []string{}
 
 	files, _ := ioutil.ReadDir(filePath)
@@ -237,7 +239,7 @@ func GetFederateLearningResult(modeladdress string) (result string) {
 	allWeights.B3 = vectorDiv(allWeights.B3, countNum)
 
 	str, _ := json.Marshal(allWeights)
-	write2json(str, LINUXRESULTPATH)
+	write2json(str, WINDOSRESULTPATH)
 	// fmt.Printf("%s\n", str)
 	return string(str)
 }

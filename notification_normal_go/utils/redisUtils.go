@@ -19,7 +19,7 @@ func Connect2Redis() (conn redis.Conn) {
 		mutex.Lock()
 		if connect_redis == nil{
 			//conn, err := redis.Dial("tcp", "212.64.85.208:6379")
-			conn, err := redis.Dial("tcp", "127.0.0.1:6379")
+			conn, err := redis.Dial("tcp", "47.100.205.196:6379")
 			if err != nil {
 				ErrorPanic(err)
 				time.Sleep(100) //等待0.1秒后重新尝试连接
