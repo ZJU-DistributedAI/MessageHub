@@ -400,6 +400,7 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 	modelIpfsHash := request.PostFormValue("modelIpfsHash")
 	dataIpfsHash := request.PostFormValue("dataIpfshash")
 	modelAddress := request.PostFormValue("train_modelFrom")
+	containerNumber := request.PostFormValue("container_number")
 
 	// 新建文件夹
 	uploadPath, directoryPath := utils.MakeDirectory("train_" + modelAddress)
@@ -407,11 +408,26 @@ func ComputingClientTrainHandler(w http.ResponseWriter, request *http.Request) {
 		// 下载文件
 		utils.DownloadFile(modelIpfsHash, uploadPath+"modelFile.json")
 		utils.DownloadFile(dataIpfsHash, uploadPath+"dataFile.json")
-		utils.CopyTrainCode(directoryPath)
+		utils.CopyTrainCode("",directoryPath)
+	}
+	//为分成{containerNumberInt}份的数据做准备
+	containerNumberInt,_ := strconv.Atoi(containerNumber)
+
+	utils.DivedeData(containerNumberInt)
+
+	for i:=0; i<containerNumberInt; i++ {
+		_, directoryPath = utils.MakeDirectory("train_" + modelAddress+"_data"+string(i+1))
+		utils.CopyTrainCode("train_" + modelAddress,directoryPath)
+		utils.CopyTrainData("train_" + modelAddress,directoryPath)
 	}
 
+	params := strings.NewReader("containernumber="+containerNumber)
+	_, err := http.Post("http://127.0.0.1:9093/containernumber","application/x-www-form-urlencoded",params)
+	if err != nil{
+		log.Println("运算方设置容器个数失败")
+	}
 	// 运算方调用容器后端
-	_, err := http.Get("http://127.0.0.1:9093/dockerbackend/starttrain?from=" + modelAddress + "&directorypath=" + directoryPath)
+	_, err = http.Get("http://127.0.0.1:9093/dockerbackend/starttrain?from=" + modelAddress + "&directorypath=" + directoryPath+"&containernumber="+containerNumber)
 	if err != nil {
 		log.Println("运算方调用容器后端失败", err)
 		// response = Resp{Msg: "运算方调用容器后端失败", Code: 500}

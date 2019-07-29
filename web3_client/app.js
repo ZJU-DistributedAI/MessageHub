@@ -48,13 +48,13 @@ if (typeof web3 !== 'undefined') {
     web3 = new Web3(web3.currentProvider);
 } else {
     // set the provider you want from Web3.providers
-    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    web3 = new Web3(new Web3.providers.HttpProvider("http://47.52.163.119:8545"));
 }
 
 
 global.web3 = web3;
 global.Tx = Tx;
-global.DataTransactionTo = "0xb1012acadcdf1c462c0f6b665e84d892e1f4bcf9";
-global.ModelTransactionTo = "0x7c5e1facd0af1c562c2d03eeade47e1c7e695ca6";
+global.DataTransactionTo = "0x7c2387f88aca12aca97a938b88f6d0512b9195e2";
+global.ModelTransactionTo = "0xf6eb003cf5fcdfdaedcc4540028f9f305f1011aa";
 global.ComputingTransactionTo = "0x25127a6a0c6dcdd431425aa1929f93e339039ed1";
 module.exports = app;

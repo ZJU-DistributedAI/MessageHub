@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	WINdOSPATH     = "D://distribute_ai_users//"
+	WINDOSPATH     = "D://distribute_ai_users//"
 	WINDOSCODEPATH = "D://MNISTCode//."
 
 	LINUXPATH       = "//root//distribute_ai_users//"
@@ -79,9 +79,13 @@ func MakeDirectory(dirname string) (userPath string, directortPath string) {
 	return LINUXPATH + dirname + "//upload//", LINUXPATH + dirname + "//"
 }
 
-func CopyTrainCode(directoryPath string) {
+func CopyTrainCode(srcpath string,directoryPath string) {
 
-	cmd := exec.Command("cp", "-r", LINUXCODEPATH, directoryPath)
+	if srcpath == ""{
+		srcpath = LINUXCODEPATH
+	}
+
+	cmd := exec.Command("cp", "-r", srcpath, directoryPath)
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("copy train code fial: ", err)
@@ -416,6 +420,14 @@ func InitConfig(path string) map[string]string {
 		myMap[key] = value
 	}
 	return myMap
+}
+
+func DivedeData(containerNumberInt int){
+	//TODO 将数据分片
+}
+
+func CopyTrainData(srcData string, desData string){
+	//TODO 将数据copy到对应的容器目录
 }
 
 //

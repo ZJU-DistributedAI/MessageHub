@@ -255,16 +255,11 @@
             <div class="card-body">
               <form >
                 <div class="form-group">
-                  {{/*<div class="form-label-group">*/}}
-                    {{/*<input name="param_from" type="text" id="upload_from" class="form-control" required="required" autofocus="autofocus" >*/}}
-                    {{/*<label for="param_from">wallet: 模型方的钱包地址 </label>*/}}
 
-                  {{/*</div>*/}}
-                  {{/*</br>*/}}
 
                   <div class="form-label-group">
-                    <input name="param_password" type="text" id="param_password" class="form-control" required="required" autofocus="autofocus" >
-                    <label for="param_password">password: 模型方的钱包密码 </label>
+                    <input name="modeladdress" type="text" id="modeladdress" class="form-control" required="required" autofocus="autofocus" >
+                    <label for="param_password">modeladdress: 模型方的地址 </label>
                   </div>
 
                 </div>
@@ -275,45 +270,6 @@
           </div>
 
 
- 	{{/**/}}
-
-    {{/*<div class="card mb-3">*/}}
-            {{/*<div class="card-header">Upload Result</div>*/}}
-            {{/*<div class="card-body">*/}}
-             {{/*<form>*/}}
-              {{/*<div class="form-group">*/}}
-                {{/*<div class="form-label-group">*/}}
-                  {{/*<input name="uploadFinal_ETH_key" type="text" id="uploadFinal_ETH_key" class="form-control" required="required" autofocus="autofocus" >*/}}
-                  {{/*<label for="uploadFinal_ETH_key">ETH_key: ETH private key for transaction </label>*/}}
-               {{/**/}}
-                {{/*</div>*/}}
-                  {{/*</br>*/}}
-
-                {{/*<div class="form-label-group">*/}}
-                {{/*<input name="uploadFinal_hash" type="text" id="uploadFinal_hash" class="form-control" required="required" autofocus="autofocus" >*/}}
-                {{/*<label for="uploadFinal_hash">hash: final arguments hash</label>*/}}
-             {{/**/}}
-                {{/*</div>*/}}
-                 {{/*</br>*/}}
-
-                {{/*<div class="form-label-group">*/}}
-                {{/*<input name="uploadFinal_rsa_key" type="text" id="uploadFinal_rsa_key" class="form-control" required="required" autofocus="autofocus" >*/}}
-                {{/*<label for="uploadFinal_rsa_key">rsa_key: rsa private key for transaction id </label>*/}}
-               {{/**/}}
-                {{/*</div>*/}}
-                {{/*</br>*/}}
-
-                {{/*<div class="form-label-group">*/}}
-                   {{/*<input name="uploadFinal_trans_id" type="text" id="uploadFinal_trans_id" class="form-control" required="required" autofocus="autofocus" >*/}}
-                  {{/*<label for="uploadFinal_trans_id">trans_id: transaction_id</label>*/}}
-                {{/*</div>*/}}
-
-              {{/*</div>*/}}
-
-              {{/*<button id="UploadResult" class="btn btn-primary btn-block" type="button">Submit</button>*/}}
-             {{/*</form>*/}}
-          {{/*</div>*/}}
-        {{/*</div>*/}}
 
 
 
@@ -422,7 +378,7 @@
             url:interfaceAddress+'/modelclient/monitorparameter',
             type:'post',
             dataType : 'text',
-            data: "password="+$('#param_password').val(),
+            data: "modeladdress="+$('#modeladdress').val(),
             success : function(data){
               console.log(data);
               var jsonObj = $.parseJSON(data)

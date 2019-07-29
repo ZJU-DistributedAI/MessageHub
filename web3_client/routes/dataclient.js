@@ -57,7 +57,7 @@ router.post('/addmetadata', function (req, res) {
                 nonce: '0x' + number,
                 gasPrice: '0x09184e72a000',
                 gasLimit: '0x271000',
-                to: DataTransactionTo,
+                to: "",
                 value: '0x00',
                 data: txData,
             };
@@ -104,7 +104,7 @@ router.post('/pushdatatocomputing', function (req, res) {
                 nonce: '0x' + number,
                 gasPrice: '0x09184e72a000',
                 gasLimit: '0x271000',
-                to: DataTransactionTo,
+                to: "",
                 value: '0x00',
                 data: txData,
             };
@@ -149,7 +149,7 @@ router.post('/aggreemodelclient', function (req, res) {
                 nonce: '0x' + number,
                 gasPrice: '0x09184e72a000',
                 gasLimit: '0x271000',
-                to: DataTransactionTo,
+                to: "",
                 value: '0x00',
                 data: txData,
             };
@@ -193,7 +193,7 @@ router.post('/askcomputing', function (req, res) {
                 nonce: '0x' + number,
                 gasPrice: '0x09184e72a000',
                 gasLimit: '0x271000',
-                to: DataTransactionTo,
+                to: "",
                 value: '0x00',
                 data: txData,
             };
@@ -237,7 +237,7 @@ router.post('/deletedata', function (req, res) {
                 nonce: '0x' + number,
                 gasPrice: '0x09184e72a000',
                 gasLimit: '0x271000',
-                to: DataTransactionTo,
+                to: "",
                 value: '0x00',
                 data: txData,
             };
