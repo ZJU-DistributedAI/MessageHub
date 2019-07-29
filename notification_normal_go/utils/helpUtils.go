@@ -81,7 +81,7 @@ func MakeDirectory(dirname string) (userPath string, directortPath string) {
 }
 
 func CopyTrainCode(srcpath string,directoryPath string) {
-	
+
 	if srcpath == ""{
 		srcpath = LINUXCODEPATH
 	}
